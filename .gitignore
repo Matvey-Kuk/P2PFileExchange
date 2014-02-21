@@ -37,3 +37,6 @@ nosetests.xml
 
 # Idea
 .idea/
+
+#Some fuckin' files from mac.
+.DS_Store
