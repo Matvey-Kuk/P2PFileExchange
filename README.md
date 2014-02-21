@@ -20,6 +20,12 @@
 
 Забрать из удаленного мастера: git pull origin master
 
+Узнать, какие файлы будут закоммичены: git status
+
+Закоммитить изменения: git commit -am "I've made something really strange"
+
+Посмотреть последние коммиты: git log
+
 Залить на удаленный мастер: git push origin master
 
 Узнать, в какой мы ветке: git branch
