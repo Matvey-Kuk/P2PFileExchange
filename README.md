@@ -7,12 +7,28 @@
 
 Игра по ветвлению, обязательна к прохождению: http://pcottle.github.io/learnGitBranching/
 
-GIT:
+Список используемых нами команд (Пополняйте его =) ):
 ------------
 
 Инициализировать репозиторий: git init
 
+Установить свой ник: git config --global user.name "Billy Everyteen"
+
+Установить свою почту: git config --global user.email "me@here.com"
+
 Добавить удаленный репозиторий: git remote add origin git@github.com:Matvey-Kuk/network.git
+
+Забрать из удаленного мастера: git pull origin master
+
+Залить на удаленный мастер: git push origin master
+
+Узнать, в какой мы ветке: git branch
+
+Создать новую ветку: git branch newBranchName
+
+Переключиться на другую ветку: git checkout someBrancName
+
+Слить с текущей веткой, ветку someBranch: git merge someBranch
 
 Python:
 ------------
