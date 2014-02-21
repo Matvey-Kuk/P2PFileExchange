@@ -1,16 +1,18 @@
 Дамы и господа, это наш священый курсач!
 
-
-Настройка GIT:
+Материалы:
 ------------
 
-Инициализировать репозиторий:
+Книжка на русском (В нашем случае можно читать до 3-й главы включительно): http://git-scm.com/book/ru
 
-git init
+Игра по ветвлению, обязательна к прохождению: http://pcottle.github.io/learnGitBranching/
 
-Добавить удаленный репозиторий:
+GIT:
+------------
 
-git remote add origin git@github.com:Matvey-Kuk/network.git
+Инициализировать репозиторий: git init
+
+Добавить удаленный репозиторий: git remote add origin git@github.com:Matvey-Kuk/network.git
 
 Python:
 ------------
