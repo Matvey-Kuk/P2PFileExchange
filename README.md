@@ -20,6 +20,8 @@
 
 Забрать из удаленного мастера: git pull origin master
 
+Узнать, какие файлы будут закоммичены: git add --all (вместо --all можно указать конкретные файлы)
+
 Узнать, какие файлы будут закоммичены: git status
 
 Закоммитить изменения: git commit -am "I've made something really strange"
