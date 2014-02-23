@@ -2,7 +2,13 @@
 """ Этот класс обеспечивает все сетевое взаимодействие."""
 
 
-class Networking (object):
+def hello():
+    print('Hello from the reactor loop!')
+    print('Lately I feel like I\'m stuck in a rut.')
 
-    def __init__(self):
-        pass
+from twisted.internet import reactor
+
+reactor.callWhenRunning(hello)
+
+print('Starting the reactor.')
+reactor.run()
