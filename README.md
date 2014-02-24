@@ -41,6 +41,6 @@
 Python:
 ------------
 
-Поставить интерпритатор: http://www.python.org/download/releases/2.7.6/
+Поставить интерпритатор: =)
 
 Поставить кошерный редактор (Обязательно Community Edition): http://www.jetbrains.com/pycharm/download/

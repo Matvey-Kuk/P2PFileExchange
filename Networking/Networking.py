@@ -1,4 +1,5 @@
-from Networking import Peer
+from Networking.Peer import *
+from Networking.ServerThread import *
 
 
 class Networking(object):
@@ -6,8 +7,15 @@ class Networking(object):
 
     network_using_objects = []
 
-    def __init__(self):
-        pass
+    def __init__(self, host, port):
+        self.server_thread = ServerThread(host, port)
+        self.server_thread.register_new_connection_callback(self.new_connection_registered)
+        self.server_thread.start()
+        print("Live is going on!")
+
+    @staticmethod
+    def new_connection_registered():
+        print("new connection callback")
 
     def send_data(self, peer, module_name):
         pass
