@@ -5,17 +5,29 @@ from Networking.ServerThread import *
 class Networking(object):
     """ Этот класс обеспечивает все сетевое взаимодействие."""
 
-    network_using_objects = []
-
     def __init__(self, host, port):
         self.server_thread = ServerThread(host, port)
         self.server_thread.register_new_connection_callback(self.new_connection_registered)
         self.server_thread.start()
-        print("Live is going on!")
+
+        self.network_using_objects = []
+
+
 
     @staticmethod
-    def new_connection_registered():
+    def new_connection_registered(peer):
         print("new connection callback")
+
+    @staticmethod
+    def data_received_from_peer(peer):
+        print("data received from peer")
+
+    def send_data_to_peer(self, peer, data):
+        pass
+
+    @staticmethod
+    def connection_closed(peer):
+        print("connection closed")
 
     def send_data(self, peer, module_name):
         pass

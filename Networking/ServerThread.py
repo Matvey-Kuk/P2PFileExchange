@@ -1,5 +1,8 @@
 import threading
 import socket
+import inspect
+
+from Networking.Peer import *
 
 
 class ServerThread(threading.Thread):
@@ -15,6 +18,8 @@ class ServerThread(threading.Thread):
 
         self.tcp_socket.bind((self.host, self.port))
 
+        self.new_connection_callback = None
+
     def register_new_connection_callback(self, function):
         self.new_connection_callback = function
 
@@ -22,10 +27,7 @@ class ServerThread(threading.Thread):
         print("Server loop started...")
         while True:
             self.tcp_socket.listen(4)
-            (clientsock, (ip, port)) = self.tcp_socket.accept()
-
-            print("new connection")
-            self.new_connection_callback()
-            # #pass clientsock to the ClientThread thread object being created
-            # newthread = ClientThread(ip, port, clientsock)
-            # newthread.start()
+            (socket, (ip, port)) = self.tcp_socket.accept()
+            peer = Peer(ip, port, socket)
+            if inspect.isroutine(self.new_connection_callback):
+                self.new_connection_callback(peer)
