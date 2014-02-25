@@ -12,5 +12,8 @@ class ClientThread(threading.Thread):
         self.disconnected_callback = disconnected_callback
         print("[+] New thread started for "+ip+":"+str(port))
 
-    def __run__(self):
-        pass
+    def run(self):
+        print("client loop started")
+        while True:
+            data = self.socket.recv(1024)
+            print('Received', repr(data))
