@@ -1,3 +1,5 @@
+from threading import Timer
+
 from Networking.Peer import *
 from Networking.ServerThread import *
 
@@ -6,20 +8,16 @@ class Networking(object):
     """ Этот класс обеспечивает все сетевое взаимодействие."""
 
     def __init__(self, host, port):
-        self.server_thread = ServerThread(host, port)
-        self.server_thread.register_new_connection_callback(self.new_connection_registered)
+        self.peers = []
+        self.server_thread = ServerThread(host, port, self.peers)
         self.server_thread.start()
-
         self.network_using_objects = []
 
-
-
-    @staticmethod
-    def new_connection_registered(peer):
-        print("new connection callback")
+        self.t = Timer(1, self.print_peers)
+        self.t.start()
 
     @staticmethod
-    def data_received_from_peer(peer):
+    def data_received_from_peer(peer, self):
         print("data received from peer")
 
     def send_data_to_peer(self, peer, data):
@@ -59,4 +57,17 @@ class Networking(object):
 
     def inspect_connections(self):
         """Инспектирует все соединения- доотправляет данные и закрывает ненужные"""
+        pass
+
+    def provoke_connection(self, ip, port):
+        """
+        Провоцирует соединение
+        @return: Peer object
+        """
+        return Peer
+
+    def print_peers(self):
+        print(self.peers)
+        self.t = Timer(1, self.print_peers)
+        self.t.start()
         pass

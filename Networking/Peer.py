@@ -1,5 +1,6 @@
 from Networking.ClientThread import *
 
+
 class Peer (object):
     """
     Пир- участник сети, о котором знает Networking. Здесь должна храниться вся информация о нем.
@@ -12,8 +13,8 @@ class Peer (object):
         self.is_alive = False
         self.socket = socket
 
-        self.client_thread = ClientThread(self.ip, self.port, self.socket, self.data_received, self.disconnected)
-        self.client_thread.start()
+        self.thread_receive = ClientThread(self.socket, self.data_received, self.disconnected)
+        self.thread_receive.start()
 
     def get_ip(self):
         return self.ip
@@ -35,3 +36,6 @@ class Peer (object):
 
     def disconnected(self):
         pass
+
+    def send_data(self, data):
+        self.socket.sendall(data)
