@@ -40,9 +40,3 @@ class Peer (object):
         print(self.received_messages)
         timer = Timer(1, self.collect_messages)
         timer.start()
-
-    def get_ip(self):
-        return self.ip
-
-    def get_port(self):
-        return self.port
