@@ -13,19 +13,7 @@ class Networking(object):
         self.server_thread.start()
         self.network_using_objects = []
 
-        self.t = Timer(1, self.print_peers)
-        self.t.start()
-
-    @staticmethod
-    def data_received_from_peer(peer, self):
-        print("data received from peer")
-
-    def send_data_to_peer(self, peer, data):
-        pass
-
-    @staticmethod
-    def connection_closed(peer):
-        print("connection closed")
+        self.update()
 
     def send_data(self, peer, module_name):
         pass
@@ -66,8 +54,13 @@ class Networking(object):
         """
         return Peer
 
-    def print_peers(self):
-        print(self.peers)
-        self.t = Timer(1, self.print_peers)
-        self.t.start()
-        pass
+    def update(self):
+        """
+        Запускает все переодические операции для соединений
+        """
+        update_timeout = 1
+
+        # print(self.peers)
+
+        timer = Timer(update_timeout, self.update)
+        timer.start()
