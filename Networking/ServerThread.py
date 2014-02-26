@@ -20,7 +20,6 @@ class ServerThread(threading.Thread):
         self.tcp_socket.bind((self.host, self.port))
 
     def run(self):
-        print("Server loop started...")
         while True:
             self.tcp_socket.listen(4)
             (socket, (ip, port)) = self.tcp_socket.accept()

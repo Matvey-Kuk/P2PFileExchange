@@ -15,7 +15,6 @@ class Networking(object):
         self.network_using_objects = []
 
         self.update()
-        self.provoke_connection("localhost", 12345)
 
     def send_data(self, peer, module_name):
         pass
