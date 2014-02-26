@@ -54,13 +54,17 @@ class Networking(object):
         """
         return Peer
 
+    def process_peers(self):
+        for peer in self.peers:
+            peer.process_messages()
+
     def update(self):
         """
         Запускает все переодические операции для соединений
         """
         update_timeout = 1
 
-        # print(self.peers)
+        self.process_peers()
 
         timer = Timer(update_timeout, self.update)
         timer.start()

@@ -11,9 +11,8 @@ class ClientReceiveThread(ClientThread):
         self.received_bytes = bytearray()
 
     def run(self):
-        print("client receive loop started")
         while True:
             received_data = self.socket.recv(1)
             self.received_bytes = b''.join([self.received_bytes, received_data])
             if b'\n' in received_data:
-                self.received_messages.put(Message(self.received_bytes, self.peer))
+                self.received_messages.put(Message(self.peer, bytes = self.received_bytes))

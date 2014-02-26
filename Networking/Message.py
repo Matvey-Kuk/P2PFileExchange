@@ -1,17 +1,35 @@
+import json
+
+
 class Message(object):
     """Сообщение, передаваемое от пира, или пиру"""
 
-    def __init__(self, body, peer):
-        self.body = body
+    def __init__(self, peer, **kwargs):
+        """
+        @param peer: Указатель на пира, с которым связано это сообщение
+        @param kwargs: либо 'bytes', либо 'prefix' и 'text' - используютя для создания объекта
+        """
         self.peer = peer
+        self.prefix = ""
+        self.text = ""
 
-        self._produced = False
+        if 'bytes' in kwargs:
+            body = kwargs['bytes'].decode("ascii")
+            body = json.JSONDecoder().decode(body)
+            self.prefix = body['prefix']
+            self.text = body['text']
+        elif 'prefix' in kwargs and 'text' in kwargs:
+            self.prefix = kwargs['prefix']
+            self.text = kwargs['text']
+        else:
+            raise NotImplementedError("Не указаны необходимые параметры для создания объекта")
 
-    def mark_processed(self):
-        self._produced = True
 
-    def is_produced(self):
-        return self._produced
+    def get_body(self):
+        return json.JSONEncoder().encode({
+            'prefix': self.prefix,
+            'text': self.text
+        })
 
     def get_bytes(self):
-        return bytearray(self.body, "ascii")
+        return bytearray(self.get_body(), "ascii")

@@ -24,20 +24,18 @@ class Peer (object):
 
         self.sending_messages_queue = Queue()
         self.send_enabled = threading.Event()
-        self.send_enabled.set()
         self.thread_send = ClientSendThread(self.socket, self.sending_messages_queue, self.send_enabled)
         self.thread_send.start()
 
         #Информация для Networking копится здесь:
         self.status = {
+            #Todo: Обработать отключение пира
             "connected": True,
             "messagesAwaitingForSending": 0,
             "receivedMessagesAwaitingForTakingAway": 0
         }
         self.messages_for_sending = []
         self.received_messages = []
-
-        self.process_messages()
 
     def process_messages(self):
         while self.received_messages_queue.qsize() > 0:
@@ -47,6 +45,3 @@ class Peer (object):
             self.sending_messages_queue.put(self.messages_for_sending.pop(0))
 
         self.send_enabled.set()
-
-        timer = Timer(1, self.process_messages)
-        timer.start()

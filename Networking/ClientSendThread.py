@@ -9,10 +9,8 @@ class ClientSendThread(ClientThread):
         self.enabled = enabled
 
     def run(self):
-        print("client send loop started")
         while True:
             self.enabled.wait()
-            print("sending message")
             if self.messages_for_sending.qsize() == 0:
                 self.enabled.clear()
             else:
