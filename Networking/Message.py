@@ -24,7 +24,6 @@ class Message(object):
         else:
             raise NotImplementedError("Не указаны необходимые параметры для создания объекта")
 
-
     def get_body(self):
         return json.JSONEncoder().encode({
             'prefix': self.prefix,

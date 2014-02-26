@@ -1,4 +1,5 @@
 from threading import Timer
+import socket
 
 from Networking.Peer import *
 from Networking.ServerThread import *
@@ -14,6 +15,7 @@ class Networking(object):
         self.network_using_objects = []
 
         self.update()
+        self.provoke_connection("localhost", 12345)
 
     def send_data(self, peer, module_name):
         pass
@@ -52,7 +54,11 @@ class Networking(object):
         Провоцирует соединение
         @return: Peer object
         """
-        return Peer
+        provoked_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        provoked_socket.connect((ip, port))
+        new_peer = Peer(ip, port, provoked_socket)
+        self.peers.append(new_peer)
+        return new_peer
 
     def process_peers(self):
         for peer in self.peers:

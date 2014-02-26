@@ -1,5 +1,4 @@
 from queue import *
-from threading import Timer
 
 from Networking.ClientReceiveThread import *
 from Networking.ClientSendThread import *
