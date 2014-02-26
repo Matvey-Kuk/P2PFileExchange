@@ -14,7 +14,7 @@
 
 Установить свой ник: git config --global user.name "Billy Everyteen"
 
-Установить свою почту: git config --global user.email "me@here.com"
+Установить свою почту (она должна совпадать с указанной здесь, чтобы гитхаб вас опознал: https://github.com/settings/emails): git config --global user.email "me@here.com"
 
 Добавить удаленный репозиторий: git remote add origin git@github.com:Matvey-Kuk/network.git
 
@@ -34,7 +34,7 @@
 
 Создать новую ветку: git branch newBranchName
 
-Переключиться на другую ветку: git checkout someBrancName
+Переключиться на другую ветку: git checkout someBranchName
 
 Слить с текущей веткой, ветку someBranch: git merge someBranch
 
