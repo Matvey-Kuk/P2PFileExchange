@@ -16,3 +16,4 @@ class ClientReceiveThread(ClientThread):
             self.received_bytes = b''.join([self.received_bytes, received_data])
             if b'\n' in received_data:
                 self.received_messages.put(Message(self.peer, bytes = self.received_bytes))
+                self.received_bytes = bytearray()

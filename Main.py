@@ -11,7 +11,7 @@ class Main(object):
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
 
-        self.p2p = P2p()
+        self.p2p = P2p(self.networking)
 
     @staticmethod
     def parse_arguments():

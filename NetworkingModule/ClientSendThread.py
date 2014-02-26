@@ -14,4 +14,4 @@ class ClientSendThread(ClientThread):
             if self.messages_for_sending.qsize() == 0:
                 self.enabled.clear()
             else:
-                self.socket.sendall(self.messages_for_sending.get().get_bytes())
+                self.socket.sendall(self.messages_for_sending.get().get_bytes() + b'\n')

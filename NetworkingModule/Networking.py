@@ -12,39 +12,29 @@ class Networking(object):
         self.server_thread.start()
         self.network_using_objects = []
 
+        self.received_messages = []
+        self.messages_for_sending = []
+
         self.update()
 
-    def send_data(self, peer, module_name):
-        pass
+    def get_messages(self, prefix, remove_taken = True):
+        buf_received_messages = []
+        result_messages = []
+        for message in self.received_messages:
+            if message.prefix == prefix:
+                result_messages.append(message)
+                if not remove_taken:
+                    buf_received_messages.append(message)
+            else:
+                buf_received_messages.append(message)
+        self.received_messages = buf_received_messages
+        return result_messages
 
-    def get_data(self, module_name):
-        return {
-            "peer": Peer,
-            "data": "some data"
-        }
+    def send_message(self, message):
+        self.messages_for_sending.append(message)
 
-    def get_self_connection_data(self):
-        return {
-            "ip": "some ip",
-            "port": "some port",
-            "alive": True
-        }
-
-    def register_network_user(self, obj):
-        """Здесь нужно решистрировать все объекты, использующие соединение"""
-        pass
-
-    def unregister_network_user(self, obj):
-        """Здесь нужно разрегистрировать все объекты, которые больше не будут использовать соединение"""
-        pass
-
-    def collect_needed_peers(self):
-        """Собирает всех пиров, с которыми нужно поддерживать соединение"""
-        pass
-
-    def inspect_connections(self):
-        """Инспектирует все соединения- доотправляет данные и закрывает ненужные"""
-        pass
+    def get_peers(self):
+        return self.peers
 
     def provoke_connection(self, ip, port):
         """
@@ -57,11 +47,30 @@ class Networking(object):
         self.peers.append(new_peer)
         return new_peer
 
+    def register_network_user(self, obj):
+        """Здесь нужно решистрировать все объекты, использующие соединение"""
+        pass
+
+    def unregister_network_user(self, obj):
+        """Здесь нужно разрегистрировать все объекты, которые больше не будут использовать соединение"""
+        pass
+
     def process_peers(self):
-        print("----")
         for peer in self.peers:
+            buff_messages_for_sending = []
+
+            for message in self.messages_for_sending:
+                if message.peer == peer:
+                    peer.messages_for_sending.append(message)
+                else:
+                    buff_messages_for_sending.append(message)
+            self.messages_for_sending = buff_messages_for_sending
+
             peer.process_messages()
-            print(peer)
+
+            if len(peer.received_messages) > 0:
+                self.received_messages = self.received_messages + peer.received_messages
+                peer.received_messages = []
 
     def update(self):
         """
