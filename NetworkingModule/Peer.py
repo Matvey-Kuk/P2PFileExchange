@@ -1,7 +1,7 @@
 from queue import *
 
-from Networking.ClientReceiveThread import *
-from Networking.ClientSendThread import *
+from NetworkingModule.ClientReceiveThread import *
+from NetworkingModule.ClientSendThread import *
 
 
 class Peer (object):

@@ -1,5 +1,5 @@
-from Networking.ClientThread import *
-from Networking.Message import *
+from NetworkingModule.ClientThread import *
+from NetworkingModule.Message import *
 
 
 class ClientReceiveThread(ClientThread):

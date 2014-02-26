@@ -2,7 +2,7 @@ import threading
 import socket
 import inspect
 
-from Networking.Peer import *
+from NetworkingModule.Peer import *
 
 
 class ServerThread(threading.Thread):

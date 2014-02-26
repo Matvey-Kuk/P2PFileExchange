@@ -1,6 +1,7 @@
 import argparse
 
-from Networking import Networking
+from NetworkingModule.Networking import *
+from NetworkingModule.P2p import *
 
 
 class Main(object):
@@ -9,6 +10,8 @@ class Main(object):
     def __init__(self):
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
+
+        self.p2p = P2p()
 
     @staticmethod
     def parse_arguments():
@@ -30,5 +33,13 @@ class Main(object):
 
         print("Server started, connection point:\"" + bind_host + ":" + str(port) + "\"")
 
-        return Networking.Networking(bind_host, port)
+        networking = Networking(bind_host, port)
+
+        if not self.command_line_arguments.first_peer is None:
+            ip_port = self.command_line_arguments.first_peer.split(':')
+            peer_ip = ip_port[0]
+            peer_port = ip_port[1]
+            print(peer_ip, peer_port)
+
+        return networking
 main = Main()

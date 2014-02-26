@@ -1,8 +1,8 @@
 from threading import Timer
 import socket
 
-from Networking.Peer import *
-from Networking.ServerThread import *
+from NetworkingModule.Peer import *
+from NetworkingModule.ServerThread import *
 
 
 class Networking(object):

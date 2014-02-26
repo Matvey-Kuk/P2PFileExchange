@@ -1,4 +1,4 @@
-from Networking.ClientThread import *
+from NetworkingModule.ClientThread import *
 
 
 class ClientSendThread(ClientThread):
