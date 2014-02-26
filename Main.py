@@ -1,7 +1,7 @@
 import argparse
 
 from NetworkingModule.Networking import *
-from NetworkingModule.P2p import *
+from P2pModule.P2p import *
 
 
 class Main(object):
