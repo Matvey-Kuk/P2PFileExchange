@@ -12,3 +12,6 @@ class Message(object):
 
     def is_produced(self):
         return self._produced
+
+    def get_bytes(self):
+        return bytearray(self.body, "ascii")

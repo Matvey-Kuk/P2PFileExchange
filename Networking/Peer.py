@@ -2,6 +2,7 @@ from queue import *
 from threading import Timer
 
 from Networking.ClientReceiveThread import *
+from Networking.ClientSendThread import *
 
 
 class Peer (object):
@@ -21,22 +22,31 @@ class Peer (object):
         self.thread_receive = ClientReceiveThread(self, self.socket, self.received_messages_queue)
         self.thread_receive.start()
 
+        self.sending_messages_queue = Queue()
+        self.send_enabled = threading.Event()
+        self.send_enabled.set()
+        self.thread_send = ClientSendThread(self.socket, self.sending_messages_queue, self.send_enabled)
+        self.thread_send.start()
+
         #Информация для Networking копится здесь:
         self.status = {
             "connected": True,
             "messagesAwaitingForSending": 0,
             "receivedMessagesAwaitingForTakingAway": 0
         }
-        self.message_for_sending = []
+        self.messages_for_sending = []
         self.received_messages = []
 
-        self.collect_messages()
+        self.process_messages()
 
-    def collect_messages(self):
-        """Синхронизирует сообщения между очередями потоков и хранилищами, доступными внешним классам"""
+    def process_messages(self):
         while self.received_messages_queue.qsize() > 0:
             self.received_messages.append(self.received_messages_queue.get())
 
-        print(self.received_messages)
-        timer = Timer(1, self.collect_messages)
+        while len(self.messages_for_sending) > 0:
+            self.sending_messages_queue.put(self.messages_for_sending.pop(0))
+
+        self.send_enabled.set()
+
+        timer = Timer(1, self.process_messages)
         timer.start()
