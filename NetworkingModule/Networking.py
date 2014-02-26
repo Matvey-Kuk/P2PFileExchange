@@ -1,7 +1,5 @@
 from threading import Timer
-import socket
 
-from NetworkingModule.Peer import *
 from NetworkingModule.ServerThread import *
 
 
@@ -60,8 +58,10 @@ class Networking(object):
         return new_peer
 
     def process_peers(self):
+        print("----")
         for peer in self.peers:
             peer.process_messages()
+            print(peer)
 
     def update(self):
         """

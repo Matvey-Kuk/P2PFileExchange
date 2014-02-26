@@ -39,7 +39,8 @@ class Main(object):
             ip_port = self.command_line_arguments.first_peer.split(':')
             peer_ip = ip_port[0]
             peer_port = ip_port[1]
-            print(peer_ip, peer_port)
+            networking.provoke_connection(peer_ip, int(peer_port))
 
         return networking
+
 main = Main()
