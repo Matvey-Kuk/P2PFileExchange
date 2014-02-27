@@ -7,6 +7,7 @@ class Networking(object):
     """ Этот класс обеспечивает все сетевое взаимодействие."""
 
     def __init__(self, host, port):
+        self.server_port = port
         self.peers = []
         self.server_thread = ServerThread(host, port, self.peers)
         self.server_thread.start()

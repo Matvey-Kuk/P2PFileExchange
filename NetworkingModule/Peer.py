@@ -16,6 +16,7 @@ class Peer (object):
         self.port = port
         self.is_alive = False
         self.socket = socket
+        self.metadata = {}
 
         self.received_messages_queue = Queue()
         self.thread_receive = ClientReceiveThread(self, self.socket, self.received_messages_queue)
@@ -44,3 +45,11 @@ class Peer (object):
             self.sending_messages_queue.put(self.messages_for_sending.pop(0))
 
         self.send_enabled.set()
+
+    def add_metadata(self, module_prefix, data_prefix, data):
+        self.metadata[module_prefix][data_prefix] = data
+
+    def get_metadata(self, module_prefix, data_prefix):
+        if module_prefix in self.metadata:
+            if data_prefix in self.metadata[module_prefix]:
+                return self.metadata[module_prefix][data_prefix]

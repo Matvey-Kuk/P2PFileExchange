@@ -1,4 +1,5 @@
 from threading import Timer
+from time import time
 
 from NetworkingModule.NetworkingInterface import *
 from NetworkingModule.Message import *
@@ -6,6 +7,9 @@ from NetworkingModule.Message import *
 
 class P2p(NetworkingInterface):
     """Следит за p2p соединением, выпрашивает новых пиров, выбирает более быстрых."""
+
+    command_give_me_peers = 'give_me_peers'
+    command_give_me_your_server_port = 'give_me_tour_server_port'
 
     def __init__(self, networking):
         super().__init__()
@@ -18,15 +22,42 @@ class P2p(NetworkingInterface):
     def process(self):
         update_timeout = 5
 
-        print("P2p processing...")
-
-        for peer in self.networking.get_peers():
-            self.networking.send_message(Message(peer, prefix='p2p', text='Hello, p2p!'))
+        self.ask_new_peers()
 
         received_messages = self.networking.get_messages('p2p')
-        if len(received_messages) > 0:
-            for message in received_messages:
-                print("Received:" + message.text)
+        for message in received_messages:
+            self.request_processor(message)
 
         timer = Timer(update_timeout, self.process)
         timer.start()
+
+    def ask_server_port(self, peer):
+        self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_your_server_port))
+
+    def ask_new_peers(self):
+        for peer in self.networking.get_peers():
+            self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
+            self.ask_server_port(peer)
+
+    def tell_about_known_peers(self, peer):
+        self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_peers","peers":[1,2,3]}))
+
+    def tell_about_my_server_port(self, peer):
+        self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_server_port","port":self.networking.server_port}))
+
+    def request_processor(self, received_message):
+        if received_message.text == self.command_give_me_peers:
+            self.tell_about_known_peers(received_message.peer)
+        elif received_message.text == self.command_give_me_your_server_port:
+            self.tell_about_my_server_port(received_message.peer)
+        elif isinstance(received_message.text, dict):
+            if received_message.text['command'] == 'my_peers':
+                self.received_peers(received_message.peer, received_message.text["peers"])
+            if received_message.text['command'] == 'my_server_port':
+                self.received_server_port(received_message.peer, received_message.text["port"])
+
+    def received_server_port(self, from_peer, server_port):
+        print("received server port: " + str(server_port))
+
+    def received_peers(self, from_peer, peers):
+        print("received peers: " + repr(peers))
