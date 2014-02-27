@@ -46,7 +46,9 @@ class Peer (object):
 
         self.send_enabled.set()
 
-    def add_metadata(self, module_prefix, data_prefix, data):
+    def set_metadata(self, module_prefix, data_prefix, data):
+        if not module_prefix in self.metadata:
+            self.metadata[module_prefix] = {}
         self.metadata[module_prefix][data_prefix] = data
 
     def get_metadata(self, module_prefix, data_prefix):

@@ -23,6 +23,7 @@ class P2p(NetworkingInterface):
         update_timeout = 5
 
         self.ask_new_peers()
+        self.check_aviability_of_server_ports()
 
         received_messages = self.networking.get_messages('p2p')
         for message in received_messages:
@@ -34,10 +35,14 @@ class P2p(NetworkingInterface):
     def ask_server_port(self, peer):
         self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_your_server_port))
 
+    def check_aviability_of_server_ports(self):
+        for peer in self.networking.get_peers():
+            if peer.get_metadata('p2p', 'server_port') is None:
+                self.ask_server_port(peer)
+
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
             self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
-            self.ask_server_port(peer)
 
     def tell_about_known_peers(self, peer):
         self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_peers","peers":[1,2,3]}))
@@ -58,6 +63,7 @@ class P2p(NetworkingInterface):
 
     def received_server_port(self, from_peer, server_port):
         print("received server port: " + str(server_port))
+        from_peer.set_metadata('p2p', 'server_port', server_port)
 
     def received_peers(self, from_peer, peers):
         print("received peers: " + repr(peers))
