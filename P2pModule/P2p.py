@@ -10,6 +10,7 @@ class P2p(NetworkingInterface):
 
     command_give_me_peers = 'give_me_peers'
     command_give_me_your_server_port = 'give_me_tour_server_port'
+    command_timeout = 10
 
     def __init__(self, networking):
         super().__init__()
@@ -23,7 +24,7 @@ class P2p(NetworkingInterface):
         update_timeout = 5
 
         self.ask_new_peers()
-        self.check_aviability_of_server_ports()
+        self.check_availability_of_server_ports()
 
         received_messages = self.networking.get_messages('p2p')
         for message in received_messages:
@@ -33,12 +34,16 @@ class P2p(NetworkingInterface):
         timer.start()
 
     def ask_server_port(self, peer):
+        peer.set_metadata('p2p', 'server_port_requested_time', time())
         self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_your_server_port))
 
-    def check_aviability_of_server_ports(self):
+    def check_availability_of_server_ports(self):
         for peer in self.networking.get_peers():
             if peer.get_metadata('p2p', 'server_port') is None:
-                self.ask_server_port(peer)
+                if peer.get_metadata('p2p', 'server_port_requested_time') is None:
+                    self.ask_server_port(peer)
+                elif time() - peer.get_metadata('p2p', 'server_port_requested_time') > self.command_timeout:
+                    self.ask_server_port(peer)
 
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
