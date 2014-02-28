@@ -12,6 +12,8 @@ class P2p(NetworkingInterface):
     command_give_me_your_server_port = 'give_me_tour_server_port'
     command_timeout = 10
 
+    peer_request_period = 60
+
     def __init__(self, networking):
         super().__init__()
         self.networking = networking
@@ -47,7 +49,12 @@ class P2p(NetworkingInterface):
 
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
-            self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
+            if peer.get_metadata('p2p', 'peer_request_time') is None:
+                self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
+                peer.set_metadata('p2p', 'peer_request_time', time())
+            elif time() - peer.get_metadata('p2p', 'peer_request_time') > self.peer_request_period:
+                self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
+                peer.set_metadata('p2p', 'peer_request_time', time())
 
     def tell_about_known_peers(self, peer):
         self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_peers","peers":[1,2,3]}))
