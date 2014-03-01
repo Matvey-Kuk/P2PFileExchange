@@ -4,18 +4,22 @@ from time import time
 from NetworkingModule.NetworkingInterface import *
 from NetworkingModule.Message import *
 
+from P2pModule.DormantPeer import *
+
 
 class P2p(NetworkingInterface):
     """Следит за p2p соединением, выпрашивает новых пиров, выбирает более быстрых."""
+    #Todo: Кажется, здесь адовый бардак, который пора приводит в порядок...
 
     command_give_me_peers = 'give_me_peers'
     command_give_me_your_server_port = 'give_me_tour_server_port'
-    command_timeout = 10
+    command_timeout = 1
 
-    peer_request_period = 60
+    peer_request_period = 5
 
     def __init__(self, networking):
         super().__init__()
+        self.dormant_peers = []
         self.networking = networking
         self.process()
 
@@ -23,7 +27,7 @@ class P2p(NetworkingInterface):
         return []
 
     def process(self):
-        update_timeout = 5
+        update_timeout = 1
 
         self.ask_new_peers()
         self.check_availability_of_server_ports()
@@ -82,4 +86,18 @@ class P2p(NetworkingInterface):
         from_peer.set_metadata('p2p', 'server_port', server_port)
 
     def received_peers(self, from_peer, peers):
-        print("received peers: " + repr(peers))
+        print(self.dormant_peers)
+        print('Received peers:' + repr(peers))
+        for peer in peers:
+
+            peer_is_known = False
+            peer_is_known_as_dormant = None
+            for dormant_peer in self.dormant_peers:
+                if dormant_peer.ip == peer['ip'] and dormant_peer.server_port == peer['port']:
+                    peer_is_known = True
+                    peer_is_known_as_dormant = dormant_peer
+
+            if peer_is_known:
+                peer_is_known_as_dormant.detected(from_peer)
+            else:
+                self.dormant_peers.append(DormantPeer(from_peer, peer['ip'], peer['port']))
