@@ -1,5 +1,7 @@
 Дамы и господа, это наш священый курсач!
 
+Когда-то мы даже напишем автоматизированные тесты... [![Build Status](https://travis-ci.org/Matvey-Kuk/network.png?branch=master)](https://travis-ci.org/Matvey-Kuk/network)
+
 Запуск:
 ------------
 Уже что-то можно запустить, но толку с этого мало:
