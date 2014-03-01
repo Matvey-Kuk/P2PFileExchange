@@ -57,7 +57,11 @@ class P2p(NetworkingInterface):
                 peer.set_metadata('p2p', 'peer_request_time', time())
 
     def tell_about_known_peers(self, peer):
-        self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_peers","peers":[1,2,3]}))
+        peers_list_for_sending = []
+        for peer in self.networking.get_peers():
+            if not peer.get_metadata('p2p', 'server_port') is None:
+                peers_list_for_sending.append({'ip': peer.ip, 'port': peer.get_metadata('p2p', 'server_port')})
+        self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_peers", "peers": peers_list_for_sending}))
 
     def tell_about_my_server_port(self, peer):
         self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_server_port","port":self.networking.server_port}))
