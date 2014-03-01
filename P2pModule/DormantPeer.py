@@ -16,10 +16,16 @@ class DormantPeer():
         self.server_port = server_port
         self.detected(reported_by_peer)
 
+        #Если к этому пиру пытались соединиться то здесь будет объект peer
+        self.connection_provoked_to_peer = None
+
     def detected(self, peer):
         if not peer in self.reported_by_peers:
             self.reported_by_peers.append(peer)
         self.detection_time = time()
+
+    def connection_provoked(self, new_peer):
+        self.connection_provoked_to_peer = new_peer
 
     def get_peers_reported(self):
         return self.reported_by_peers

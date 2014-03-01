@@ -31,6 +31,7 @@ class P2p(NetworkingInterface):
 
         self.ask_new_peers()
         self.check_availability_of_server_ports()
+        self.initialise_connections()
 
         received_messages = self.networking.get_messages('p2p')
         for message in received_messages:
@@ -39,7 +40,18 @@ class P2p(NetworkingInterface):
         timer = Timer(update_timeout, self.process)
         timer.start()
 
+    def initialise_connections(self):
+        print("dormant:")
+        for dormant_peer in self.dormant_peers:
+            print(dormant_peer.ip + ":" + str(dormant_peer.server_port))
+        for dormant_peer in self.dormant_peers:
+            if dormant_peer.connection_provoked_to_peer is None:
+                provoked_with_peer = self.networking.provoke_connection(dormant_peer.ip, dormant_peer.server_port)
+                dormant_peer.connection_provoked(provoked_with_peer)
+                print("provoked from dormant")
+
     def ask_server_port(self, peer):
+        print("requested server port")
         peer.set_metadata('p2p', 'server_port_requested_time', time())
         self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_your_server_port))
 
@@ -86,7 +98,6 @@ class P2p(NetworkingInterface):
         from_peer.set_metadata('p2p', 'server_port', server_port)
 
     def received_peers(self, from_peer, peers):
-        print(self.dormant_peers)
         print('Received peers:' + repr(peers))
         for peer in peers:
 
