@@ -1,13 +1,11 @@
 from threading import Timer
 from time import time
 
-from NetworkingModule.NetworkingInterface import *
-from NetworkingModule.Message import *
-
+from NetworkingModule.NetworkingUsingModule import *
 from P2pModule.DormantPeer import *
 
 
-class P2p(NetworkingInterface):
+class P2p(NetworkingUsingModule):
     """Следит за p2p соединением, выпрашивает новых пиров, выбирает более быстрых."""
     #Todo: Кажется, здесь адовый бардак, который пора приводит в порядок...
 
@@ -18,13 +16,10 @@ class P2p(NetworkingInterface):
     peer_request_period = 5
 
     def __init__(self, networking):
-        super().__init__()
+        super().__init__(networking, 'p2p_new_prefix')
         self.dormant_peers = []
         self.networking = networking
         self.process()
-
-    def get_needed_peers(self):
-        return []
 
     def process(self):
         update_timeout = 1
@@ -33,7 +28,7 @@ class P2p(NetworkingInterface):
         self.check_availability_of_server_ports()
         self.initialise_connections()
 
-        received_messages = self.networking.get_messages('p2p')
+        received_messages = self.networking.get_messages(self.prefix)
         for message in received_messages:
             self.request_processor(message)
 
@@ -53,7 +48,7 @@ class P2p(NetworkingInterface):
     def ask_server_port(self, peer):
         print("requested server port")
         peer.set_metadata('p2p', 'server_port_requested_time', time())
-        self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_your_server_port))
+        self.send_message_to_peer(peer, self.command_give_me_your_server_port)
 
     def check_availability_of_server_ports(self):
         for peer in self.networking.get_peers():
@@ -66,10 +61,10 @@ class P2p(NetworkingInterface):
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
             if peer.get_metadata('p2p', 'peer_request_time') is None:
-                self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
+                self.send_message_to_peer(peer, self.command_give_me_peers)
                 peer.set_metadata('p2p', 'peer_request_time', time())
             elif time() - peer.get_metadata('p2p', 'peer_request_time') > self.peer_request_period:
-                self.networking.send_message(Message(peer, prefix='p2p', text=self.command_give_me_peers))
+                self.send_message_to_peer(peer, self.command_give_me_peers)
                 peer.set_metadata('p2p', 'peer_request_time', time())
 
     def tell_about_known_peers(self, peer):
@@ -77,10 +72,10 @@ class P2p(NetworkingInterface):
         for peer in self.networking.get_peers():
             if not peer.get_metadata('p2p', 'server_port') is None:
                 peers_list_for_sending.append({'ip': peer.ip, 'port': peer.get_metadata('p2p', 'server_port')})
-        self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_peers", "peers": peers_list_for_sending}))
+        self.send_message_to_peer(peer, {"command": "my_peers", "peers": peers_list_for_sending})
 
     def tell_about_my_server_port(self, peer):
-        self.networking.send_message(Message(peer, prefix='p2p', text={"command": "my_server_port","port":self.networking.server_port}))
+        self.send_message_to_peer(peer, {"command": "my_server_port","port":self.networking.server_port})
 
     def request_processor(self, received_message):
         if received_message.text == self.command_give_me_peers:
