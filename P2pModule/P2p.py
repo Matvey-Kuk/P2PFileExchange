@@ -100,15 +100,24 @@ class P2p(NetworkingInterface):
     def received_peers(self, from_peer, peers):
         print('Received peers:' + repr(peers))
         for peer in peers:
-
-            peer_is_known = False
+            all_peers_sent_server_ports = True
+            peer_is_known_as_local_peer = None
             peer_is_known_as_dormant = None
             for dormant_peer in self.dormant_peers:
                 if dormant_peer.ip == peer['ip'] and dormant_peer.server_port == peer['port']:
-                    peer_is_known = True
+                    print('known')
                     peer_is_known_as_dormant = dormant_peer
 
-            if peer_is_known:
-                peer_is_known_as_dormant.detected(from_peer)
-            else:
-                self.dormant_peers.append(DormantPeer(from_peer, peer['ip'], peer['port']))
+            for local_peer in self.networking.get_peers():
+                if local_peer.get_metadata('p2p', 'server_port') is None:
+                    all_peers_sent_server_ports = False
+                else:
+                    if peer['port'] == local_peer.get_metadata('p2p', 'server_port') and peer['ip'] == local_peer.ip:
+                        peer_is_known_as_local_peer = local_peer
+
+            if all_peers_sent_server_ports:
+                if not peer_is_known_as_dormant is None:
+                    peer_is_known_as_dormant.detected(from_peer)
+                else:
+                    if peer_is_known_as_local_peer is None:
+                        self.dormant_peers.append(DormantPeer(from_peer, peer['ip'], peer['port']))
