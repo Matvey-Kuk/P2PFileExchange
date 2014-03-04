@@ -28,7 +28,7 @@ class P2p(NetworkingUsingModule):
         self.check_availability_of_server_ports()
         self.initialise_connections()
 
-        received_messages = self.networking.get_messages(self.prefix)
+        received_messages = self.receive_messages()
         for message in received_messages:
             self.request_processor(message)
 
@@ -47,31 +47,31 @@ class P2p(NetworkingUsingModule):
 
     def ask_server_port(self, peer):
         print("requested server port")
-        peer.set_metadata('p2p', 'server_port_requested_time', time())
+        self.set_peer_metadata(peer, 'server_port_requested_time', time())
         self.send_message_to_peer(peer, self.command_give_me_your_server_port)
 
     def check_availability_of_server_ports(self):
         for peer in self.networking.get_peers():
-            if peer.get_metadata('p2p', 'server_port') is None:
-                if peer.get_metadata('p2p', 'server_port_requested_time') is None:
+            if self.get_peer_metadata(peer, 'server_port') is None:
+                if self.get_peer_metadata(peer, 'server_port_requested_time') is None:
                     self.ask_server_port(peer)
-                elif time() - peer.get_metadata('p2p', 'server_port_requested_time') > self.command_timeout:
+                elif time() - self.get_peer_metadata(peer, 'server_port_requested_time') > self.command_timeout:
                     self.ask_server_port(peer)
 
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
-            if peer.get_metadata('p2p', 'peer_request_time') is None:
+            if self.get_peer_metadata(peer, 'peer_request_time') is None:
                 self.send_message_to_peer(peer, self.command_give_me_peers)
-                peer.set_metadata('p2p', 'peer_request_time', time())
-            elif time() - peer.get_metadata('p2p', 'peer_request_time') > self.peer_request_period:
+                self.set_peer_metadata(peer, 'peer_request_time', time())
+            elif time() - self.get_peer_metadata(peer, 'peer_request_time') > self.peer_request_period:
                 self.send_message_to_peer(peer, self.command_give_me_peers)
-                peer.set_metadata('p2p', 'peer_request_time', time())
+                self.set_peer_metadata(peer, 'peer_request_time', time())
 
     def tell_about_known_peers(self, peer):
         peers_list_for_sending = []
         for peer in self.networking.get_peers():
-            if not peer.get_metadata('p2p', 'server_port') is None:
-                peers_list_for_sending.append({'ip': peer.ip, 'port': peer.get_metadata('p2p', 'server_port')})
+            if not self.get_peer_metadata(peer, 'server_port') is None:
+                peers_list_for_sending.append({'ip': peer.ip, 'port': self.get_peer_metadata(peer, 'server_port')})
         self.send_message_to_peer(peer, {"command": "my_peers", "peers": peers_list_for_sending})
 
     def tell_about_my_server_port(self, peer):
@@ -89,8 +89,7 @@ class P2p(NetworkingUsingModule):
                 self.received_server_port(received_message.peer, received_message.text["port"])
 
     def received_server_port(self, from_peer, server_port):
-        print("received server port: " + str(server_port))
-        from_peer.set_metadata('p2p', 'server_port', server_port)
+        self.set_peer_metadata(from_peer, 'server_port', server_port)
 
     def received_peers(self, from_peer, peers):
         print('Received peers:' + repr(peers))
@@ -104,10 +103,10 @@ class P2p(NetworkingUsingModule):
                     peer_is_known_as_dormant = dormant_peer
 
             for local_peer in self.networking.get_peers():
-                if local_peer.get_metadata('p2p', 'server_port') is None:
+                if self.get_peer_metadata(local_peer, 'server_port') is None:
                     all_peers_sent_server_ports = False
                 else:
-                    if peer['port'] == local_peer.get_metadata('p2p', 'server_port') and peer['ip'] == local_peer.ip:
+                    if peer['port'] == self.get_peer_metadata(local_peer, 'server_port') and peer['ip'] == local_peer.ip:
                         peer_is_known_as_local_peer = local_peer
 
             if all_peers_sent_server_ports:
