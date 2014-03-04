@@ -11,23 +11,23 @@ class Message(object):
         """
         self.peer = peer
         self.prefix = ""
-        self.text = ""
+        self.data = ""
 
         if 'bytes' in kwargs:
             body = kwargs['bytes'].decode("ascii")
             body = json.JSONDecoder().decode(body)
             self.prefix = body['prefix']
-            self.text = body['text']
+            self.data = body['text']
         elif 'prefix' in kwargs and 'text' in kwargs:
             self.prefix = kwargs['prefix']
-            self.text = kwargs['text']
+            self.data = kwargs['text']
         else:
             raise NotImplementedError("Не указаны необходимые параметры для создания объекта")
 
     def get_body(self):
         return json.JSONEncoder().encode({
             'prefix': self.prefix,
-            'text': self.text
+            'text': self.data
         })
 
     def get_bytes(self):
