@@ -56,5 +56,3 @@ Python:
 Поставить интерпритатор, обязательно версии 3.3, или новее: http://www.python.org/downloads/
 
 Поставить кошерный редактор (Обязательно Community Edition): http://www.jetbrains.com/pycharm/download/
-
-Здесь был Радмир
