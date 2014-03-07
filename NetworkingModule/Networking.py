@@ -1,6 +1,7 @@
 from threading import Timer
 
 from NetworkingModule.ServerThread import *
+from NetworkingModule.Request import *
 
 
 class Networking(object):
@@ -18,13 +19,18 @@ class Networking(object):
 
         self.update()
 
-    def get_messages(self, prefix, remove_taken = True):
+    def get_messages(self, prefix, mark_taken_as_read=True):
+        """
+        Получаем непрочитанные сообщения с данным префиксом.
+        Можно пометить как прочтенные после получение, это исключит повторную выдачу.
+        По умолчанию- все отмечаются как прочитанные.
+        """
         buf_received_messages = []
         result_messages = []
         for message in self.received_messages:
             if message.prefix == prefix:
                 result_messages.append(message)
-                if not remove_taken:
+                if not mark_taken_as_read:
                     buf_received_messages.append(message)
             else:
                 buf_received_messages.append(message)
@@ -33,6 +39,10 @@ class Networking(object):
 
     def send_message(self, message):
         self.messages_for_sending.append(message)
+
+    def mark_message_as_read(self, message):
+        """Помогает отметить конкретное сообщение как прочитанное"""
+        pass
 
     def get_peers(self):
         return self.peers

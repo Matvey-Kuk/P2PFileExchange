@@ -22,6 +22,7 @@ class P2p(NetworkingUsingModule):
         self.process()
 
     def process(self):
+        super().process()
         update_timeout = 1
 
         self.ask_new_peers()
