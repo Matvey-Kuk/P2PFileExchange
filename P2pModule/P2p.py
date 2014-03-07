@@ -7,7 +7,6 @@ from P2pModule.DormantPeer import *
 
 class P2p(NetworkingUsingModule):
     """Следит за p2p соединением, выпрашивает новых пиров, выбирает более быстрых."""
-    #Todo: Кажется, здесь адовый бардак, который пора приводит в порядок...
 
     command_give_me_peers = 'give_me_peers'
     command_give_me_your_server_port = 'give_me_tour_server_port'
@@ -26,12 +25,12 @@ class P2p(NetworkingUsingModule):
         update_timeout = 1
 
         self.ask_new_peers()
-        self.check_availability_of_server_ports()
-        self.initialise_connections()
-
-        received_messages = self.receive_messages()
-        for message in received_messages:
-            self.request_processor(message)
+        # self.check_availability_of_server_ports()
+        # self.initialise_connections()
+        #
+        # received_messages = self.receive_messages()
+        # for message in received_messages:
+        #     self.request_processor(message)
 
         timer = Timer(update_timeout, self.process)
         timer.start()
@@ -61,12 +60,9 @@ class P2p(NetworkingUsingModule):
 
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
-            if self.get_peer_metadata(peer, 'peer_request_time') is None:
-                self.send_message_to_peer(peer, self.command_give_me_peers)
-                self.set_peer_metadata(peer, 'peer_request_time', time())
-            elif time() - self.get_peer_metadata(peer, 'peer_request_time') > self.peer_request_period:
-                self.send_message_to_peer(peer, self.command_give_me_peers)
-                self.set_peer_metadata(peer, 'peer_request_time', time())
+            if self.get_peer_metadata(peer, 'server_port_request') is None:
+                print('1')
+
 
     def tell_about_known_peers(self, peer):
         peers_list_for_sending = []

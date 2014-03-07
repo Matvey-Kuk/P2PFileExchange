@@ -27,3 +27,9 @@ class NetworkingUsingModule():
 
     def process(self):
         self.process_requests()
+
+    def set_peer_metadata(self, peer, data_prefix, data):
+        peer.set_metadata(self.prefix, data_prefix, data)
+
+    def get_peer_metadata(self, peer, data_prefix):
+        peer.get_metadata(self.prefix, data_prefix)
