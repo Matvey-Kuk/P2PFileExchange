@@ -42,7 +42,7 @@ class Networking(object):
 
     def mark_message_as_read(self, message):
         """Помогает отметить конкретное сообщение как прочитанное"""
-        pass
+        self.received_messages.remove(message)
 
     def get_peers(self):
         return self.peers
