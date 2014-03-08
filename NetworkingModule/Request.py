@@ -12,7 +12,7 @@ class Request(object):
         self.answer_received = False
 
     def get_message(self):
-        return self.message; #Trololololo lololo lololo hohohohoho (c) Eduard Hil
+        return self.message
 
     def is_answer_received(self):
         return self.answer_received
@@ -27,5 +27,7 @@ class Request(object):
         return Message(peer, prefix=self.messaging_prefix, text=data_in_json)
 
     def check_message_is_answer(self, message):
-        if message.get_body() is dict:
-            print(message.get_body())
+        decoded_message = json.JSONDecoder().decode(message.get_body())
+        decoded_request_data = json.JSONDecoder().decode(decoded_message['text'])
+        if decoded_request_data['request_id'] == id(self):
+            print('answer detected!')
