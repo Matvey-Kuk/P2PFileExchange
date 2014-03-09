@@ -57,8 +57,3 @@ Python:
 
 Поставить кошерный редактор (Обязательно Community Edition): http://www.jetbrains.com/pycharm/download/
 
-RSA-библиотека:
--------------
-Необходимо добавить библиотеку "rsa" в питон(папка rsa-3.1.4): python setup.py install 
-
-Домашняя страница: https://pypi.python.org/pypi/rsa
