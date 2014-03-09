@@ -56,3 +56,7 @@ Python:
 Поставить интерпритатор, обязательно версии 3.3, или новее: http://www.python.org/downloads/
 
 Поставить кошерный редактор (Обязательно Community Edition): http://www.jetbrains.com/pycharm/download/
+
+RSA-библиотека:
+-------------
+Выполнить в папке rsa-3.1.4 чтоб добавить библиотеку "rsa" в питон: python setup.py install 
