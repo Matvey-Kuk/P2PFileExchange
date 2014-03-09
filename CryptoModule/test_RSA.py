@@ -1,7 +1,6 @@
-__author__ = 'Radmir'
+# __author__ = 'Radmir'
 
 import rsa
-
 (pubkey, privkey) = rsa.newkeys(512)
 # print(pubkey)
 # print(privkey)
