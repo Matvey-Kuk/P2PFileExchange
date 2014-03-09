@@ -59,4 +59,5 @@ Python:
 
 RSA-библиотека:
 -------------
-Выполнить в папке rsa-3.1.4 чтоб добавить библиотеку "rsa" в питон: python setup.py install 
+Необходимо добавить библиотеку "rsa" в питон(папка rsa-3.1.4): python setup.py install 
+Домашняя страница: https://pypi.python.org/pypi/rsa
