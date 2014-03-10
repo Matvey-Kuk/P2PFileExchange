@@ -14,15 +14,8 @@ class P2p(NetworkingUsingModule):
     peer_request_period = 5
 
     def __init__(self, networking, requests_processor):
-        super().__init__(networking, 'p2p_new_prefix')
-        self.dormant_peers = []
-        self.networking = networking
-        self.requests_processor = requests_processor
-        self.requests_processor.register_answer_generator_callback(
-            self.prefix,
-            'server_port',
-            self.server_port_request_answer
-        )
+        super().__init__(networking, requests_processor, 'p2p_new_prefix')
+        self.register_request_answer_generator('server_port', self.server_port_request_answer)
         self.process()
 
     def server_port_request_answer(self, question_data):

@@ -7,8 +7,9 @@ class NetworkingUsingModule():
 
     """Должны унаследовать все классы, использующие Networking"""
 
-    def __init__(self, networking, prefix):
+    def __init__(self, networking, request_processor ,prefix):
         self.networking = networking
+        self.requests_processor = request_processor
         self.prefix = prefix
         self.received_messages = []
         self.requests_in_processing = []
@@ -23,26 +24,14 @@ class NetworkingUsingModule():
     def receive_messages(self):
         return self.networking.get_messages(self.prefix)
 
-    def new_request_for_peer(self, peer, request_class, data_for_question):
-        request = request_class(peer=peer, module_prefix=self.prefix, data_for_question=data_for_question)
-        self.requests_in_processing.append(request)
-        return request
+    def send_request(self, peer, request_prefix, request_data):
+        self.requests_processor.send_request(peer, self.prefix, request_prefix, request_data)
 
-    def process_requests(self):
-        received_messages = self.networking.get_messages(Request.messaging_prefix, False)
-        for request_in_process in self.requests_in_processing:
-            if time() - request_in_process.question_sending_time > self.request_re_asking_timeout:
-                self.send_message_to_peer(message=request_in_process.get_question_message())
-
-        for received_message in received_messages:
-            print(received_message.get_body())
-            for request_in_process in self.requests_in_processing:
-                is_answer = request_in_process.check_message_is_answer(received_message)
-                if is_answer:
-                    self.networking.mark_message_as_read(received_message)
+    def register_request_answer_generator(self, request_type, callback):
+        self.requests_processor.register_answer_generator_callback(self.prefix, request_type, callback)
 
     def process(self):
-        self.process_requests()
+        pass
 
     def set_peer_metadata(self, peer, data_prefix, data):
         peer.set_metadata(self.prefix, data_prefix, data)
