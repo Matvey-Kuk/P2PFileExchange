@@ -19,21 +19,46 @@ class RequestsProcessor(object):
         self.process_requests()
 
     def send_request(self, peer, module_prefix, request_prefix, question_data):
+        """
+        Отправляем запрос.
+        @param peer: Пир.
+        @param module_prefix: Префикс модуля.
+        @param request_prefix: Тип(префикс) запроса.
+        @param question_data: Данные, которые можно отправить с запросом.
+        @return:
+        """
         request = Request(peer, self.prefix, module_prefix, request_prefix, question_data)
         self.non_processed_requests.append(request)
         return request
 
-    def register_answer_generator_callback(self, module_prefix, request_type, callback):
+    def register_answer_generator_callback(self, module_prefix, request_prefix, callback):
+        """
+        Здесь нужно зарегистрировать функцию, которая будет генерировать ответные данные на конкретный тип запросов.
+        @param module_prefix: Префикс модуля.
+        @param request_prefix: Префикс запроса.
+        @param callback: Функция, которая выдаст ответ на данный запрос.
+        @return:
+        """
         if not module_prefix in self.answer_generating_callbacks:
             self.answer_generating_callbacks[module_prefix] = {}
-        self.answer_generating_callbacks[module_prefix][request_type] = callback
+        self.answer_generating_callbacks[module_prefix][request_prefix] = callback
 
-    def register_answer_received_callback(self, module_prefix, request_type, callback):
+    def register_answer_received_callback(self, module_prefix, request_prefix, callback):
+        """
+        Здесь нужно зарегистрировать функцию, которая будет вызываться, когда запрос выполнен.
+        @param module_prefix: Префикс модуля.
+        @param request_prefix: Префикс запроса.
+        @param callback: Функция, которая обработает успешное срабатывание запроса.
+        @return:
+        """
         if not module_prefix in self.answer_received_callbacks:
             self.answer_received_callbacks[module_prefix] = {}
-        self.answer_received_callbacks[module_prefix][request_type] = callback
+        self.answer_received_callbacks[module_prefix][request_prefix] = callback
 
     def process_requests(self):
+        """
+        Системная функция, перемалывает запросы и вызывает коллбэки.
+        """
         update_timeout = 0.1
 
         new_non_processed_requests = []
@@ -44,13 +69,11 @@ class RequestsProcessor(object):
 
         for request in self.non_processed_requests:
             if request.question_sending_needed():
-                print('sending message')
                 self.networking.send_message(request.generate_question_message())
                 request.question_sent()
 
         messages = self.networking.get_messages(self.prefix)
         for message in messages:
-            print('received: ' + message.get_body())
             message_body_json = message.get_body()
             message_body = json.JSONDecoder().decode(message_body_json)
             if message_body['text']['request_question_answer'] == 'question':
@@ -64,6 +87,9 @@ class RequestsProcessor(object):
         timer.start()
 
     def process_question(self, peer, message_body):
+        """
+        Генерирует ответы на чужие запросы через вызов коллбэков.
+        """
         module_prefix = message_body['text']['module_prefix']
         request_prefix = message_body['text']['request_prefix']
         request_data = message_body['text']['request_data']
@@ -79,5 +105,4 @@ class RequestsProcessor(object):
             'request_prefix': request_prefix,
             'request_data': answer
         }
-        print('answering: ' + repr(answer_message))
         self.networking.send_message(Message(peer, prefix=self.prefix, text=answer_message))
