@@ -78,7 +78,7 @@ class NetworkingUsingModule():
 
     def get_peer_metadata(self, peer, data_prefix):
         """
-        У пира можно забрать данные, выставленные @function set_peer_metadata .
+        У пира можно забрать данные, выставленные set_peer_metadata .
         @param peer: Peer
         @param data_prefix: Префикс данных.
         """
