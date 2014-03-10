@@ -40,9 +40,9 @@ class NetworkingUsingModule():
         @param request_prefix: Префикс запроса- уникален для каждого типа запроса.
         @param request_data: Данные, которые уйдут с запросом. Их получит функция, которая будет генерировать
         ответ на стороне пира.
-        @return:
+        @return: Запрос.
         """
-        self.requests_processor.send_request(peer, self.prefix, request_prefix, request_data)
+        return self.requests_processor.send_request(peer, self.prefix, request_prefix, request_data)
 
     def register_request_answer_generator(self, request_type, callback):
         """

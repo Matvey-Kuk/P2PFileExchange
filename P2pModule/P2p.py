@@ -35,10 +35,7 @@ class P2p(NetworkingUsingModule):
     def ask_server_port(self):
         for peer in self.networking.get_peers():
             if self.get_peer_metadata(peer, 'server_port_request') is None:
-                request = self.requests_processor.send_request(peer,
-                                                               self.prefix,
-                                                               'server_port',
-                                                               'Hello, boy! Give me your server port.')
+                request = self.send_request(peer, 'server_port', 'Hello, boy, give me your server port!')
                 request.set_periodically(5)
                 self.set_peer_metadata(peer, 'server_port_request', request)
 
