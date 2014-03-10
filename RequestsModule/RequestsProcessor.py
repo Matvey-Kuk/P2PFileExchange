@@ -73,7 +73,6 @@ class RequestsProcessor(object):
 
         for request in self.non_processed_requests:
             if request.question_sending_needed():
-                print('sending question')
                 self.networking.send_message(request.generate_question_message())
                 request.question_sent()
 

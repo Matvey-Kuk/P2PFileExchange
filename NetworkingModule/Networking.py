@@ -1,7 +1,6 @@
 from threading import Timer
 
 from NetworkingModule.ServerThread import *
-from NetworkingModule.Request import *
 
 
 class Networking(object):

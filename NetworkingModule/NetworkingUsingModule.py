@@ -1,7 +1,5 @@
 from time import time
 
-from NetworkingModule.Request import *
-
 
 class NetworkingUsingModule():
 
