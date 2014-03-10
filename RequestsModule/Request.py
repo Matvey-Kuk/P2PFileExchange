@@ -36,11 +36,20 @@ class Request(object):
         return Message(self.peer, prefix=self.request_processor_prefix, text=question_data)
 
     def check_message_is_answer(self, message):
-        print(message.get_body())
+        message_decoded = json.JSONDecoder().decode(message.get_body())
+        print(message_decoded)
+        if message_decoded['text']['request_id'] == id(self) and message_decoded['text']['request_question_answer'] == 'answer' and message.peer == self.peer:
+            self.answer_received = True
+            self.answer_receiving_time = time()
+            self.answer_data = message_decoded['text']['request_data']
+            print('answer detected')
+            return True
+        else:
+            return False
 
     def question_sent(self):
         self.question_has_been_sent = True
         self.question_sending_time = time()
 
     def question_sending_needed(self):
-        return not self.question_has_been_sent or time() - self.question_sending_time > self.question_sending_timeout
+        return (not self.question_has_been_sent or time() - self.question_sending_time > self.question_sending_timeout) and not self.answer_received

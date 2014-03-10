@@ -33,6 +33,12 @@ class RequestsProcessor(object):
     def process_requests(self):
         update_timeout = 0.1
 
+        new_non_processed_requests = []
+        for request in self.non_processed_requests:
+            if not request.answer_received:
+                new_non_processed_requests.append(request)
+        self.non_processed_requests = new_non_processed_requests
+
         for request in self.non_processed_requests:
             if request.question_sending_needed():
                 self.networking.send_message(request.generate_question_message())
