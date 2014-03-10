@@ -7,6 +7,10 @@ from RequestsModule.Request import *
 
 class RequestsProcessor(object):
 
+    """
+    Процессор запросов, следит за ними и работает циклично в фоне.
+    """
+
     prefix = 'requests_processor'
 
     def __init__(self, networking):
