@@ -8,7 +8,6 @@ class Request(object):
     Отправляется переодически, пока не получит ответ- упрямость.
     Хранит время получения ответа.
     Хранит время последней отправки вопроса.
-    Один объект используется для одной итерации вопрос- ответ.
     Удобен для единоразового, или невысокочастотного получения каких-то данных пира.
     """
 
@@ -30,6 +29,9 @@ class Request(object):
         self.question_data = question_data
         self.answer_data = None
 
+        #Если указан то запрос повторяется переодически.
+        self.repeat_timeout = None
+
     def generate_question_message(self):
         question_data = {
             'request_question_answer': 'question',
@@ -42,7 +44,6 @@ class Request(object):
 
     def check_message_is_answer(self, message):
         message_decoded = json.JSONDecoder().decode(message.get_body())
-        print(message_decoded)
         if message_decoded['text']['request_id'] == id(self) and message_decoded['text']['request_question_answer'] == 'answer' and message.peer == self.peer:
             self.answer_received = True
             self.answer_receiving_time = time()
@@ -56,4 +57,24 @@ class Request(object):
         self.question_sending_time = time()
 
     def question_sending_needed(self):
-        return (not self.question_has_been_sent or time() - self.question_sending_time > self.question_sending_timeout) and not self.answer_received
+        if not self.answer_receiving_time is None:
+            if time() - self.answer_receiving_time > self.repeat_timeout and time() - self.question_sending_time > self.repeat_timeout:
+                return True
+        if not self.answer_received:
+            if not self.question_has_been_sent or time() - self.question_sending_time > self.question_sending_timeout:
+                return True
+        return False
+
+    def set_periodically(self, period):
+        self.repeat_timeout = period
+
+    def is_periodically(self):
+        return not self.repeat_timeout is None
+
+    def _set_unanswered(self):
+        """
+        Чистим всю информацию о полученном ответе.
+        """
+        self.answer_received = False
+        self.answer_data = None
+        self.answer_receiving_time = None

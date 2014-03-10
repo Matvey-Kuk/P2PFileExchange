@@ -67,12 +67,13 @@ class RequestsProcessor(object):
 
         new_non_processed_requests = []
         for request in self.non_processed_requests:
-            if not request.answer_received:
+            if not request.answer_received or request.is_periodically():
                 new_non_processed_requests.append(request)
         self.non_processed_requests = new_non_processed_requests
 
         for request in self.non_processed_requests:
             if request.question_sending_needed():
+                print('sending question')
                 self.networking.send_message(request.generate_question_message())
                 request.question_sent()
 

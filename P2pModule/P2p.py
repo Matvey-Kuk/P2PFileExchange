@@ -1,15 +1,10 @@
 from threading import Timer
-from time import time
 
 from NetworkingModule.NetworkingUsingModule import *
 
 
 class P2p(NetworkingUsingModule):
     """Следит за p2p соединением, выпрашивает новых пиров, выбирает более быстрых."""
-
-    command_give_me_peers = 'give_me_peers'
-    command_give_me_your_server_port = 'give_me_tour_server_port'
-    command_timeout = 1
 
     peer_request_period = 5
 
@@ -20,9 +15,11 @@ class P2p(NetworkingUsingModule):
         self.process()
 
     def server_port_request_answer(self, question_data):
+        print('generating answer')
         return self.networking.server_port
 
     def server_port_answer_received(self, request):
+        print('answer received')
         self.set_peer_metadata(request.peer, 'server_port', request.answer_data)
 
     def process(self):
@@ -30,10 +27,10 @@ class P2p(NetworkingUsingModule):
         update_timeout = 1
 
         self.ask_server_port()
+        self.ask_new_peers()
 
         timer = Timer(update_timeout, self.process)
         timer.start()
-
 
     def ask_server_port(self):
         for peer in self.networking.get_peers():
@@ -42,4 +39,8 @@ class P2p(NetworkingUsingModule):
                                                                self.prefix,
                                                                'server_port',
                                                                'Hello, boy! Give me your server port.')
+                request.set_periodically(5)
                 self.set_peer_metadata(peer, 'server_port_request', request)
+
+    def ask_new_peers(self):
+        pass
