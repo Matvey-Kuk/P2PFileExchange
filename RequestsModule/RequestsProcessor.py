@@ -44,20 +44,22 @@ class RequestsProcessor(object):
 
         for request in self.non_processed_requests:
             if request.question_sending_needed():
+                print('sending message')
                 self.networking.send_message(request.generate_question_message())
                 request.question_sent()
 
         messages = self.networking.get_messages(self.prefix)
         for message in messages:
+            print('received: ' + message.get_body())
+            message_body_json = message.get_body()
+            message_body = json.JSONDecoder().decode(message_body_json)
+            if message_body['text']['request_question_answer'] == 'question':
+                self.process_question(message.peer, message_body)
             for request in self.non_processed_requests:
-                message_body_json = message.get_body()
-                message_body = json.JSONDecoder().decode(message_body_json)
                 if message_body['text']['request_question_answer'] == 'answer':
                     is_answer = request.check_message_is_answer(message)
                     if is_answer:
                         self.answer_received_callbacks[message_body['text']['module_prefix']][message_body['text']['request_prefix']](request)
-                elif message_body['text']['request_question_answer'] == 'question':
-                    self.process_question(message.peer, message_body)
         timer = Timer(update_timeout, self.process_requests)
         timer.start()
 
@@ -77,4 +79,5 @@ class RequestsProcessor(object):
             'request_prefix': request_prefix,
             'request_data': answer
         }
+        print('answering: ' + repr(answer_message))
         self.networking.send_message(Message(peer, prefix=self.prefix, text=answer_message))
