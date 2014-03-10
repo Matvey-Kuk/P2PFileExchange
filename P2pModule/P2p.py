@@ -16,10 +16,14 @@ class P2p(NetworkingUsingModule):
     def __init__(self, networking, requests_processor):
         super().__init__(networking, requests_processor, 'p2p_new_prefix')
         self.register_request_answer_generator('server_port', self.server_port_request_answer)
+        self.register_answer_received_callback('server_port', self.server_port_answer_received)
         self.process()
 
     def server_port_request_answer(self, question_data):
         return self.networking.server_port
+
+    def server_port_answer_received(self, request):
+        print("answer_received")
 
     def process(self):
         super().process()

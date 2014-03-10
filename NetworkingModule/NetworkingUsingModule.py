@@ -30,6 +30,9 @@ class NetworkingUsingModule():
     def register_request_answer_generator(self, request_type, callback):
         self.requests_processor.register_answer_generator_callback(self.prefix, request_type, callback)
 
+    def register_answer_received_callback(self, request_type, callback):
+        self.requests_processor.register_answer_received_callback(self.prefix, request_type, callback)
+
     def process(self):
         pass
 

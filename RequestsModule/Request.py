@@ -42,7 +42,6 @@ class Request(object):
             self.answer_received = True
             self.answer_receiving_time = time()
             self.answer_data = message_decoded['text']['request_data']
-            print('answer detected')
             return True
         else:
             return False
