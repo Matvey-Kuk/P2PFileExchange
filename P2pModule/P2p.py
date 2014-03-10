@@ -63,7 +63,9 @@ class P2p(NetworkingUsingModule):
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
             if self.get_peer_metadata(peer, 'server_port_request') is None:
-                request = self.new_request_for_peer(peer, PingRequest, None)
+                print('send')
+                request = self.requests_processor.send_request(peer, 'a', 'b', 'q')
+                print(request)
                 self.set_peer_metadata(peer, 'server_port_request', request)
     #
     # def tell_about_known_peers(self, peer):
