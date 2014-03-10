@@ -15,10 +15,11 @@ class P2p(NetworkingUsingModule):
 
     peer_request_period = 5
 
-    def __init__(self, networking):
+    def __init__(self, networking, requests_processor):
         super().__init__(networking, 'p2p_new_prefix')
         self.dormant_peers = []
         self.networking = networking
+        self.requests_processor = requests_processor
         self.process()
 
     def process(self):

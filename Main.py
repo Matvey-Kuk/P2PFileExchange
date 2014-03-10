@@ -2,6 +2,7 @@ import argparse
 
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
+from RequestsModule.RequestsProcessor import *
 
 
 class Main(object):
@@ -10,8 +11,9 @@ class Main(object):
     def __init__(self):
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
+        self.requests_processor = RequestsProcessor(self.networking)
 
-        self.p2p = P2p(self.networking)
+        self.p2p = P2p(self.networking, self.requests_processor)
 
     @staticmethod
     def parse_arguments():
