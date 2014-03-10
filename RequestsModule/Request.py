@@ -30,13 +30,13 @@ class Request(object):
             'request_question_answer': 'question',
             'request_id': id(self),
             'module_prefix': self.module_prefix,
-            'request_type': self.request_prefix,
+            'request_prefix': self.request_prefix,
             'request_data': self.question_data
         }
         return Message(self.peer, prefix=self.request_processor_prefix, text=question_data)
 
-    def message_is_answer(self, message):
-        pass
+    def check_message_is_answer(self, message):
+        print(message.get_body())
 
     def question_sent(self):
         self.question_has_been_sent = True

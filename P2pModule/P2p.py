@@ -2,8 +2,6 @@ from threading import Timer
 from time import time
 
 from NetworkingModule.NetworkingUsingModule import *
-from P2pModule.DormantPeer import *
-from P2pModule.PingRequest import *
 
 
 class P2p(NetworkingUsingModule):
@@ -20,7 +18,15 @@ class P2p(NetworkingUsingModule):
         self.dormant_peers = []
         self.networking = networking
         self.requests_processor = requests_processor
+        self.requests_processor.register_answer_generator_callback(
+            self.prefix,
+            'server_port',
+            self.server_port_request_answer
+        )
         self.process()
+
+    def server_port_request_answer(self, question_data):
+        return self.networking.server_port
 
     def process(self):
         super().process()
@@ -63,9 +69,7 @@ class P2p(NetworkingUsingModule):
     def ask_new_peers(self):
         for peer in self.networking.get_peers():
             if self.get_peer_metadata(peer, 'server_port_request') is None:
-                print('send')
-                request = self.requests_processor.send_request(peer, 'a', 'b', 'q')
-                print(request)
+                request = self.requests_processor.send_request(peer, self.prefix, 'server_port', 'q')
                 self.set_peer_metadata(peer, 'server_port_request', request)
     #
     # def tell_about_known_peers(self, peer):
