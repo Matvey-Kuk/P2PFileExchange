@@ -5,7 +5,7 @@ class NetworkingUsingModule():
 
     """Должны унаследовать все классы, использующие Networking"""
 
-    def __init__(self, networking, request_processor ,prefix):
+    def __init__(self, networking, request_processor, prefix):
         self.networking = networking
         self.requests_processor = request_processor
         self.prefix = prefix

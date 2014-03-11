@@ -1,10 +1,9 @@
-"""Модуль распределенной базы данных пользователей"""
-__author__ = 'Radmir'
-
-import NetworkingModule
-
-class AuthDataBase(NetwokingUsingModule):
-    def __init__(self):
-        self.prefix="AuDB"
 
 
+from NetworkingModule.NetworkingUsingModule import *
+
+
+class AuthDataBase(NetworkingUsingModule):
+    """Модуль распределенной базы данных пользователей"""
+    def __init__(self, networking, request_processor):
+        super().__init__(networking, request_processor, 'auth_database')
