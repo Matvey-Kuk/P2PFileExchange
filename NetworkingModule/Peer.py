@@ -1,4 +1,5 @@
 from queue import *
+import socket
 
 from NetworkingModule.ClientReceiveThread import *
 from NetworkingModule.ClientSendThread import *
@@ -11,21 +12,16 @@ class Peer (object):
     Асинхронно накапливает данные в массивах, откуда их переодически забирает Networking.
     """
 
-    def __init__(self, ip, port, socket):
+    def __init__(self, ip, port):
         self.ip = ip
         self.port = port
-        self.is_alive = False
-        self.socket = socket
+        self.socket = None
         self.metadata = {}
 
         self.received_messages_queue = Queue()
-        self.thread_receive = ClientReceiveThread(self, self.socket, self.received_messages_queue)
-        self.thread_receive.start()
 
         self.sending_messages_queue = Queue()
         self.send_enabled = threading.Event()
-        self.thread_send = ClientSendThread(self.socket, self.sending_messages_queue, self.send_enabled)
-        self.thread_send.start()
 
         #Информация для Networking копится здесь:
         self.status = {
@@ -36,6 +32,24 @@ class Peer (object):
         }
         self.messages_for_sending = []
         self.received_messages = []
+
+    def connect(self, new_socket=None):
+        if new_socket is None:
+            provoked_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            provoked_socket.connect((self.ip, self.port))
+            self.socket = provoked_socket
+        else:
+            self.socket = new_socket
+        self.start_threads()
+
+    def start_threads(self):
+        self.thread_receive = ClientReceiveThread(self, self.socket, self.received_messages_queue)
+        self.thread_receive.start()
+        self.thread_send = ClientSendThread(self.socket, self.sending_messages_queue, self.send_enabled)
+        self.thread_send.start()
+
+    def disconnect(self):
+        pass
 
     def process_messages(self):
         while self.received_messages_queue.qsize() > 0:

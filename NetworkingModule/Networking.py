@@ -51,9 +51,8 @@ class Networking(object):
         Провоцирует соединение
         @return: Peer object
         """
-        provoked_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        provoked_socket.connect((ip, port))
-        new_peer = Peer(ip, port, provoked_socket)
+        new_peer = Peer(ip, port)
+        new_peer.connect()
         self.peers.append(new_peer)
         return new_peer
 
