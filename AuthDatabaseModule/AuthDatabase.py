@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from NetworkingModule.NetworkingUsingModule import *
 from threading import Timer
 from time import time
