@@ -1,8 +1,9 @@
 import argparse
-
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
 from AuthDatabaseModule.AuthDataBase import *
+from RequestsModule.RequestsProcessor import *
+from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 
 
 class Main(object):
@@ -11,9 +12,10 @@ class Main(object):
     def __init__(self):
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
-
-        self.p2p = P2p(self.networking)
+        self.requests_processor = RequestsProcessor(self.networking)
         self.AuthDataBase=AuthDataBase(self.networking)
+        self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
+        self.p2p = P2p(self.networking, self.requests_processor)
 
     @staticmethod
     def parse_arguments():

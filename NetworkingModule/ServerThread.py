@@ -23,6 +23,7 @@ class ServerThread(threading.Thread):
         while True:
             self.tcp_socket.listen(4)
             (socket, (ip, port)) = self.tcp_socket.accept()
-            peer = Peer(ip, port, socket)
+            peer = Peer(ip, port)
+            peer.connect(socket)
             print("New incoming connection from " + ip + ":" + str(port))
             self.peers.append(peer)
