@@ -2,6 +2,7 @@ import argparse
 
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
+from AuthDatabaseModule.AuthDataBase import *
 
 
 class Main(object):
@@ -12,6 +13,7 @@ class Main(object):
         self.networking = self.start_networking()
 
         self.p2p = P2p(self.networking)
+        self.AuthDataBase=AuthDataBase(self.networking)
 
     @staticmethod
     def parse_arguments():
@@ -19,6 +21,8 @@ class Main(object):
         parser.add_argument('-port', '-p', dest='port', help='Server port')
         parser.add_argument('-host', dest='bind_host', help='Host for server binding')
         parser.add_argument('-peer', dest='first_peer', help='ip:port of first peer needed for connection')
+        parser.add_argument('-nop2pmodule', dest='nop2pmodelu', help='')
+
         command_line_args = parser.parse_args()
         return command_line_args
 
