@@ -19,7 +19,7 @@ class Main(object):
             self.command_line_arguments.onlyP2PModule
 
         if self.command_line_arguments.onlyAuthDatabaseModule:
-            self.auth_database = AuthDataBase(self.networking, self.requests_processor)
+            self.auth_database = AuthDataBase(self.networking, self.requests_processor, self.command_line_arguments.nick_name)
 
         if self.command_line_arguments.onlyP2PModule:
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
@@ -36,6 +36,7 @@ class Main(object):
         parser.add_argument('-port', '-p', dest='port', help='Server port')
         parser.add_argument('-host', dest='bind_host', help='Host for server binding')
         parser.add_argument('-peer', dest='first_peer', help='ip:port of first peer needed for connection')
+        parser.add_argument('-nick',dest='nick_name',help='Enter your nick name')
         parser.add_argument(
             '-onlyAuthDatabaseModule',
             dest='onlyAuthDatabaseModule',
