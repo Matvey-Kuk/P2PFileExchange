@@ -1,6 +1,7 @@
 from threading import Timer
 
 from NetworkingModule.NetworkingUsingModule import *
+from NetworkingModule.Peer import *
 
 
 class P2p(NetworkingUsingModule):
@@ -34,21 +35,14 @@ class P2p(NetworkingUsingModule):
     def peer_request_answer_received(self, request):
         print('received peers: ' + repr(request.answer_data))
         all_server_ports_are_known = True
-        peer_list = []
         for peer in self.networking.get_peers():
             if self.get_peer_metadata(peer, 'server_port') is None:
                 all_server_ports_are_known = False
-            else:
-                peer_list.append({
-                    'ip': peer.ip,
-                    'server_port': self.get_peer_metadata(peer, 'server_port')
-                })
 
         if all_server_ports_are_known:
             new_peers = request.answer_data
             for new_peer in new_peers:
-                if not new_peer in peer_list:
-                    print('provoked with ' + new_peer['ip'] + ":" + str(new_peer['server_port']))
+                if self.networking.get_peer(new_peer['ip'], new_peer['server_port']) is None:
                     self.networking.provoke_connection(new_peer['ip'], new_peer['server_port'])
 
     def server_port_request_answer(self, question_data):
