@@ -1,17 +1,19 @@
-from NetworkingModule.NetworkingUsingModule import *
 from threading import Timer
 from time import time
 from CryptoModule.rsa import *
 
+from NetworkingModule.NetworkingUsingModule import *
+
+
 class AuthDataBase(NetworkingUsingModule):
     """Модуль распределенной базы данных пользователей"""
 
-    def __init__(self, networking, request_processor,nick_name):
+    def __init__(self, networking, request_processor, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
         self.register_callbacks_for_requests()
         my_name=nick_name
         if my_name is None:
-            my_name="Alex"
+            my_name = "Alex"
         print("Nick name: " + my_name)
         # (pubkey, privkey) = rsa.newkeys(512)
 
@@ -22,7 +24,6 @@ class AuthDataBase(NetworkingUsingModule):
     def process(self):
         super().process()
         update_timeout = 1
-
 
         for peer in self.networking.get_peers():
             if self.get_peer_metadata(peer, 'verification_request') is None:
@@ -39,10 +40,10 @@ class AuthDataBase(NetworkingUsingModule):
         self.register_request_answer_generator('verification_request', self.verification_request_answer_generator)
         self.register_answer_received_callback('verification_request', self.verification_request_answer_received)
 
-    def welcome_request_answer_generator(self):
+    def welcome_request_answer_generator(self, question_data):
         return "welcome"
 
-    def welcome_request_answer_received(self):
+    def welcome_request_answer_received(self, request):
         return "Hello!"
 
     def verification_request_answer_generator(self, question_data):
