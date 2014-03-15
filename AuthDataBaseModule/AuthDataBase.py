@@ -23,7 +23,7 @@ class AuthDataBase(NetworkingUsingModule):
             print("Request connect me into p2p network")
             welcome_request=self.send_request(peer,'welcome',welcome_data)
 
-        self.process()
+        # self.process()
 
     def process(self):
         super().process()
@@ -31,7 +31,7 @@ class AuthDataBase(NetworkingUsingModule):
 
         for peer in self.networking.get_peers():
             if self.get_peer_metadata(peer, 'welcome') is None:
-                request = self.send_request(peer, 'welcome', 'Hello! Ti kto takoy?')
+                request = self.send_request(peer, 'welcome',)
                 self.set_peer_metadata(peer, 'welcome', request)
 
         timer = Timer(update_timeout, self.process)
