@@ -1,7 +1,7 @@
 import argparse
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
-from AuthDataBaseModule.AuthDataBase import *
+from AuthDataBaseModule.AuthDatabase import *
 from RequestsModule.RequestsProcessor import *
 from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 
@@ -13,7 +13,7 @@ class Main(object):
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
         self.requests_processor = RequestsProcessor(self.networking)
-        self.AuthDataBase=AuthDataBase(self.networking,self.requests_processor)
+        self.auth_database = AuthDataBase(self.networking, self.requests_processor)
         self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
         self.p2p = P2p(self.networking, self.requests_processor)
 
@@ -23,7 +23,7 @@ class Main(object):
         parser.add_argument('-port', '-p', dest='port', help='Server port')
         parser.add_argument('-host', dest='bind_host', help='Host for server binding')
         parser.add_argument('-peer', dest='first_peer', help='ip:port of first peer needed for connection')
-        parser.add_argument('-nop2pmodule', dest='nop2pmodelu', help='')
+        parser.add_argument('-nop2pModule', dest='nop2pModule', help='Disable p2p module.')
 
         command_line_args = parser.parse_args()
         return command_line_args
