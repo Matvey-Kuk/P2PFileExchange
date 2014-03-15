@@ -17,9 +17,8 @@ class AuthDataBase(NetworkingUsingModule):
             my_name = "Alex"
         print("Nick name: " + my_name)
         (pubkey, privkey) = rsa.newkeys(256)
-        print(type(pubkey))
 
-        welcome_data={'nick':my_name,'pubkey':pubkey}
+        welcome_data={'nick':my_name,'pubkey_n':pubkey.n,'pubkey_e':pubkey.e}
         for peer in self.networking.get_peers():
             print("Request connect me into p2p network")
             welcome_request=self.send_request(peer,'welcome',welcome_data)
@@ -47,9 +46,10 @@ class AuthDataBase(NetworkingUsingModule):
 
     def welcome_request_answer_generator(self, ver_data):
         """Генерация шифрованного сообщения и передача для верификации"""
-        print("User "+ver_data['nick']+" request conection")
+        print("User ",ver_data['nick']," request conection")
         random_msg = rsa.randnum.read_random_bits(128)
-        crypto = rsa.encrypt(random_msg,ver_data['pubkey'])
+        Pub=rsa.PublicKey(ver_data['pubkey_n'],ver_data['pubkey_e'])
+        crypto = rsa.encrypt(random_msg,Pub)
         answer_data=ver_data.update({'crypto_msg':crypto})
         return answer_data
 
@@ -67,10 +67,10 @@ class AuthDataBase(NetworkingUsingModule):
         """Проверка расшифрованного сообщения"""
         if random_msg == verif_msg['decrypt_msg']:
             self.users_list.append=({'nick':verif_msg['nick'],'pubkey':ver_msg['pubkey']})
-            print("User "+verif_msg['nick'] +"is authenticated")
+            print("User ",verif_msg['nick'],"is authenticated")
             return "Welcome to p2p world!!"
         else:
-            print("User "+verif_msg['nick']+"is not authenticated")
+            print("User ",verif_msg['nick'],"is not authenticated")
             return "Authentication error!!"
 
     def verification_request_answer_received(self, request):
