@@ -1,7 +1,7 @@
 import argparse
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
-from AuthDataBaseModule.AuthDatabase import *
+from AuthDataBaseModule.AuthDataBase import *
 from RequestsModule.RequestsProcessor import *
 from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 
