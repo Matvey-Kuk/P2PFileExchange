@@ -23,12 +23,12 @@ class Main(object):
 
         if self.command_line_arguments.onlyP2PModule:
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
-            self.p2p = P2p(self.networking, self.requests_processor)
+            self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
         if not only_one_module_enabled:
             self.auth_database = AuthDataBase(self.networking, self.requests_processor)
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
-            self.p2p = P2p(self.networking, self.requests_processor)
+            self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
     @staticmethod
     def parse_arguments():

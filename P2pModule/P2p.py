@@ -8,8 +8,9 @@ class P2p(NetworkingUsingModule):
 
     peer_request_period = 5
 
-    def __init__(self, networking, requests_processor):
+    def __init__(self, networking, requests_processor, circle_detector):
         super().__init__(networking, requests_processor, 'p2p_new_prefix')
+        self.circle_detector = circle_detector
         self.register_callbacks_for_requests()
         self.process()
 

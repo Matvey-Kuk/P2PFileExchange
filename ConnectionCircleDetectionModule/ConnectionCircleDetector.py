@@ -16,6 +16,7 @@ class ConnectionCircleDetector(NetworkingUsingModule):
         self.detected_circles = []
         self.detected_not_circled = []
         self.register_callbacks_for_requests()
+        self.peers_unique_instance_keys = {}
 
         self.unique_key = random.random()
         print('Unique instance key:' + repr(self.unique_key))
@@ -29,31 +30,42 @@ class ConnectionCircleDetector(NetworkingUsingModule):
         return self.unique_key
 
     def unique_instance_key_received(self, request):
+        self.peers_unique_instance_keys[request.peer] = request.answer_data
         if request.answer_data == self.unique_key:
-            print('circle detected')
+            if not request.peer in self.detected_circles:
+                self.detected_circles.append(request.peer)
+        else:
+            if not request.peer in self.detected_not_circled:
+                self.detected_not_circled.append(request.peer)
 
     def is_peer_checked(self, peer):
-        pass
+        return peer in self.detected_circles or peer in self.detected_not_circled
 
     def is_peer_connection_circle(self, peer):
-        pass
+        return peer in self.detected_circles
 
     def get_circled_peers(self):
-        pass
+        return self.detected_circles
+
+    def get_peer_unique_instance_key(self, peer):
+        if peer in self.peers_unique_instance_keys:
+            return self.peers_unique_instance_keys[peer]
+        else:
+            return False
 
     def get_not_circled_peers(self):
-        pass
+        return self.detected_not_circled
 
     def check_peer(self, peer):
-        pass
+        if self.get_peer_metadata(peer, 'uid_request') is None:
+                request = self.send_request(peer, 'unique_instance_key', 'Hello, boy, give me your server port!')
+                self.set_peer_metadata(peer, 'uid_request', request)
 
     def process(self):
         update_timeout = 1
 
         for peer in self.networking.get_peers():
-            if self.get_peer_metadata(peer, 'uid_request') is None:
-                request = self.send_request(peer, 'unique_instance_key', 'Hello, boy, give me your server port!')
-                self.set_peer_metadata(peer, 'uid_request', request)
+            self.check_peer(peer)
 
         timer = Timer(update_timeout, self.process)
         timer.start()

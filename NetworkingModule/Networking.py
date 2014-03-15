@@ -46,6 +46,16 @@ class Networking(object):
     def get_peers(self):
         return self.peers
 
+    def get_peer(self, ip, port):
+        required_peer = None
+        for peer in self.peers:
+            if peer.ip == ip and peer.port == port:
+                required_peer = peer
+        return required_peer
+
+    def register_new_peer(self, peer):
+        self.peers.append(peer)
+
     def provoke_connection(self, ip, port):
         """
         Провоцирует соединение
@@ -53,16 +63,8 @@ class Networking(object):
         """
         new_peer = Peer(ip, port)
         new_peer.connect()
-        self.peers.append(new_peer)
+        self.register_new_peer(new_peer)
         return new_peer
-
-    def register_network_user(self, obj):
-        """Здесь нужно решистрировать все объекты, использующие соединение"""
-        pass
-
-    def unregister_network_user(self, obj):
-        """Здесь нужно разрегистрировать все объекты, которые больше не будут использовать соединение"""
-        pass
 
     def process_peers(self):
         for peer in self.peers:
