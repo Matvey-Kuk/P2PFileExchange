@@ -17,6 +17,7 @@ class AuthDataBase(NetworkingUsingModule):
             my_name = "Alex"
         print("Nick name: " + my_name)
         (pubkey, privkey) = rsa.newkeys(256)
+        print(type(pubkey))
 
         welcome_data={'nick':my_name,'pubkey':pubkey}
         for peer in self.networking.get_peers():
