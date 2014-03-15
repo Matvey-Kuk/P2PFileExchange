@@ -1,7 +1,9 @@
-from NetworkingModule.NetworkingUsingModule import *
 from threading import Timer
 from time import time
 import rsa
+
+from NetworkingModule.NetworkingUsingModule import *
+
 
 class AuthDataBase(NetworkingUsingModule):
     """Модуль распределенной базы данных пользователей"""
@@ -12,7 +14,7 @@ class AuthDataBase(NetworkingUsingModule):
         random_msg=[]
         my_name=nick_name
         if my_name is None:
-            my_name="Alex"
+            my_name = "Alex"
         print("Nick name: " + my_name)
         (pubkey, privkey) = rsa.newkeys(256)
 
@@ -42,6 +44,7 @@ class AuthDataBase(NetworkingUsingModule):
         self.register_request_answer_generator('verification_request', self.verification_request_answer_generator)
         self.register_answer_received_callback('verification_request', self.verification_request_answer_received)
 
+<<<<<<< HEAD
     def welcome_request_answer_generator(self, ver_data):
         """Генерация шифрованного сообщения и передача для верификации"""
         print("User "+ver_data['nick']+" request conection")
@@ -56,6 +59,13 @@ class AuthDataBase(NetworkingUsingModule):
         reseive_msg = rsa.decrypt(request_data['crypto_msg'], privkey)
         verif_msg={'nick':request_data['nick'],'pubkey':request_data['pubkey'],'decrypt_msg':reseive_msg}
         ver_request=self.send_request(peer,'verification_request', verif_msg)
+=======
+    def welcome_request_answer_generator(self, question_data):
+        return "welcome"
+
+    def welcome_request_answer_received(self, request):
+        return "Hello!"
+>>>>>>> 63b1eb40fc430df72b58b727c5703c0ad5941a3f
 
     def verification_request_answer_generator(self, verif_msg):
         """Проверка расшифрованного сообщения"""

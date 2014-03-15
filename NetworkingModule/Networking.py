@@ -77,7 +77,7 @@ class Networking(object):
                     buff_messages_for_sending.append(message)
             self.messages_for_sending = buff_messages_for_sending
 
-            peer.process_messages()
+            peer.process()
 
             if len(peer.received_messages) > 0:
                 self.received_messages = self.received_messages + peer.received_messages
