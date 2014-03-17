@@ -31,7 +31,8 @@ class Main(object):
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
             self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
-        self.interface = Interface()
+        if not self.command_line_arguments.noInterface:
+            self.interface = Interface()
 
     @staticmethod
     def parse_arguments():
@@ -53,6 +54,12 @@ class Main(object):
             help='Enables only one module.'
         )
 
+        parser.add_argument(
+            '-noInterface',
+            dest='noInterface',
+            action='store_true',
+            help='Disables interface module.'
+        )
         command_line_args = parser.parse_args()
         return command_line_args
 
