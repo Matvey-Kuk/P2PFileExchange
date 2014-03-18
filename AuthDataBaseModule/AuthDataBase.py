@@ -1,5 +1,5 @@
-from threading import Timer
-from time import time
+# from threading import Timer
+# from time import time
 import rsa
 
 from NetworkingModule.NetworkingUsingModule import *
@@ -11,8 +11,9 @@ class AuthDataBase(NetworkingUsingModule):
     def __init__(self, networking, request_processor, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
         self.register_callbacks_for_requests()
-        self.random_msg=[]
+        self.random_msg = []
         self.my_name = nick_name
+        self.users_list = ['nick', 'pubkey']
         if self.my_name is None:
             self.my_name = "Alex"
         print("Auth_module: Nick name: " + self.my_name)
@@ -24,9 +25,8 @@ class AuthDataBase(NetworkingUsingModule):
         for peer in self.networking.get_peers():
             print("Auth_module: Request connect me into p2p network")
             welcome_request = self.send_request(peer, 'welcome', welcome_data)
-
         # self.process()
-"""
+    """
     def process(self):
         super().process()
         update_timeout = 1
@@ -39,6 +39,7 @@ class AuthDataBase(NetworkingUsingModule):
         timer = Timer(update_timeout, self.process)
         timer.start()
     """
+
     def register_callbacks_for_requests(self):
         self.register_request_answer_generator('welcome', self.welcome_request_answer_generator)
         self.register_answer_received_callback('welcome', self.welcome_request_answer_received)
@@ -52,15 +53,24 @@ class AuthDataBase(NetworkingUsingModule):
     def welcome_request_answer_generator(self, ver_data):
         """Генерация шифрованного сообщения и передача для верификации"""
         print("Auth_module: User ", ver_data['nick'], " request connection")
-        random_msg = rsa.randnum.read_random_bits(128)
+        self.random_msg = rsa.randnum.read_random_bits(128)
         Pub = rsa.PublicKey(ver_data['pubkey_n'], ver_data['pubkey_e'])
-        crypto = rsa.encrypt(random_msg , Pub)
+        crypto = rsa.encrypt(self.random_msg, Pub)
+        i = 0
+        crypto_mas = []
+        while i < len(crypto):
+            crypto_mas.append(crypto[i])
+            i = i+1
         # print(ver_data)
         # answer_data=ver_data.update({'crypto_msg':crypto})
-        answer_data = {'nick': ver_data['nick'], 'crypto_msg': crypto}
+        answer_data = {'nick': ver_data['nick'],
+                       'pubkey_n': ver_data['pubkey_n'],
+                       'pubkey_e': ver_data['pubkey_e'],
+                       'crypto_msg': crypto_mas}
         # print(answer_data)
         for peer in self.networking.get_peers():
-            request = self.send_request(peer,  'verification_request', answer_data)
+            print('Ok')
+            self.send_request(peer,  'verification_request', answer_data)
 
 
     def welcome_request_answer_received(self, request):
@@ -70,9 +80,17 @@ class AuthDataBase(NetworkingUsingModule):
         """Прием зашифрованного сообщения, отправка запроса на проверку для верификации"""
         print("Auth_module: Received crypto message")
         # print(type(request_data['crypto_msg']))
-        print(request_data)
-        decrypt_msg = rsa.decrypt(request_data['crypto_msg'], self.privkey)
-        send_msg = {'nick': request_data['nick'], 'pubkey': request_data['pubkey'], 'decrypt_msg': decrypt_msg}
+        # print(request_data)
+        decrypt_msg = rsa.decrypt(bytes(request_data['crypto_msg']), self.privkey)
+        i = 0
+        decrypt_mas = []
+        while i < len(decrypt_msg):
+            decrypt_mas.append(decrypt_msg[i])
+            i = i+1
+        send_msg = {'nick': request_data['nick'],
+                    'pubkey_n': request_data['pubkey_n'],
+                    'pubkey_e': request_data['pubkey_e'],
+                    'decrypt_msg': decrypt_mas}
         for peer in self.networking.get_peers():
             ver_request = self.send_request(peer, 'auth_request', send_msg)
 
@@ -81,14 +99,16 @@ class AuthDataBase(NetworkingUsingModule):
 
     def auth_request_answer_generator(self, request_data):
         """Проверка расшифрованного сообщения"""
-        print("Auth_module: Users verification")
-        if self.random_msg == request_data['decrypt_msg']:
-            self.users_list.append = ({'nick': request_data['nick'], 'pubkey': request_data['pubkey']})
+        print(bytes(request_data['decrypt_msg']))
+        if self.random_msg == bytes(request_data['decrypt_msg']):
+            self.users_list.append( {'nick': request_data['nick'],
+                                       'pubkey': rsa.PublicKey(request_data['pubkey_n'], request_data['pubkey_e'])} )
             print("User ", request_data['nick'], "is authenticated")
+            # print(self.users_list)
             return "Auth_module: Welcome to p2p world!!"
         else:
             print("User ", request_data['nick'], "is not authenticated")
             return "Auth_module: Authentication error!!"
 
     def auth_request_answer_received(self, request):
-        print(request)
+        print()
