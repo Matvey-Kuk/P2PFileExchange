@@ -1,24 +1,15 @@
-<<<<<<< HEAD
-__author__ = 'lossidze'
 
-from openfile  import diffile
-=======
-
-from openfile  import Diffile
->>>>>>> Cotl
+from openfile import FilesDifferences
 from threading import Thread
 
-class threadControl(Thread):
+
+class ThreadControl(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.daemon = True
-<<<<<<< HEAD
-        self.dif = diffile()
-=======
-        self.dif = Diffile()
->>>>>>> Cotl
+        self.dif = FilesDifferences('base')
     def run(self):
-        self.dif.find_diff()
+        pass
 
-thread = threadControl()
+thread = ThreadControl()
 thread.start()

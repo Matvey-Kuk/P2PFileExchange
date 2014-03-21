@@ -8,12 +8,13 @@ class OpenDir():
 
     def see_dir(self, path):
         try:
-            self.files_in_dir[path] = [x for x in os.listdir(path) if x[-1] != '~']
+            #Todo: отпилить тильды
+            self.files_in_dir[path] = [x for x in os.listdir(path) if x[-1] != '~' and x[0] != '.']
         except NotADirectoryError:
             return False
         else:
             for i, file in enumerate(self.files_in_dir[path]):
                 if os.path.isdir(path + '/' + file):
-                     self.see_dir(path + '/' + file)
+                    self.see_dir(path + '/' + file)
             self.files_in_dir[path] = [x for x in self.files_in_dir[path] if os.path.isfile(path + '/' + x)]
             return True
