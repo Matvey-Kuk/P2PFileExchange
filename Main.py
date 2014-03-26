@@ -33,6 +33,8 @@ class Main(object):
 
         if not self.command_line_arguments.noInterface:
             self.interface = Interface()
+            self.interface.register_data_sender(self.p2p, self.p2p)
+            self.interface.roottk.mainloop()
 
     @staticmethod
     def parse_arguments():
