@@ -37,20 +37,20 @@ class Main(object):
             '-AuthDatabaseModule',
             dest='AuthDatabaseModule',
             action='store_true',
-            help='Enables only one module.'
+            help='Enables this module.'
         )
         parser.add_argument(
             '-P2PModule',
             dest='P2PModule',
             action='store_true',
-            help='Enables only one module.'
+            help='Enables this module.'
         )
 
         parser.add_argument(
             '-Interface',
             dest='Interface',
             action='store_true',
-            help='Disables interface module.'
+            help='Enables interface module.'
         )
         command_line_args = parser.parse_args()
         return command_line_args

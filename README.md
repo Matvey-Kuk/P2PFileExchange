@@ -2,13 +2,8 @@
 
 Запуск:
 ------------
-Уже что-то можно запустить, но толку с этого мало:
 
-1-я копия: python3 Main.py -port 1235
-
-2-я копия: python3 Main.py -peer localhost:1235
-
-Есть даже help: python3 Main.py -h
+python3 Main.py -h
 
 Материалы:
 ------------
