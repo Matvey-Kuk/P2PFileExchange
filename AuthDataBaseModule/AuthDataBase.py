@@ -11,7 +11,7 @@ class AuthDataBase(NetworkingUsingModule):
         self.register_callbacks_for_requests()
         self.random_msg = []
         self.my_name = nick_name
-        self.users_list = ['nick', 'pubkey']
+        self.users_list = []
         if self.my_name is None:
             self.my_name = "Alex"
         print("Auth_module: Nick name: " + self.my_name)
@@ -24,7 +24,7 @@ class AuthDataBase(NetworkingUsingModule):
             print("Auth_module: Request connect me into p2p network")
             welcome_request = self.send_request(peer, 'welcome', welcome_data)
         # self.process()
-    """
+
     def process(self):
         super().process()
         update_timeout = 1
@@ -36,7 +36,6 @@ class AuthDataBase(NetworkingUsingModule):
 
         timer = Timer(update_timeout, self.process)
         timer.start()
-    """
 
     def register_callbacks_for_requests(self):
         self.register_request_answer_generator('welcome', self.welcome_request_answer_generator)
@@ -70,7 +69,6 @@ class AuthDataBase(NetworkingUsingModule):
             print('Ok')
             self.send_request(peer,  'verification_request', answer_data)
 
-
     def welcome_request_answer_received(self, request):
         print("Auth_module: User received my authentication data")
 
@@ -90,17 +88,16 @@ class AuthDataBase(NetworkingUsingModule):
                     'pubkey_e': request_data['pubkey_e'],
                     'decrypt_msg': decrypt_mas}
         for peer in self.networking.get_peers():
-            ver_request = self.send_request(peer, 'auth_request', send_msg)
+            self.send_request(peer, 'auth_request', send_msg)
 
     def verification_request_answer_received(self, request):
         print("Auth_module: User received crypto message")
 
     def auth_request_answer_generator(self, request_data):
         """Проверка расшифрованного сообщения"""
-        print(bytes(request_data['decrypt_msg']))
         if self.random_msg == bytes(request_data['decrypt_msg']):
-            self.users_list.append( {'nick': request_data['nick'],
-                                       'pubkey': rsa.PublicKey(request_data['pubkey_n'], request_data['pubkey_e'])} )
+            self.users_list.append({'nick': request_data['nick'],
+                                    'pubkey': rsa.PublicKey(request_data['pubkey_n'], request_data['pubkey_e'])})
             print("User ", request_data['nick'], "is authenticated")
             # print(self.users_list)
             return "Auth_module: Welcome to p2p world!!"

@@ -73,3 +73,7 @@ class P2p(NetworkingUsingModule):
                 request = self.send_request(peer, 'peers_request', None)
                 request.set_periodically(10)
                 self.set_peer_metadata(peer, 'peers_request', request)
+
+    def send_data_to_interface(self):
+        s = "Number of peers: %d" % len(self.networking.peers)
+        return s
