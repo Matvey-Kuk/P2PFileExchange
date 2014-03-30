@@ -1,6 +1,8 @@
 import pickle
 from OpenDir import OpenDir
 import os
+import xml.etree.ElementTree as ET
+from hashlib import md5
 NAME_SYSTEM_FILE = 'system'
 
 
@@ -11,86 +13,112 @@ class FilesDifferences:
         #Создание вспомагательных дирректорий
         if not os.path.exists(self.main_dir + '/.' + NAME_SYSTEM_FILE):
             os.mkdir(self.main_dir + '/.' + NAME_SYSTEM_FILE)
-            open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt', 'w').write(str(-1))
+            main = ET.Element('commit_file')
+            cur_state = ET.SubElement(main, 'current_state')
+            cur_state.text = "-1"
+            ET.ElementTree(main).write(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+            hash_md5 = ET.Element('hash_file')
+            ET.ElementTree(hash_md5).write(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/hash.xml")
         self.state = self.take_state()
 
     def take_state(self):
-        if os.path.exists(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt'):
-            text = [x for x in open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt').readline()]
-            number = ''
-            for sym in text:
-                number += sym
-            return int(number)
-        else:
-            return -1
+        tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+        root = tree.getroot()
+        return int(root.find('current_state').text)
 
-    #Todo улучшить обработку фаила
+    #Todo улучшить обработку фаила. Добавить количество комитов
     def change_state(self, move):
-            commit_file = open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt', 'r').read()
-            lines_commit_file = commit_file.split('\n')
-            try:
-                lines_commit_file.remove('')
-            except:
-                pass
-            lines_commit_file[0] = str(self.state + move)
-            commit_file = open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt', 'w')
-            for lines in lines_commit_file:
-                commit_file.write(lines + '\n')
-            commit_file.flush()
-            return len(lines_commit_file) - 1
+        tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+        root = tree.getroot()
+        root.find('current_state').text = str(self.state + move)
+        tree.write(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+        self.state += move
+
+    def hash_file(self, path):
+        tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/hash.xml")
+        root = tree.getroot()
+        new_hash = md5(open(path, 'rb').read())
+        hash_file = str(new_hash.hexdigest())
+        sub = root.find(str("*[@name='" + path.split('/')[-1] + "']"))
+        if sub.text == hash_file:
+            return False
+        else:
+            sub.text = hash_file
+            return True
 
     def max_state(self):
-        commit_file = open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt', 'r').read()
-        lines_commit_file = commit_file.split('\n')
-        lines_commit_file.remove('')
-        return len(lines_commit_file) - 2
+        tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+        root = tree.getroot()
+        return len(root.findall('commit'))
 
-    #Todo Возможна ошибка парсинга из за слешей в комите
+    def create_hash_xml(self, files):
+        tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/hash.xml")
+        root = tree.getroot()
+        for keys in files:
+            sub = root.find(str("[@name='" + keys + "']"))
+            if sub:
+                if not(sub.text == files[keys]):
+                    sub.text = files[keys]
+                    sub.set("changed", 'yes')
+            else:
+                file = ET.SubElement(root, 'file')
+                file.set('name', keys)
+                file.text = files[keys]
+        tree.write(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/hash.xml")
+
     def add_commit(self, commit):
-        if not(commit.find('/') or commit.find('|') or commit.find('\\')):
-            return "Строка комита не должна содержать /, | ,\\"
         files = self.take_files()
-        if not (files == {}):
-            len_lines = self.change_state(1)
-            modify_test = ''
-            for keys in files:
-                modify_test += '|' + keys + '\\'
-                for items in files[keys]:
-                    modify_test += items + '/'
-            str_commit = str(len_lines) + '"' + commit + '"' + modify_test
-            commit_file = open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt', 'a')
-            commit_file.write(str_commit)
-            commit_file.flush()
+        if files[0]:
+            if self.state == self.max_state() - 1:
+                self.change_state(1)
+            len_lines = self.max_state()
+            tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+            root = tree.getroot()
+            sub = ET.SubElement(root, 'commit')
+            sub.set('name', commit)
+            sub.set('number', str(len_lines))
+            for keys in files[0]:
+                directory = ET.SubElement(sub, 'path_files')
+                directory.set('path', keys)
+                for items in files[0][keys]:
+                    file = ET.SubElement(directory, 'file')
+                    file.text = items
+            if files[1]:
+                self.create_hash_xml(files[1])
+            tree.write(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
             return True
         else:
-            return "Нет измененных фаилов"
+            return False
 
     def take_files(self):
         change_files = {}
+        hash_files = {}
         for keys in self.take_dir.files_in_dir.keys():
             if not os.path.exists(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys):
                 os.makedirs(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys)
             change_files[keys] = []
             for items in self.take_dir.files_in_dir[keys]:
                 if os.path.exists(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys + '/' + items):
-                    delta = self.find_diff(keys + '/' + items,
-                                           self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys + '/' + items + '/' +
-                                           items)
-                    if len(delta) > 0:
-                        pass
+                    if self.hash_file(keys + '/' + items):
+                        delta = self.find_diff(keys + '/' + items,
+                                               self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys + '/' + items + '/' +
+                                               items)
                         change_files[keys].append(items)
                         self.save(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys + '/' + items,
-                                  delta, keys + '/' + items, items)
+                                      delta, keys + '/' + items, items)
                 else:
                     os.makedirs(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys + '/' + items)
                     new_file = open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + keys + '/' + items + '/' + items,
                                     'wb')
-                    new_file.write(open(keys + '/' + items, 'rb').read())
+                    old_file = open(keys + '/' + items, 'rb').read()
+                    new_file.write(old_file)
+                    new_hash = md5(old_file)
                     new_file.close()
                     change_files[keys].append(items)
+                    hash_files[items] = new_hash.hexdigest()
             if len(change_files[keys]) == 0:
                 del change_files[keys]
-        return change_files
+        return change_files, hash_files
 
     @staticmethod
     def find_diff(path_file, path_store_file):
@@ -128,7 +156,7 @@ class FilesDifferences:
             return False
 
     def forward_step(self):
-        if self.state < self.max_state():
+        if self.state < self.max_state() - 1:
             self.step(1)
             return True
         else:
@@ -152,16 +180,13 @@ class FilesDifferences:
         # словарь, хранящий измененые объекты указанного комита
         parsing_str = {}
         if state >= 0:
-            check_cur_state = -1
-            for commit_file in open(self.main_dir + '/.' + NAME_SYSTEM_FILE + '/' + 'commit.txt', 'r'):
-                if check_cur_state == state:
-                    break
-                else:
-                    check_cur_state +=1
-            commit_file = commit_file.split('|')[1:]
-            for path_commit in commit_file:
-                path = path_commit.split('\\')
-                parsing_str[path[0]] = path[1].split('/')[0:-1]
+            tree = ET.parse(self.main_dir + '/.' + NAME_SYSTEM_FILE + "/comment.xml")
+            root = tree.getroot()
+            commit = root.findall('commit')
+            for my_dir in commit[state]:
+                parsing_str[my_dir.attrib['path']] = []
+                for file in my_dir:
+                    parsing_str[my_dir.attrib['path']].append(file.text)
             return parsing_str
         else:
             return None
@@ -191,5 +216,5 @@ class FilesDifferences:
 
 test = FilesDifferences('base')
 #test.add_commit("The first step")
-#test.back_step()
+test.back_step()
 #test.forward_step()
