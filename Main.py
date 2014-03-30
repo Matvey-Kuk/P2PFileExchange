@@ -1,4 +1,5 @@
 import argparse
+
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
 from AuthDataBaseModule.AuthDataBase import *
@@ -15,23 +16,14 @@ class Main(object):
         self.networking = self.start_networking()
         self.requests_processor = RequestsProcessor(self.networking)
 
-        only_one_module_enabled = \
-            self.command_line_arguments.onlyAuthDatabaseModule or \
-            self.command_line_arguments.onlyP2PModule
-
-        if self.command_line_arguments.onlyAuthDatabaseModule:
+        if self.command_line_arguments.AuthDatabaseModule:
             self.auth_database = AuthDataBase(self.networking, self.requests_processor, self.command_line_arguments.nick_name)
 
-        if self.command_line_arguments.onlyP2PModule:
+        if self.command_line_arguments.P2PModule:
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
             self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
-        if not only_one_module_enabled:
-            self.auth_database = AuthDataBase(self.networking, self.requests_processor)
-            self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
-            self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
-
-        if not self.command_line_arguments.noInterface:
+        if self.command_line_arguments.Interface:
             self.interface = Interface()
 
     @staticmethod
@@ -42,21 +34,21 @@ class Main(object):
         parser.add_argument('-peer', dest='first_peer', help='ip:port of first peer needed for connection')
         parser.add_argument('-nick', dest='nick_name', help='Enter your nick name')
         parser.add_argument(
-            '-onlyAuthDatabaseModule',
-            dest='onlyAuthDatabaseModule',
+            '-AuthDatabaseModule',
+            dest='AuthDatabaseModule',
             action='store_true',
             help='Enables only one module.'
         )
         parser.add_argument(
-            '-onlyP2PModule',
-            dest='onlyP2PModule',
+            '-P2PModule',
+            dest='P2PModule',
             action='store_true',
             help='Enables only one module.'
         )
 
         parser.add_argument(
-            '-noInterface',
-            dest='noInterface',
+            '-Interface',
+            dest='Interface',
             action='store_true',
             help='Disables interface module.'
         )
