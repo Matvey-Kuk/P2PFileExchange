@@ -2,6 +2,7 @@ from threading import Timer
 
 from NetworkingModule.NetworkingUsingModule import *
 from NetworkingModule.Peer import *
+from Interface.Interface import *
 
 
 class P2p(NetworkingUsingModule):
@@ -13,6 +14,7 @@ class P2p(NetworkingUsingModule):
         super().__init__(networking, requests_processor, 'p2p_new_prefix')
         self.circle_detector = circle_detector
         self.register_callbacks_for_requests()
+        self.register_interface_callbacks()
         self.process()
 
     def register_callbacks_for_requests(self):
@@ -38,7 +40,6 @@ class P2p(NetworkingUsingModule):
         return peer_list
 
     def peer_request_answer_received(self, request):
-        print('received peers: ' + repr(request.answer_data))
         all_server_ports_are_known = True
         all_unique_keys_checked = True
         for peer in self.networking.get_peers():
@@ -52,7 +53,6 @@ class P2p(NetworkingUsingModule):
             for new_peer in new_peers:
                 if self.circle_detector.get_peer_with_unique_key(new_peer['unique_key']) is None and self.circle_detector.unique_key != new_peer['unique_key']:
                     if self.networking.get_peer(new_peer['ip'], new_peer['server_port']) is None:
-                        print('connecting with:' + repr(new_peer))
                         self.networking.provoke_connection(new_peer['ip'], new_peer['server_port'])
 
     def server_port_request_answer(self, question_data):
@@ -87,3 +87,10 @@ class P2p(NetworkingUsingModule):
     def send_data_to_interface(self):
         s = "Number of peers: %d" % len(self.networking.peers)
         return s
+
+    def process_interface_command(self, command):
+        return 'Command received in p2p:' + command
+
+    def register_interface_callbacks(self):
+        Interface.register_output_callback(self.prefix, self.send_data_to_interface)
+        Interface.register_command_processor_callback(self.prefix, self.process_interface_command)

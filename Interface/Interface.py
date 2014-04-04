@@ -6,7 +6,11 @@
 from tkinter import *
 from tkinter.ttk import *
 
+
 class Interface(object):
+
+    __output_callbacks = {}
+    __commands_processors_callbacks = {}
 
     def __init__(self):
         self.data_senders = []
@@ -80,4 +84,12 @@ class Interface(object):
             o[1]['text'] = str
         self.txtfr1['state'] = 'disabled'
 
+    @staticmethod
+    def register_output_callback(prefix, callback):
+        """Здесь должны регистрироваться коллбэки функций, которые будут выводить на монитор данные в реалтайме"""
+        Interface.__output_callbacks[prefix] = callback
 
+    @staticmethod
+    def register_command_processor_callback(prefix, callback):
+        """Здесь регистрируются коллбэки функций, которые обрабатывают команды"""
+        Interface.__commands_processors_callbacks[prefix] = callback
