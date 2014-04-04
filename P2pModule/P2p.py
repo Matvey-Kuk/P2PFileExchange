@@ -24,12 +24,16 @@ class P2p(NetworkingUsingModule):
 
     def peer_request_answer(self, question_data):
         peer_list = []
+        peer_added_list = []
         for peer in self.networking.get_peers():
-            if not self.get_peer_metadata(peer, 'server_port') is None:
-                peer_list.append({
-                    'ip': peer.ip,
-                    'server_port': self.get_peer_metadata(peer, 'server_port')
-                })
+            if self.circle_detector.is_peer_non_connection_circled:
+                if not self.get_peer_metadata(peer, 'server_port') is None:
+                    if not peer in peer_added_list:
+                        peer_list.append({
+                            'ip': peer.ip,
+                            'server_port': self.get_peer_metadata(peer, 'server_port')
+                        })
+                        peer_added_list.append(peer)
         return peer_list
 
     def peer_request_answer_received(self, request):

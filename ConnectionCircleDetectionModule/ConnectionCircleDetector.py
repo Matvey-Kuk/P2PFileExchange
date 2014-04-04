@@ -44,6 +44,9 @@ class ConnectionCircleDetector(NetworkingUsingModule):
     def is_peer_connection_circle(self, peer):
         return peer in self.detected_circles
 
+    def is_peer_non_connection_circled(self, peer):
+        return peer in self.detected_not_circled
+
     def get_circled_peers(self):
         return self.detected_circles
 
@@ -69,3 +72,9 @@ class ConnectionCircleDetector(NetworkingUsingModule):
 
         timer = Timer(update_timeout, self.process)
         timer.start()
+
+    def is_known_peer_with_unique_key(self, key):
+        for peer in self.peers_unique_instance_keys:
+            if self.peers_unique_instance_keys[peer] == key:
+                return peer
+        return False

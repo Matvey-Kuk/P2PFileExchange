@@ -63,7 +63,8 @@ class Peer (object):
         self.thread_send.start()
 
     def disconnect(self):
-        self.socket.close()
+        if not self.socket is None:
+            self.socket.close()
         self.socket = None
         self.send_thread_run = False
         self.receive_thread_run = False
@@ -95,3 +96,6 @@ class Peer (object):
         if module_prefix in self.metadata:
             if data_prefix in self.metadata[module_prefix]:
                 return self.metadata[module_prefix][data_prefix]
+
+    def __repr__(self):
+        return self.ip + ':' + str(self.port)
