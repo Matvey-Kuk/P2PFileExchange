@@ -94,5 +94,5 @@ class P2p(NetworkingUsingModule):
         return 'Undefined command'
 
     def register_interface_callbacks(self):
-        Interface.register_output_callback(self.prefix, self.send_data_to_interface)
-        Interface.register_command_processor_callback(self.prefix, self.process_interface_command)
+        Interface.register_output_callback('p2p', self.send_data_to_interface)
+        Interface.register_command_processor_callback('p2p', self.process_interface_command)
