@@ -73,8 +73,8 @@ class ConnectionCircleDetector(NetworkingUsingModule):
         timer = Timer(update_timeout, self.process)
         timer.start()
 
-    def is_known_peer_with_unique_key(self, key):
+    def get_peer_with_unique_key(self, key):
         for peer in self.peers_unique_instance_keys:
             if self.peers_unique_instance_keys[peer] == key:
                 return peer
-        return False
+        return None

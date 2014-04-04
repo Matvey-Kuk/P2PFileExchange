@@ -31,7 +31,8 @@ class P2p(NetworkingUsingModule):
                     if not peer in peer_added_list:
                         peer_list.append({
                             'ip': peer.ip,
-                            'server_port': self.get_peer_metadata(peer, 'server_port')
+                            'server_port': self.get_peer_metadata(peer, 'server_port'),
+                            'unique_key': self.circle_detector.get_peer_unique_instance_key(peer)
                         })
                         peer_added_list.append(peer)
         return peer_list
@@ -39,15 +40,20 @@ class P2p(NetworkingUsingModule):
     def peer_request_answer_received(self, request):
         print('received peers: ' + repr(request.answer_data))
         all_server_ports_are_known = True
+        all_unique_keys_checked = True
         for peer in self.networking.get_peers():
+            if not self.circle_detector.is_peer_checked(peer):
+                all_unique_keys_checked = False
             if self.get_peer_metadata(peer, 'server_port') is None:
                 all_server_ports_are_known = False
 
-        if all_server_ports_are_known:
+        if all_server_ports_are_known and all_unique_keys_checked:
             new_peers = request.answer_data
             for new_peer in new_peers:
-                if self.networking.get_peer(new_peer['ip'], new_peer['server_port']) is None:
-                    self.networking.provoke_connection(new_peer['ip'], new_peer['server_port'])
+                if self.circle_detector.get_peer_with_unique_key(new_peer['unique_key']) is None and self.circle_detector.unique_key != new_peer['unique_key']:
+                    if self.networking.get_peer(new_peer['ip'], new_peer['server_port']) is None:
+                        print('connecting with:' + repr(new_peer))
+                        self.networking.provoke_connection(new_peer['ip'], new_peer['server_port'])
 
     def server_port_request_answer(self, question_data):
         return self.networking.server_port
