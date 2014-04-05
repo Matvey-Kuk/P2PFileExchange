@@ -10,10 +10,13 @@ from AuthorizationModule.UsersDatabase import *
 class Authorization(NetworkingUsingModule):
     """Модуль, поддерживающий все, что связано с авторизацией"""
 
-    def __init__(self, networking, request_processor, nick_name):
+    def __init__(self, networking, request_processor, database_engine, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
 
-        self.users_database = UsersDatabase()
+        self.users_database = UsersDatabase('users_database')
+
+        self.database_engine = database_engine
+        self.database_engine.add_database(self.users_database)
 
         self.register_callbacks_for_requests()
         self.random_msg = []
@@ -42,8 +45,6 @@ class Authorization(NetworkingUsingModule):
         #         request = self.send_request(peer, 'welcome', None)
         #         self.set_peer_metadata(peer, 'welcome', request)
 
-        self.process_database_synchronization()
-
         timer = Timer(update_timeout, self.process)
         timer.start()
 
@@ -57,37 +58,12 @@ class Authorization(NetworkingUsingModule):
         self.register_request_answer_generator('auth_request', self.auth_request_answer_generator)
         self.register_answer_received_callback('auth_request', self.auth_request_answer_received)
 
-        self.register_request_answer_generator(
-            'database_version_request',
-            self.database_version_request_answer_generator
-        )
-        self.register_answer_received_callback(
-            'database_version_request',
-            self.database_version_request_answer_received
-        )
-
-    def database_version_request_answer_received(self, request):
-        print('Answer received: ' + str(request))
-
-    def database_version_request_answer_generator(self, request_data):
-        message = {
-            "db_version": self.users_database.get_version(),
-            "db_hash": self.users_database.get_hash()
-        }
-        answer = json.JSONEncoder().encode(message)
-        return answer
-
-    def process_database_synchronization(self):
-        for peer in self.networking.get_peers():
-            print('request has been sent')
-            self.send_request(peer,  'database_version_request', 'Give me your db version')
-
     def welcome_request_answer_generator(self, ver_data):
         """Генерация шифрованного сообщения и передача для верификации"""
         # print("Auth_module: User ", ver_data['nick'], " request connection")
         self.random_msg = rsa.randnum.read_random_bits(128)
-        Pub = rsa.PublicKey(ver_data['pubkey_n'], ver_data['pubkey_e'])
-        crypto = rsa.encrypt(self.random_msg, Pub)
+        pub = rsa.PublicKey(ver_data['pubkey_n'], ver_data['pubkey_e'])
+        crypto = rsa.encrypt(self.random_msg, pub)
         i = 0
         crypto_mas = []
         while i < len(crypto):
