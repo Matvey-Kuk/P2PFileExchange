@@ -29,7 +29,6 @@ class Request(object):
         self.question_data = question_data
         self.answer_data = None
 
-        #Если указан то запрос повторяется переодически.
         self.repeat_timeout = None
 
     def generate_question_message(self):
@@ -78,3 +77,7 @@ class Request(object):
         self.answer_received = False
         self.answer_data = None
         self.answer_receiving_time = None
+
+    def __repr__(self):
+        return "Peer: " + repr(self.peer) + " Question data: " + self.question_data + " Answer data: " + \
+               repr(self.answer_data)

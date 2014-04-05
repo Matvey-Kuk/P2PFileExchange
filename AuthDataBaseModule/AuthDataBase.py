@@ -1,6 +1,10 @@
 import rsa
+from threading import Timer
+import json
+
 
 from NetworkingModule.NetworkingUsingModule import *
+from AuthDataBaseModule.Database import *
 
 
 class AuthDataBase(NetworkingUsingModule):
@@ -8,31 +12,37 @@ class AuthDataBase(NetworkingUsingModule):
 
     def __init__(self, networking, request_processor, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
+
+        self.users_database = Database()
+
         self.register_callbacks_for_requests()
         self.random_msg = []
         self.my_name = nick_name
         self.users_list = []
         if self.my_name is None:
             self.my_name = "Alex"
-        print("Auth_module: Nick name: " + self.my_name)
+        # print("Auth_module: Nick name: " + self.my_name)
         (self.pubkey, self.privkey) = rsa.newkeys(256)
         # msg="Hello my friend"
         # cr=rsa.encrypt(msg, self.pubkey)
         # msg2=rsa.decrypt(cr, self.privkey)
         welcome_data = {'nick': self.my_name, 'pubkey_n': self.pubkey.n, 'pubkey_e': self.pubkey.e}
         for peer in self.networking.get_peers():
-            print("Auth_module: Request connect me into p2p network")
+            # print("Auth_module: Request connect me into p2p network")
             welcome_request = self.send_request(peer, 'welcome', welcome_data)
-        # self.process()
+
+        self.process()
 
     def process(self):
         super().process()
-        update_timeout = 1
+        update_timeout = 10
 
-        for peer in self.networking.get_peers():
-            if self.get_peer_metadata(peer, 'welcome') is None:
-                request = self.send_request(peer, 'welcome', None)
-                self.set_peer_metadata(peer, 'welcome', request)
+        # for peer in self.networking.get_peers():
+        #     if self.get_peer_metadata(peer, 'welcome') is None:
+        #         request = self.send_request(peer, 'welcome', None)
+        #         self.set_peer_metadata(peer, 'welcome', request)
+
+        self.process_database_synchronization()
 
         timer = Timer(update_timeout, self.process)
         timer.start()
@@ -47,9 +57,34 @@ class AuthDataBase(NetworkingUsingModule):
         self.register_request_answer_generator('auth_request', self.auth_request_answer_generator)
         self.register_answer_received_callback('auth_request', self.auth_request_answer_received)
 
+        self.register_request_answer_generator(
+            'database_version_request',
+            self.database_version_request_answer_generator
+        )
+        self.register_answer_received_callback(
+            'database_version_request',
+            self.database_version_request_answer_received
+        )
+
+    def database_version_request_answer_received(self, request):
+        print('Answer received: ' + str(request))
+
+    def database_version_request_answer_generator(self, request_data):
+        message = {
+            "db_version": self.users_database.get_version(),
+            "db_hash": self.users_database.get_hash()
+        }
+        answer = json.JSONEncoder().encode(message)
+        return answer
+
+    def process_database_synchronization(self):
+        for peer in self.networking.get_peers():
+            print('request has been sent')
+            self.send_request(peer,  'database_version_request', 'Give me your db version')
+
     def welcome_request_answer_generator(self, ver_data):
         """Генерация шифрованного сообщения и передача для верификации"""
-        print("Auth_module: User ", ver_data['nick'], " request connection")
+        # print("Auth_module: User ", ver_data['nick'], " request connection")
         self.random_msg = rsa.randnum.read_random_bits(128)
         Pub = rsa.PublicKey(ver_data['pubkey_n'], ver_data['pubkey_e'])
         crypto = rsa.encrypt(self.random_msg, Pub)
@@ -70,11 +105,12 @@ class AuthDataBase(NetworkingUsingModule):
             self.send_request(peer,  'verification_request', answer_data)
 
     def welcome_request_answer_received(self, request):
-        print("Auth_module: User received my authentication data")
+        # print("Auth_module: User received my authentication data")
+        pass
 
     def verification_request_answer_generator(self, request_data):
         """Прием зашифрованного сообщения, отправка запроса на проверку для верификации"""
-        print("Auth_module: Received crypto message")
+        # print("Auth_module: Received crypto message")
         # print(type(request_data['crypto_msg']))
         # print(request_data)
         decrypt_msg = rsa.decrypt(bytes(request_data['crypto_msg']), self.privkey)
@@ -91,7 +127,8 @@ class AuthDataBase(NetworkingUsingModule):
             self.send_request(peer, 'auth_request', send_msg)
 
     def verification_request_answer_received(self, request):
-        print("Auth_module: User received crypto message")
+        # print("Auth_module: User received crypto message")
+        pass
 
     def auth_request_answer_generator(self, request_data):
         """Проверка расшифрованного сообщения"""
