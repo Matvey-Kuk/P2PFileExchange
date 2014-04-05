@@ -24,3 +24,12 @@ class Database(object):
 
     def merge_branched_same_version(self, serialized_db):
         pass
+
+    def new_record(self, key, value):
+        pass
+
+    def edit_record(self, key, value):
+        pass
+
+    def get_record(self, key):
+        pass

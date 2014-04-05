@@ -2,7 +2,7 @@ import argparse
 
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
-from AuthDataBaseModule.AuthDataBase import *
+from AuthorizationModule.Authorization import *
 from RequestsModule.RequestsProcessor import *
 from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 from Interface.Interface import *
@@ -17,7 +17,7 @@ class Main(object):
         self.requests_processor = RequestsProcessor(self.networking)
 
         if self.command_line_arguments.AuthDatabaseModule:
-            self.auth_database = AuthDataBase(self.networking, self.requests_processor, self.command_line_arguments.nick_name)
+            self.auth_database = Authorization(self.networking, self.requests_processor, self.command_line_arguments.nick_name)
 
         if self.command_line_arguments.P2PModule:
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)

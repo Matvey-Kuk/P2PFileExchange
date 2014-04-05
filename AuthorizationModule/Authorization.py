@@ -4,16 +4,16 @@ import json
 
 
 from NetworkingModule.NetworkingUsingModule import *
-from AuthDataBaseModule.Database import *
+from AuthorizationModule.UsersDatabase import *
 
 
-class AuthDataBase(NetworkingUsingModule):
-    """Модуль распределенной базы данных пользователей"""
+class Authorization(NetworkingUsingModule):
+    """Модуль, поддерживающий все, что связано с авторизацией"""
 
     def __init__(self, networking, request_processor, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
 
-        self.users_database = Database()
+        self.users_database = UsersDatabase()
 
         self.register_callbacks_for_requests()
         self.random_msg = []
