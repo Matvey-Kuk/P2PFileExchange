@@ -11,16 +11,20 @@ class Database(object):
             'bob': '{"pubkey": "asdasdsdsd:", "ip":"127.0.0.1", "port":12344}',
         }
 
+        self.__retrospective_max_length = 10
+        self.__retrospective_tables = {}
+
     def get_prefix(self):
         return self.__prefix
 
     def get_version(self):
         return self.__version
 
-    def get_hash(self):
-        return hashlib.sha224(str(sorted(self.__table)).encode('utf-8')).hexdigest()
+    def get_hash(self, retrospective_version=None):
+        if retrospective_version is None:
+            return hashlib.sha224(str(sorted(self.__table)).encode('utf-8')).hexdigest()
 
-    def get_serialized(self):
+    def get_serialized(self, retrospective_version=None):
         pass
 
     def merge_update(self, serialized_db, new_version):
@@ -33,7 +37,18 @@ class Database(object):
         pass
 
     def edit_record(self, key, value):
-        pass
+        self.__dump_retrospective()
 
-    def get_record(self, key):
-        pass
+    def get_record(self, key, retrospective_version=None):
+        if retrospective_version is None:
+            self.__dump_retrospective()
+
+    def __dump_retrospective(self):
+        if len(self.__retrospective_tables) > self.__retrospective_max_length:
+            oldest_version = None
+            for version in self.__retrospective_tables:
+                if oldest_version is None:
+                    oldest_version = version
+                if version < oldest_version:
+                    oldest_version = version
+
