@@ -37,6 +37,29 @@ class DatabaseEngine(NetworkingUsingModule):
             'version_request',
             self.database_version_request_answer_received
         )
+        self.register_request_answer_generator(
+            'dump_request',
+            self.database_dump_request_answer_generator
+        )
+        self.register_answer_received_callback(
+            'dump_request'
+        )
+
+    def database_dump_request_answer_generator(self, request_data):
+        pass
+
+    def database_dump_request_answer_received(self, request):
+        pass
+
+    def database_version_request_answer_generator(self, request_data):
+        message = {}
+        for db in self.__databases:
+            message[db.get_prefix()] = {
+                "db_version": db.get_version(),
+                "db_hash": db.get_hash()
+            }
+        answer = json.JSONEncoder().encode(message)
+        return answer
 
     def database_version_request_answer_received(self, request):
         new_data = json.JSONDecoder().decode(request.answer_data)
@@ -49,17 +72,13 @@ class DatabaseEngine(NetworkingUsingModule):
                    new_data[database_prefix]['db_hash'] != self.get_database(database_prefix).get_hash():
                     print('Branched version detected')
 
+    def merge_new_version(self, peer, peer_version, database_prefix):
+        pass
+
+    def merge_branch_version(self):
+        pass
+
     def get_database(self, prefix):
         for database in self.__databases:
             if database.get_prefix() == prefix:
                 return database
-
-    def database_version_request_answer_generator(self, request_data):
-        message = {}
-        for db in self.__databases:
-            message[db.get_prefix()] = {
-                "db_version": db.get_version(),
-                "db_hash": db.get_hash()
-            }
-        answer = json.JSONEncoder().encode(message)
-        return answer

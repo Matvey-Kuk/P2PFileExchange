@@ -6,10 +6,11 @@ class Database(object):
     def __init__(self, prefix):
         self.__prefix = prefix
         self.__version = 0
-        self.__table = {
-            'alex': '{"pubkey": "hewjhrkejwhrjhewkr:", "ip":"127.0.0.1", "port":123}',
-            'bob': '{"pubkey": "asdasdsdsd:", "ip":"127.0.0.1", "port":12344}',
-        }
+        self.__table = {}
+
+        # self.__lock_timeout = 20
+        # self.__is_locked = False
+        # self.__lock_time = None
 
         self.__retrospective_max_length = 10
         self.__retrospective_tables = {}
