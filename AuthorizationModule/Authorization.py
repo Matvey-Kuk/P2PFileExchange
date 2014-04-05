@@ -1,6 +1,7 @@
 import rsa
 from threading import Timer
 import json
+import random
 
 
 from NetworkingModule.NetworkingUsingModule import *
@@ -38,7 +39,13 @@ class Authorization(NetworkingUsingModule):
 
     def process(self):
         super().process()
-        update_timeout = 10
+        update_timeout = 2
+
+        if random.random() < 0.1:
+            print('pushed new record to database')
+            self.users_database.new_record(str(random.random()), random.random())
+
+        print(self.users_database.get_serialized())
 
         # for peer in self.networking.get_peers():
         #     if self.get_peer_metadata(peer, 'welcome') is None:

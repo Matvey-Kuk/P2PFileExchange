@@ -1,5 +1,6 @@
 from threading import Timer
 import json
+import random
 
 from NetworkingModule.NetworkingUsingModule import *
 
@@ -41,11 +42,12 @@ class DatabaseEngine(NetworkingUsingModule):
         new_data = json.JSONDecoder().decode(request.answer_data)
         print(new_data)
         for database_prefix in new_data:
-            if new_data[database_prefix]['db_version'] > self.get_database(database_prefix).get_version():
-                if new_data[database_prefix]['db_hash'] == self.get_database(database_prefix):
+            if int(new_data[database_prefix]['db_version']) > self.get_database(database_prefix).get_version():
+                print('New version detected')
+            else:
+                if new_data[database_prefix]['db_version'] == self.get_database(database_prefix).get_version() and \
+                   new_data[database_prefix]['db_hash'] != self.get_database(database_prefix).get_hash():
                     print('Branched version detected')
-                else:
-                    print('New version detected')
 
     def get_database(self, prefix):
         for database in self.__databases:

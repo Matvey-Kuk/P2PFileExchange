@@ -25,7 +25,7 @@ class Database(object):
             return hashlib.sha224(str(sorted(self.__table)).encode('utf-8')).hexdigest()
 
     def get_serialized(self, retrospective_version=None):
-        pass
+        return repr(self.__table)
 
     def merge_update(self, serialized_db, new_version):
         pass
@@ -34,14 +34,18 @@ class Database(object):
         pass
 
     def new_record(self, key, value):
-        pass
+        self.__dump_retrospective()
+        self.__table[key] = value
+        self.__version += 1
 
     def edit_record(self, key, value):
         self.__dump_retrospective()
+        self.__table[key] = value
+        self.__version += 1
 
     def get_record(self, key, retrospective_version=None):
         if retrospective_version is None:
-            self.__dump_retrospective()
+            pass
 
     def __dump_retrospective(self):
         if len(self.__retrospective_tables) > self.__retrospective_max_length:
@@ -51,4 +55,5 @@ class Database(object):
                     oldest_version = version
                 if version < oldest_version:
                     oldest_version = version
-
+            del self.__retrospective_tables[oldest_version]
+        self.__retrospective_tables[self.__version] = self.__table.copy()
