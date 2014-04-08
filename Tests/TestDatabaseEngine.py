@@ -3,7 +3,7 @@ import unittest
 from DatabaseEngineModule.DatabaseEngine import *
 
 
-class TestSequenceFunctions(unittest.TestCase):
+class TestDatabaseEngine(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -17,5 +17,5 @@ class TestSequenceFunctions(unittest.TestCase):
     def test_sample(self):
         pass
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_merge(self):
+        pass
