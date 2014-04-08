@@ -1,4 +1,4 @@
-Когда-то мы даже напишем автоматизированные тесты... [![Build Status](https://travis-ci.org/Matvey-Kuk/network.png?branch=master)](https://travis-ci.org/Matvey-Kuk/network)
+[![Build Status](https://travis-ci.org/Matvey-Kuk/network.png?branch=master)](https://travis-ci.org/Matvey-Kuk/network)
 
 Запуск:
 ------------
