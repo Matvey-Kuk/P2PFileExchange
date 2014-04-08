@@ -5,7 +5,7 @@ import random
 
 
 from NetworkingModule.NetworkingUsingModule import *
-from AuthorizationModule.UsersDatabase import *
+from AuthorizationModule.UsersTable import *
 
 
 class Authorization(NetworkingUsingModule):
@@ -14,7 +14,7 @@ class Authorization(NetworkingUsingModule):
     def __init__(self, networking, request_processor, database_engine, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
 
-        self.users_database = UsersDatabase('users_database')
+        self.users_database = UsersTable()
 
         self.database_engine = database_engine
         self.database_engine.add_database(self.users_database)
