@@ -1,5 +1,7 @@
 import unittest
 
+from DatabaseEngineModule.DatabaseEngine import *
+
 
 class TestSequenceFunctions(unittest.TestCase):
 
