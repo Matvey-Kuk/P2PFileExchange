@@ -10,13 +10,13 @@ class DatabaseEngine(NetworkingUsingModule):
     def __init__(self, networking, request_processor):
         super().__init__(networking, request_processor, 'database_engine')
 
-        self.__databases = []
+        self.__tables = []
 
         self.register_requests_callbacks()
         self.process()
 
-    def add_database(self, database):
-        self.__databases.append(database)
+    def add_table(self, table):
+        self.__tables.append(table)
 
     def process(self):
         update_timeout = 5
@@ -53,7 +53,7 @@ class DatabaseEngine(NetworkingUsingModule):
 
     def database_version_request_answer_generator(self, request_data):
         message = {}
-        for db in self.__databases:
+        for db in self.__tables:
             message[db.get_prefix()] = {
                 "db_version": db.get_version(),
                 "db_hash": db.get_hash()
@@ -79,6 +79,6 @@ class DatabaseEngine(NetworkingUsingModule):
         pass
 
     def get_database(self, prefix):
-        for database in self.__databases:
+        for database in self.__tables:
             if database.get_prefix() == prefix:
                 return database

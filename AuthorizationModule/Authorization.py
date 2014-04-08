@@ -17,7 +17,7 @@ class Authorization(NetworkingUsingModule):
         self.users_database = UsersTable()
 
         self.database_engine = database_engine
-        self.database_engine.add_database(self.users_database)
+        self.database_engine.add_table(self.users_database)
 
         self.register_callbacks_for_requests()
         self.random_msg = []
