@@ -37,13 +37,6 @@ class DatabaseEngine(NetworkingUsingModule):
             'version_request',
             self.database_version_request_answer_received
         )
-        self.register_request_answer_generator(
-            'dump_request',
-            self.database_dump_request_answer_generator
-        )
-        self.register_answer_received_callback(
-            'dump_request'
-        )
 
     def database_dump_request_answer_generator(self, request_data):
         pass
