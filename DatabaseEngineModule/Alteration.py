@@ -8,19 +8,19 @@ class Alteration(object):
         """
         Может создаваться по списку изменений и версии, а может создаваться из дампа с другого пира.
         """
-        self.__alterations = None
+        self.__rows = None
         self.__version = None
 
-        if 'alterations' in kwargs and 'version' in kwargs:
-            self.__alterations = kwargs['alterations']
+        if 'rows' in kwargs and 'version' in kwargs:
+            self.__rows = kwargs['rows']
             self.__version = kwargs['version']
         elif 'dump' in kwargs:
             self.__init_from_dump(kwargs['dump'])
 
         self.__creation_time = time()
 
-    def get_alterations(self):
-        return self.__alterations.copy()
+    def get_rows(self):
+        return self.__rows.copy()
 
     def get_creation_time(self):
         return self.__creation_time
@@ -28,10 +28,7 @@ class Alteration(object):
     def get_version(self):
         return self.__version
 
-    def merge(self, alteration):
-        raise Exception('Method is not written yet')
-
     def __init_from_dump(self, dump):
         self.__version = None
-        self.__alterations = None
+        self.__rows = None
         raise Exception('Method is not written yet')
