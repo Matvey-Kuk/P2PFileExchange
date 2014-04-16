@@ -13,7 +13,8 @@ class Interface(object):
     __commands_processors_callbacks = {}
 
     def __init__(self):
-        self.data_senders = []
+
+        self.Info_labels = {}
 
         self.roottk = Tk()
         self.roottk.title("Project console interface :D")
@@ -45,44 +46,48 @@ class Interface(object):
         self.roottk.columnconfigure(0, weight=1)
         self.roottk.rowconfigure(1, weight=1)
 
+        i = -1
+        for prefix in self.__output_callbacks.keys():
+            i += 1
+            self.Info_labels[prefix] = Label(self.frameInfo, anchor='center')
+            self.Info_labels[prefix].grid(row=0, column=i, sticky='nsew')
+        self.frameInfo.columnconfigure(i, weight=1)
 
         self.txtfr1.after_idle(self.asking_for_information)
        # self.roottk.after(100, self.roottk.mainloop())
 
     def input_command(self, event):
+        """Обработчик введённых команд"""
         s = self.txtfr2.get('1.0', 'end')
         self.txtfr2.delete('1.0', 'end')
         self.txtfr1['state'] = 'normal'
         s = s.strip()
         self.txtfr1.insert('end',"\n" + s)
         self.txtfr1.yview_moveto(1.0)
-        input_words = s.split()
-        self.txtfr1['state'] = 'disabled'
 
-    def register_data_sender(self, *data_senders):
-        for data_sender in data_senders:
-            if hasattr(data_sender, "send_data_to_interface"):
-                ds = []
-                ds.append(data_sender)
-                print("Object of type %s was registered" % type(data_sender))
-                ds.append(Label(self.frameInfo, anchor='center'))
-                self.data_senders.append(ds)
-                n = len(self.data_senders) - 1
-                ds[1].grid(row=0, column=n, sticky='nsew')
-                self.frameInfo.columnconfigure(n, weight=1)
-            else:
-                print("Object of type %s has no method to send data" % type(data_sender))
+        input_words = s.split(None, 1)
+
+        try:
+            str = Interface.__commands_processors_callbacks[input_words[0]](input_words[1])
+            self.txtfr1.insert('end',"\n" + str)
+            self.txtfr1.yview_moveto(1.0)
+        except:
+            self.txtfr1.insert('end',"\n" + "Wrong command (prefix)")
+            self.txtfr1.yview_moveto(1.0)
+
+        self.txtfr1['state'] = 'disabled'
 
     def asking_for_information(self):
+        """Метод, опрашивающий поставщиков данных"""
         self.txtfr1.after(1000, self.asking_for_information)
-        self.txtfr1['state'] = 'normal'
-        if not self.data_senders:
+        #self.txtfr1['state'] = 'normal'
+        if not self.Info_labels:
             self.txtfr1.insert('end', "\nno data")
-        for o in self.data_senders:
-            str = o[0].send_data_to_interface()
-            self.txtfr1.insert('end', "\n%s" % str)
-            o[1]['text'] = str
-        self.txtfr1['state'] = 'disabled'
+        for prefix in self.Info_labels.keys():
+            str = Interface.__output_callbacks[prefix]()
+            #self.txtfr1.insert('end', "\n%s" % str)
+            self.Info_labels[prefix]['text'] = str
+        #self.txtfr1['state'] = 'disabled'
 
     @staticmethod
     def register_output_callback(prefix, callback):
