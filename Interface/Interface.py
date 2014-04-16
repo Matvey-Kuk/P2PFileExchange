@@ -72,7 +72,7 @@ class Interface(object):
             self.txtfr1.insert('end',"\n" + str)
             self.txtfr1.yview_moveto(1.0)
         except:
-            self.txtfr1.insert('end',"\n" + "Wrong command (prefix)")
+            self.txtfr1.insert('end',"\n" + "Undefined command (prefix)")
             self.txtfr1.yview_moveto(1.0)
 
         self.txtfr1['state'] = 'disabled'
