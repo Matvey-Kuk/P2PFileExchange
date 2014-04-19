@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from DatabaseEngineModule.Table import *
+from DatabaseEngineModule.Database import *
 
 
 class TestDatabaseEngine(unittest.TestCase):
@@ -41,5 +42,26 @@ class TestDatabaseEngine(unittest.TestCase):
         table_b.new_alteration({'some_key': 'some_value'})
         self.assertEqual(table_a.get_hash(), table_b.get_hash())
 
-    def test_dump_and_returning(self):
-        pass
+    # def test_dump_and_returning(self):
+    #     table_a = Table('test_table')
+    #     table_a.new_alteration({'some_key': 'some_value'})
+    #     print(table_a.get_string_representation())
+
+    def test_tables_synchronization(self):
+        database_a = Database()
+        database_b = Database()
+
+        database_a.add_table(Table('table_for_sync'))
+        database_b.add_table(Table('table_for_sync'))
+
+        self.assertEqual(
+            database_a.get_table('table_for_sync').get_version(),
+            database_b.get_table('table_for_sync').get_version()
+        )
+
+        database_a.get_table('table_for_sync').new_alteration({'key': 'value'})
+
+        database_b.notice_foreign_database_condition(database_a.get_condition())
+        database_a.notice_foreign_database_condition(database_b.get_condition())
+
+        

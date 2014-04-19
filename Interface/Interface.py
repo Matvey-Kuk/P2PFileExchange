@@ -25,7 +25,7 @@ class Interface(object):
 
         self.txtfr1 = Text(self.frameCommandLine, wrap='word')
         self.txtfr1.grid(row=1, column=0, sticky='nsew')
-        self.txtfr1.insert(AtInsert(), 'Welcome!\n')
+        self.txtfr1.insert('end', 'Welcome!\n')
         self.txtfr1['state'] = 'disabled'
 
         self.scrollb = Scrollbar(self.frameCommandLine, command=self.txtfr1.yview)
@@ -33,7 +33,7 @@ class Interface(object):
         self.scrollb.grid(row=1, column=1, sticky='nse')
 
         self.txtfr2 = Text(self.frameCommandLine, height=1)
-        self.txtfr2.insert(AtInsert(), "\n")
+        self.txtfr2.insert('end', "\n")
         self.txtfr2.grid(row=2, column=0, columnspan=2, sticky='sew')
         self.txtfr2.bind('<Return>', self.input_command)
 

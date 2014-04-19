@@ -29,13 +29,13 @@ class Alteration(object):
     def get_version(self):
         return self.__version
 
-    def dump_to_str(self):
+    def get_dump(self):
         dump = {
             'rows': self.__rows,
             'version': self.__version,
             'creation_time': self.__creation_time
         }
-        return json.JSONEncoder().encode(dump)
+        return dump
 
     def __init_from_dump(self, dump):
         dump = json.JSONDecoder().decode(dump)

@@ -1,4 +1,5 @@
 import hashlib
+import json
 
 from DatabaseEngineModule.Alteration import Alteration
 
@@ -15,6 +16,12 @@ class Table(object):
         self.__lower_limit_of_the_range = None
         self.__upper_limit_of_the_range = None
 
+    def get_lower_limit_of_the_range(self):
+        return self.__lower_limit_of_the_range
+
+    def get_upper_limit_of_the_range(self):
+        return self.__upper_limit_of_the_range
+
     def get_prefix(self):
         return self.__prefix
 
@@ -25,7 +32,20 @@ class Table(object):
         return hashlib.sha224(str(self.merge_rows()).encode('utf-8')).hexdigest()
 
     def get_alterations(self, first_version, last_version):
-        raise Exception('Method is not written yet')
+        alterations = []
+        for alteration in self.__alterations:
+            if first_version <= alteration.get_version() <= last_version:
+                alterations.append(alteration)
+        return alterations
+
+    def get_string_representation(self, first_version=0, last_version=None):
+        if last_version is None:
+            last_version = self.__version
+        alterations = self.get_alterations(first_version, last_version)
+        dumps = []
+        for alteration in alterations:
+            dumps.append(alteration.get_dump())
+        return json.JSONEncoder().encode(dumps)
 
     def new_alteration(self, rows):
         self.__version += 1
