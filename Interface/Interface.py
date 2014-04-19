@@ -15,6 +15,8 @@ class Interface(object):
     def __init__(self):
 
         self.Info_labels = {}
+        self.previous_commands = []
+        self.current_command_number = 0
 
         self.roottk = Tk()
         self.roottk.title("Project console interface :D")
@@ -25,7 +27,7 @@ class Interface(object):
 
         self.txtfr1 = Text(self.frameCommandLine, wrap='word')
         self.txtfr1.grid(row=1, column=0, sticky='nsew')
-        self.txtfr1.insert(AtInsert(), 'Welcome!\n')
+        self.txtfr1.insert('end', 'Welcome!\n')
         self.txtfr1['state'] = 'disabled'
 
         self.scrollb = Scrollbar(self.frameCommandLine, command=self.txtfr1.yview)
@@ -33,9 +35,11 @@ class Interface(object):
         self.scrollb.grid(row=1, column=1, sticky='nse')
 
         self.txtfr2 = Text(self.frameCommandLine, height=1)
-        self.txtfr2.insert(AtInsert(), "\n")
+        self.txtfr2.insert('end', "\n")
         self.txtfr2.grid(row=2, column=0, columnspan=2, sticky='sew')
         self.txtfr2.bind('<Return>', self.input_command)
+        self.txtfr2.bind('<Up>', self.input_up_command)
+        self.txtfr2.bind('<Down>', self.input_down_command)
 
         self.frameCommandLine.rowconfigure(1, weight=1)
         self.frameCommandLine.columnconfigure(0, weight=1)
@@ -60,15 +64,18 @@ class Interface(object):
         """Обработчик введённых команд"""
         s = self.txtfr2.get('1.0', 'end')
         self.txtfr2.delete('1.0', 'end')
+
         self.txtfr1['state'] = 'normal'
         s = s.strip()
         self.txtfr1.insert('end',"\n" + s)
         self.txtfr1.yview_moveto(1.0)
 
+        self.previous_commands.append(s)
+
         input_words = s.split(None, 1)
 
         try:
-            str = Interface.__commands_processors_callbacks[input_words[0]](input_words[1])
+            str = Interface.__commands_processors_callbacks[input_words[0].lower()](input_words[1])
             self.txtfr1.insert('end',"\n" + str)
             self.txtfr1.yview_moveto(1.0)
         except:
@@ -76,6 +83,19 @@ class Interface(object):
             self.txtfr1.yview_moveto(1.0)
 
         self.txtfr1['state'] = 'disabled'
+        self.current_command_number += 1
+
+    def input_up_command(self, event):
+        if self.current_command_number:
+            self.current_command_number -= 1
+        self.txtfr2.delete('1.0', 'end')
+        self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
+
+    def input_down_command(self, event):
+        if self.current_command_number < len(self.previous_commands) - 1:
+            self.current_command_number += 1
+        self.txtfr2.delete('1.0', 'end')
+        self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
 
     def asking_for_information(self):
         """Метод, опрашивающий поставщиков данных"""
@@ -92,9 +112,9 @@ class Interface(object):
     @staticmethod
     def register_output_callback(prefix, callback):
         """Здесь должны регистрироваться коллбэки функций, которые будут выводить на монитор данные в реалтайме"""
-        Interface.__output_callbacks[prefix] = callback
+        Interface.__output_callbacks[prefix.lower()] = callback
 
     @staticmethod
     def register_command_processor_callback(prefix, callback):
         """Здесь регистрируются коллбэки функций, которые обрабатывают команды"""
-        Interface.__commands_processors_callbacks[prefix] = callback
+        Interface.__commands_processors_callbacks[prefix.lower()] = callback
