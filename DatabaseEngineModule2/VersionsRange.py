@@ -8,7 +8,7 @@ class VersionsRange(object):
         if 'version' in kwargs:
             self.__first_version = kwargs['version']
             self.__last_version = kwargs['version']
-        elif 'first' in kwargs and 'last' in 'kwargs':
+        elif 'first' in kwargs and 'last' in kwargs:
             self.__first_version = kwargs['first']
             self.__last_version = kwargs['last']
         else:
@@ -30,7 +30,7 @@ class VersionsRange(object):
         Проверяет, входит ли указанный диапазон в рамки текущего.
         """
         return self.__last_version >= versions_range.get_last_version() and \
-                        self.__first_version <= versions_range.get_first_version()
+               self.__first_version <= versions_range.get_first_version()
 
     def __eq__(self, other):
         """
@@ -52,3 +52,16 @@ class VersionsRange(object):
 
     def __repr__(self):
         return 'First: ' + str(self.__first_version) + ' Last: ' + str(self.__last_version)
+
+    @staticmethod
+    def merge(versions_ranges):
+        first = None
+        last = None
+
+        for version_range in versions_ranges:
+            if (first is None) or (first > version_range.get_first_version()):
+                first = version_range.get_first_version()
+            if last is None or last < version_range.get_last_version():
+                last = version_range.get_last_version()
+
+        return VersionsRange(first=first, last=last)

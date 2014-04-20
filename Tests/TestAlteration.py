@@ -69,3 +69,21 @@ class TestAlteration(unittest.TestCase):
                 'c': 2
             }
         )
+
+    def test_merge_versions(self):
+        alteration = Alteration(
+            {
+                'b': 2,
+                'c': 2
+            }
+            , VersionsRange(first=0, last=4)
+        )
+        alteration_2 = Alteration(
+            {
+                'a': 1,
+                'b': 1
+            }
+            , VersionsRange(first=3, last=6)
+        )
+        merged = Alteration.merge([alteration_2, alteration])
+        self.assertEqual(merged.get_versions_range(), VersionsRange(first=0, last=6))

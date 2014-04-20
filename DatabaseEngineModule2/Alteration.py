@@ -25,8 +25,10 @@ class Alteration(object):
     @staticmethod
     def merge(alterations):
         result_changes_with_versions_and_times = {}
+        versions_ranges = []
         for alteration in alterations:
             changes = alteration.get_changes()
+            versions_ranges.append(alteration.get_versions_range())
             for key in changes:
                 write_ready = False
                 if not key in result_changes_with_versions_and_times:
@@ -47,4 +49,4 @@ class Alteration(object):
         for key in result_changes_with_versions_and_times:
             result_changes[key] = result_changes_with_versions_and_times[key]['value']
 
-        return Alteration(result_changes,VersionsRange(version=0))
+        return Alteration(result_changes,VersionsRange.merge(versions_ranges))
