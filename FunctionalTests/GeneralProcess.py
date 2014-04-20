@@ -12,9 +12,9 @@ def CreateProcess(N):
     for i in range(N):
         f = tempfile.TemporaryFile()
         #f = open('text.txt', 'a')
-        subprocess.Popen(['python3', 'script0.py', str(i)], stdout=f)
+        subprocess.Popen(['python3', 'TestScript.py', str(i)], stdout=f)
         processes.append(f)
-        arr[i]=f
+        #arr[i]=f
         #print(arr[i])
         #sleep(0.03)
         #arr[i].seek(0)
