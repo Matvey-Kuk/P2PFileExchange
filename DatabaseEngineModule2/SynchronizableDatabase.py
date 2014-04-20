@@ -22,6 +22,7 @@ class SynchronizableDatabase(Database):
         Сообщить базе о внешней базе и ее состоянии в указанном диапазоне.
         """
         raise Exception('Not written yet.')
+
     def get_information_for_foreign_database(self, database_id):
         """
         Узнать, какую информацию требуется передать внешней базе.
