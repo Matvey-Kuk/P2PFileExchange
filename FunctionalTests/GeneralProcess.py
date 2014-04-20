@@ -4,12 +4,14 @@ import tempfile
 import threading
 from time import sleep
 
-arr=[]
+arr = []
 
 processes = []
-def CreateProcess(N):
+
+
+def creation_process(n):
     global arr
-    for i in range(N):
+    for i in range(n):
         f = tempfile.TemporaryFile()
         #f = open('text.txt', 'a')
         subprocess.Popen(['python3', 'TestScript.py', str(i)], stdout=f)
@@ -29,8 +31,9 @@ def CreateProcess(N):
 
 #sleep(0.03)
 
-def Log():
-    r=0
+
+def log():
+    r = 0
     global arr
     print("!")
      #for r in arr:
@@ -39,8 +42,8 @@ def Log():
         #print(arr[r].read())
 
 
-t1=threading.Thread(name='th1', target=CreateProcess, kwargs={'N': 3})
-t2=threading.Thread(name='th2', target=Log)
+t1 = threading.Thread(name='th1', target=creation_process, kwargs={'n': 3})
+t2 = threading.Thread(name='th2', target=log)
 
 t1.start()
 
