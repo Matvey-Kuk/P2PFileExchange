@@ -22,3 +22,19 @@ class TestDatabase(unittest.TestCase):
 
         self.assertTrue(len(alterations) == 1)
         self.assertEqual(alterations[0].get_versions_range(), VersionsRange(first=2, last=5))
+
+    def test_restore_a_table(self):
+        database = Database()
+        database.insert_alteration(Alteration({'a': 1}, VersionsRange(version=0)))
+        database.insert_alteration(Alteration({'a': 2}, VersionsRange(version=1)))
+        database.insert_alteration(Alteration({'a': 3}, VersionsRange(version=2)))
+        database.insert_alteration(Alteration({'b': 1}, VersionsRange(version=3)))
+        restored_table = database.restore_a_table(VersionsRange(first=0, last=database.get_last_version()))
+        self.assertEqual(restored_table, {
+            'a': 3,
+            'b': 1
+        })
+        self.assertEqual(
+            database.find_in_restored_table(VersionsRange(first=0, last=database.get_last_version()), 'a'),
+            3
+        )
