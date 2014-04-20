@@ -34,6 +34,9 @@ class Alteration(object):
                 if key in result_changes_with_versions_and_times:
                     if result_changes_with_versions_and_times[key]['version'] < alteration.get_versions_range():
                         write_ready = True
+                    if result_changes_with_versions_and_times[key]['version'] == alteration.get_versions_range():
+                        if result_changes_with_versions_and_times[key]['time'] < alteration.get_creation_time():
+                            write_ready = True
                 if write_ready:
                     result_changes_with_versions_and_times[key] = {
                         'value': changes[key],
