@@ -1,5 +1,7 @@
 from time import time
 
+from DatabaseEngineModule2.VersionsRange import *
+
 
 class Alteration(object):
     """
@@ -22,6 +24,24 @@ class Alteration(object):
 
     @staticmethod
     def merge(alterations):
-        result_changes = {}
+        result_changes_with_versions_and_times = {}
         for alteration in alterations:
-            pass
+            changes = alteration.get_changes()
+            for key in changes:
+                write_ready = False
+                if not key in result_changes_with_versions_and_times:
+                    write_ready = True
+                if key in result_changes_with_versions_and_times:
+                    if result_changes_with_versions_and_times[key]['version'] < alteration.get_versions_range():
+                        write_ready = True
+                if write_ready:
+                    result_changes_with_versions_and_times[key] = {
+                        'value': changes[key],
+                        'version': alteration.get_versions_range(),
+                        'time': alteration.get_creation_time()
+                    }
+        result_changes = {}
+        for key in result_changes_with_versions_and_times:
+            result_changes[key] = result_changes_with_versions_and_times[key]['value']
+
+        return Alteration(result_changes,VersionsRange(version=0))

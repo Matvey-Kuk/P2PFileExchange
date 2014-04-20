@@ -13,6 +13,8 @@ class VersionsRange(object):
             self.__last_version = kwargs['last']
         else:
             raise Exception('Init failed.')
+        if self.__first_version > self.__last_version:
+            raise Exception('Init failed.')
 
     def is_version_in_range(self, version):
         return self.__last_version >= version >= self.__first_version
@@ -47,3 +49,6 @@ class VersionsRange(object):
         self > other оператор
         """
         return other.get_last_version() < self.get_first_version()
+
+    def __repr__(self):
+        return 'First: ' + str(self.__first_version) + ' Last: ' + str(self.__last_version)

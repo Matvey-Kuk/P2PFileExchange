@@ -21,7 +21,7 @@ class TestAlteration(unittest.TestCase):
                 'a': 1,
                 'b': 1
             }
-            , VersionsRange(version=0)
+            , VersionsRange(version=1)
         )
         alteration_2 = Alteration(
             {
@@ -30,12 +30,12 @@ class TestAlteration(unittest.TestCase):
             }
             , VersionsRange(version=0)
         )
-        merged = Alteration.merge([alteration, alteration_2])
-        # self.assertEqual(
-        #     merged.get_changes(),
-        #     {
-        #         'a': 1,
-        #         'b': 1,
-        #         'c': 2
-        #     }
-        # )
+        merged = Alteration.merge([alteration_2, alteration])
+        self.assertEqual(
+            merged.get_changes(),
+            {
+                'a': 1,
+                'b': 1,
+                'c': 2
+            }
+        )
