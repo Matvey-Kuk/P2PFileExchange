@@ -6,7 +6,7 @@ class Database(object):
     """
 
     def __init__(self):
-        raise Exception('Not written yet.')
+        self.__alterations = []
 
     def insert_alteration(self, alteration):
         raise Exception('Not written yet.')

@@ -87,3 +87,22 @@ class TestAlteration(unittest.TestCase):
         )
         merged = Alteration.merge([alteration_2, alteration])
         self.assertEqual(merged.get_versions_range(), VersionsRange(first=0, last=6))
+
+    def test_eq_operator(self):
+        alteration = Alteration(
+            {
+                'b': 2,
+                'c': 2
+            }
+            , VersionsRange(first=2, last=4),
+            creation_time=1234
+        )
+        alteration_b = Alteration(
+            {
+                'b': 2,
+                'c': 2
+            }
+            , VersionsRange(first=2, last=4),
+            creation_time=1234
+        )
+        self.assertTrue(alteration == alteration_b)

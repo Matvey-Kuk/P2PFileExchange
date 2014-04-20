@@ -8,10 +8,13 @@ class Alteration(object):
     Изменение- единица, которой оперирует база данных. Тот самый "шарик".
     """
 
-    def __init__(self, changes, versions_range):
+    def __init__(self, changes, versions_range, **kwargs):
         self.__changes = changes
         self.__versions_range = versions_range
-        self.__creation_time = time()
+        if 'creation_time' in kwargs:
+            self.__creation_time = kwargs['creation_time']
+        else:
+            self.__creation_time = time()
 
     def get_versions_range(self):
         return self.__versions_range
@@ -21,6 +24,10 @@ class Alteration(object):
 
     def get_creation_time(self):
         return self.__creation_time
+
+    def __eq__(self, other):
+        return self.__changes == other.get_changes() and self.__versions_range == other.get_versions_range() and \
+               self.__creation_time == other.get_creation_time()
 
     @staticmethod
     def merge(alterations):
