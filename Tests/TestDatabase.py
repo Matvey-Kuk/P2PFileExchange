@@ -38,3 +38,29 @@ class TestDatabase(unittest.TestCase):
             database.find_in_restored_table(VersionsRange(first=0, last=database.get_last_version()), 'a'),
             3
         )
+
+    def test_get_hash(self):
+        database_a = Database()
+        database_a.insert_alteration(Alteration({'a': 1}, VersionsRange(version=0)))
+
+        database_b = Database()
+        database_b.insert_alteration(Alteration({'a': 1}, VersionsRange(version=0)))
+
+        self.assertEqual(
+            database_a.get_hash(VersionsRange(first=0, last=database_a.get_last_version())),
+            database_b.get_hash(VersionsRange(first=0, last=database_b.get_last_version())),
+        )
+
+        database_a.insert_alteration(Alteration({'b': 1}, VersionsRange(version=1)))
+
+        self.assertNotEqual(
+            database_a.get_hash(VersionsRange(first=0, last=database_a.get_last_version())),
+            database_b.get_hash(VersionsRange(first=0, last=database_b.get_last_version())),
+        )
+
+        database_b.insert_alteration(Alteration({'b': 1}, VersionsRange(version=1)))
+
+        self.assertEqual(
+            database_a.get_hash(VersionsRange(first=0, last=database_a.get_last_version())),
+            database_b.get_hash(VersionsRange(first=0, last=database_b.get_last_version())),
+        )

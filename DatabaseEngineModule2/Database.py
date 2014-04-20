@@ -1,3 +1,5 @@
+import hashlib
+
 from DatabaseEngineModule2.VersionsRange import *
 from DatabaseEngineModule2.Alteration import *
 
@@ -42,5 +44,5 @@ class Database(object):
     def find_in_restored_table(self, versions_range, key):
         return self.restore_a_table(versions_range)[key]
 
-    def get_hash(self, version_first=0, version_last=None):
-        raise Exception('Not written yet.')
+    def get_hash(self, versions_range):
+        return hashlib.sha224(str(self.restore_a_table(versions_range)).encode('utf-8')).hexdigest()
