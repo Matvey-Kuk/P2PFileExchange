@@ -8,5 +8,8 @@ class TestSynchronizableDatabase(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_nothing(self):
-        pass
+    def test_conditions_exchange(self):
+        database_a = SynchronizableDatabase()
+        database_b = SynchronizableDatabase()
+
+        print(database_a.get_condition(VersionsRange(first=0, last=None)))

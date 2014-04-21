@@ -17,11 +17,15 @@ class VersionsRange(object):
             self.__last_version = kwargs['last']
         else:
             raise Exception('Init failed.')
-        if self.__first_version > self.__last_version:
-            raise Exception('Init failed.')
+        if not self.__last_version is None:
+            if self.__first_version > self.__last_version:
+                raise Exception('Init failed.')
 
     def is_version_in_range(self, version):
-        return self.__last_version >= version >= self.__first_version
+        if self.__last_version is None:
+            return version >= self.__first_version
+        else:
+            return self.__last_version >= version >= self.__first_version
 
     def get_first_version(self):
         return self.__first_version
@@ -33,8 +37,11 @@ class VersionsRange(object):
         """
         Проверяет, входит ли указанный диапазон в рамки текущего.
         """
-        return self.__last_version >= versions_range.get_last_version() and \
-               self.__first_version <= versions_range.get_first_version()
+        if self.__last_version is None:
+            return self.__first_version <= versions_range.get_first_version()
+        else:
+            return self.__last_version >= versions_range.get_last_version() and \
+                self.__first_version <= versions_range.get_first_version()
 
     def __eq__(self, other):
         """
@@ -46,7 +53,10 @@ class VersionsRange(object):
         """
         self < other оператор
         """
-        return self.get_last_version() < other.get_first_version()
+        if self.__last_version is None:
+            return False
+        else:
+            return self.get_last_version() < other.get_first_version()
 
     def __gt__(self, other):
         """
@@ -61,11 +71,15 @@ class VersionsRange(object):
     def merge(versions_ranges):
         first = None
         last = None
+        last_infinity = False
 
         for version_range in versions_ranges:
             if (first is None) or (first > version_range.get_first_version()):
                 first = version_range.get_first_version()
-            if last is None or last < version_range.get_last_version():
+            if version_range.get_last_version() is None:
+                last_infinity = True
+                last = None
+            if (last is None or last < version_range.get_last_version()) and not last_infinity:
                 last = version_range.get_last_version()
 
         return VersionsRange(first=first, last=last)

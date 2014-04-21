@@ -1,4 +1,7 @@
+import random
+
 from DatabaseEngineModule2.Database import *
+from DatabaseEngineModule2.VersionsRange import *
 
 
 class SynchronizableDatabase(Database):
@@ -9,13 +12,17 @@ class SynchronizableDatabase(Database):
     def __init__(self):
         super().__init__()
 
-        self.id = None
+        self.__id = hash(random.random())
 
-    def get_condition(self, version_first=0, version_last=None):
+    def get_condition(self, versions_range):
         """
         Получить состояние базы в указанном диапазоне версий (хеши).
         """
-        raise Exception('Not written yet.')
+        return {
+            'hash': self.get_hash(versions_range),
+            'id': self.__id,
+            'versions_range': versions_range
+        }
 
     def notify_condition(self, condition):
         """
@@ -23,9 +30,9 @@ class SynchronizableDatabase(Database):
         """
         raise Exception('Not written yet.')
 
-    def get_information_for_foreign_database(self, database_id):
+    def get_versions_range_required_from_another_database(self, database_id):
         """
-        Узнать, какую информацию требуется передать внешней базе.
+        Получить, какие состояния требуется узнать у другой базы.
         """
         raise Exception('Not written yet.')
 
