@@ -15,6 +15,9 @@ class VersionsRange(object):
         elif 'first' in kwargs and 'last' in kwargs:
             self.__first_version = kwargs['first']
             self.__last_version = kwargs['last']
+        elif 'dump' in kwargs:
+            self.__first_version = kwargs['dump']['first']
+            self.__last_version = kwargs['dump']['last']
         else:
             raise Exception('Init failed.')
         if not self.__last_version is None:
@@ -66,6 +69,12 @@ class VersionsRange(object):
 
     def __repr__(self):
         return 'First: ' + str(self.__first_version) + ' Last: ' + str(self.__last_version)
+
+    def get_dump(self):
+        return {
+            'first': self.__first_version,
+            'last': self.__last_version
+        }
 
     @staticmethod
     def merge(versions_ranges):

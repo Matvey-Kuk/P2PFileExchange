@@ -16,10 +16,10 @@ class ForeignDatabase(object):
     def get_id(self):
         return self.__id
 
-    def set_versions_range_with_detected_hash_difference(self, version_first, version_last):
+    def set_versions_range_with_detected_hash_difference(self, versions_range):
         raise Exception('Not written yet.')
 
-    def set_versions_range_with_detected_hash_equivalence(self, version_first, version_last):
+    def set_versions_range_with_detected_hash_equivalence(self, versions_range):
         raise Exception('Not written yet.')
 
     def get_range_with_detected_hash_differences(self):

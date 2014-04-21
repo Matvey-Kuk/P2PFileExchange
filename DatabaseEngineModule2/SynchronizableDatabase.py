@@ -14,6 +14,8 @@ class SynchronizableDatabase(Database):
 
         self.__id = hash(random.random())
 
+        self.__foreign_databases = []
+
     def get_condition(self, versions_range):
         """
         Получить состояние базы в указанном диапазоне версий (хеши).
@@ -21,7 +23,7 @@ class SynchronizableDatabase(Database):
         return {
             'hash': self.get_hash(versions_range),
             'id': self.__id,
-            'versions_range': versions_range
+            'versions_range': versions_range.get_dump()
         }
 
     def notify_condition(self, condition):
