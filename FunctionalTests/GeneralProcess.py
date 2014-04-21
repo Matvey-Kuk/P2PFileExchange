@@ -7,7 +7,11 @@ arr = {}
 
 processes = []
 
+#Не информативное название переменной
 k = int(input("Какое количество программ запустить:"))
+
+#Todo: Получать это через аргументы командной строки
+program_path = input("Путь к папке с приложением:")
 
 
 def creation_process():
@@ -16,12 +20,20 @@ def creation_process():
         f = tempfile.TemporaryFile()
         #f = open('text.txt', 'a')
         if i == 0:
-            subprocess.Popen(['python3 $HOME/network/Main.py -port 111' +str(i+1)+ ' -P2PModule'], stdout=f, shell=True)
+            subprocess.Popen(
+                ['python3 ' + program_path + '/Main.py -port 111' + str(i+1) + ' -P2PModule'],
+                stdout=f,
+                shell=True
+            )
         else:
-            subprocess.Popen(['python3 $HOME/network/Main.py -port 111' +str(i+1)+ ' -peer 127.0.0.1:111' +str(i+1)+ ' -P2PModule'], stdout=f, shell=True)
+            subprocess.Popen(
+                ['python3 ' + program_path + '/Main.py -port 111' + str(i+1) + ' -peer 127.0.0.1:111' + str(i + 1) +
+                 ' -P2PModule'],
+                stdout=f,
+                shell=True
+            )
         processes.append(f)
         arr[i] = f
-
 
 
 def log():
