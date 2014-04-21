@@ -12,4 +12,4 @@ class TestSynchronizableDatabase(unittest.TestCase):
         database_a = SynchronizableDatabase()
         database_b = SynchronizableDatabase()
 
-        database_b.notify_condition(database_a.get_condition(VersionsRange(first=0, last=None)))
+        # database_b.notify_condition(database_a.get_condition(VersionsRange(first=0, last=None)))
