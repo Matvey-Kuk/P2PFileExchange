@@ -2,6 +2,7 @@ import random
 
 from DatabaseEngineModule2.Database import *
 from DatabaseEngineModule2.VersionsRange import *
+from DatabaseEngineModule2.ForeignDatabase import *
 
 
 class SynchronizableDatabase(Database):
@@ -30,7 +31,18 @@ class SynchronizableDatabase(Database):
         """
         Сообщить базе о внешней базе и ее состоянии в указанном диапазоне.
         """
-        raise Exception('Not written yet.')
+        detected_foreign_database = None
+        for foreign_database in self.__foreign_databases:
+            if foreign_database.get_id() == condition['id']:
+                detected_foreign_database = foreign_database
+        if detected_foreign_database is None:
+            detected_foreign_database = ForeignDatabase(condition['id'])
+
+        versions_range_from_condition = VersionsRange(dump=condition['versions_range'])
+        if self.get_hash(versions_range_from_condition) == condition['hash']:
+            detected_foreign_database.set_versions_range_with_detected_hash_equivalence(versions_range_from_condition)
+        else:
+            detected_foreign_database.set_versions_range_with_detected_hash_difference(versions_range_from_condition)
 
     def get_versions_range_required_from_another_database(self, database_id):
         """

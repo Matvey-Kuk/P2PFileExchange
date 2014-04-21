@@ -77,6 +77,22 @@ class VersionsRange(object):
         }
 
     @staticmethod
+    def subtraction(minuend, subtrahend):
+        """
+        Вычитание некого диапазона из текущего
+        """
+        result = []
+        if not minuend.get_first_version() >= subtrahend.get_first_version():
+            result.append(
+                VersionsRange(first=minuend.get_first_version(), last=subtrahend.get_first_version() - 1)
+            )
+        if not minuend.get_last_version() <= subtrahend.get_last_version():
+            result.append(
+                VersionsRange(first=subtrahend.get_last_version() + 1, last=minuend.get_last_version())
+            )
+        return result
+
+    @staticmethod
     def merge(versions_ranges):
         first = None
         last = None
