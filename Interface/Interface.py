@@ -23,32 +23,41 @@ class Interface(object):
         self.roottk.minsize(256, 128)
 
         self.frameInfo = Frame()
+        self.frameTBox = Frame()
         self.frameCommandLine = Frame()
 
-        self.txtfr1 = Text(self.frameCommandLine, wrap='word')
-        self.txtfr1.grid(row=1, column=0, sticky='nsew')
+        self.txtfr1 = Text(self.frameTBox, wrap='word')
+        self.txtfr1.grid(row=0, column=0, sticky='nsew')
         self.txtfr1.insert('end', 'Welcome!\n')
         self.txtfr1['state'] = 'disabled'
 
-        self.scrollb = Scrollbar(self.frameCommandLine, command=self.txtfr1.yview)
+        self.scrollb = Scrollbar(self.frameTBox, command=self.txtfr1.yview)
         self.txtfr1['yscrollcommand'] = self.scrollb.set
-        self.scrollb.grid(row=1, column=1, sticky='nse')
+        self.scrollb.grid(row=0, column=1, sticky='nse')
+
+        self.frameTBox.rowconfigure(0, weight=1)
+        self.frameTBox.columnconfigure(0, weight=1)
 
         self.txtfr2 = Text(self.frameCommandLine, height=1)
         self.txtfr2.insert('end', "\n")
-        self.txtfr2.grid(row=2, column=0, columnspan=2, sticky='sew')
+        self.txtfr2.grid(row=0, column=0, sticky='sew')
         self.txtfr2.bind('<Return>', self.input_command)
         self.txtfr2.bind('<Up>', self.input_up_command)
         self.txtfr2.bind('<Down>', self.input_down_command)
 
-        self.frameCommandLine.rowconfigure(1, weight=1)
+        self.b_input = Button(self.frameCommandLine, text='OK', width=20, command=self.input_command)
+        self.b_input.grid(row=0, column=1, sticky='sew')
+
+        self.frameCommandLine.rowconfigure(0, weight=1)
         self.frameCommandLine.columnconfigure(0, weight=1)
 
         self.frameInfo.grid(row=0, column=0, sticky='nswe')
-        self.frameCommandLine.grid(row=1, column=0, sticky='nsew')
+        self.frameTBox.grid(row=1, column=0, sticky='nsew')
+        self.frameCommandLine.grid(row=2, column=0, sticky='nsew')
 
         self.roottk.columnconfigure(0, weight=1)
         self.roottk.rowconfigure(1, weight=1)
+        #self.roottk.rowconfigure(2, weight=0)
 
         i = -1
         for prefix in self.__output_callbacks.keys():
@@ -60,7 +69,7 @@ class Interface(object):
         self.txtfr1.after_idle(self.asking_for_information)
        # self.roottk.after(100, self.roottk.mainloop())
 
-    def input_command(self, event):
+    def input_command(self, *event):
         """Обработчик введённых команд"""
         s = self.txtfr2.get('1.0', 'end')
         self.txtfr2.delete('1.0', 'end')
@@ -83,7 +92,7 @@ class Interface(object):
             self.txtfr1.yview_moveto(1.0)
 
         self.txtfr1['state'] = 'disabled'
-        self.current_command_number += 1
+        self.current_command_number = len(self.previous_commands)
 
     def input_up_command(self, event):
         if self.current_command_number:
