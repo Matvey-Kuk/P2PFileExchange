@@ -3,5 +3,5 @@ notifications:
     - motakuk@gmail.com
 language: python
 python:
-  - "3.4"
+  - "3.3"
 script:  python3 -m unittest discover --start-directory=Tests --pattern=*.py
