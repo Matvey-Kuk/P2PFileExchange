@@ -25,7 +25,6 @@ class TestSynchronizableDatabase(unittest.TestCase):
         )
 
         #Теперь в базе "a" пополнение и "b" хочет от нее ограниченный диапазон
-
         database_a.insert_alteration(Alteration({'a': 2}, VersionsRange(version=6)))
 
         database_b.notify_condition(database_a.get_condition(VersionsRange(first=0, last=None)))
@@ -33,4 +32,14 @@ class TestSynchronizableDatabase(unittest.TestCase):
         self.assertEqual(
             database_b.get_versions_ranges_required_from_another_database(database_a.get_id()),
             [VersionsRange(first=0, last=3), VersionsRange(first=4, last=6)]
+        )
+
+        #Уведомим "b" о хешах в новых диапазонах:
+        database_b.notify_condition(database_a.get_condition(VersionsRange(first=0, last=3)))
+        database_b.notify_condition(database_a.get_condition(VersionsRange(first=4, last=6)))
+
+        #Проверим, что нужно базе опять:
+        self.assertEqual(
+            database_b.get_versions_ranges_required_from_another_database(database_a.get_id()),
+            [VersionsRange(first=4, last=5), VersionsRange(version=6)]
         )
