@@ -34,10 +34,10 @@ class VersionsRange(object):
         if self.__last_version is None:
             self.__last_version = int(concrete_last_version)
 
-    def get_first_version(self):
+    def get_first(self):
         return self.__first_version
 
-    def get_last_version(self):
+    def get_last(self):
         return self.__last_version
 
     def includes(self, versions_range):
@@ -45,17 +45,17 @@ class VersionsRange(object):
         Проверяет, входит ли указанный диапазон в рамки текущего.
         """
         if self.__last_version is None:
-            return self.__first_version <= versions_range.get_first_version()
+            return self.__first_version <= versions_range.get_first()
         else:
-            return self.__last_version >= versions_range.get_last_version() and \
-                self.__first_version <= versions_range.get_first_version()
+            return self.__last_version >= versions_range.get_last() and \
+                self.__first_version <= versions_range.get_first()
 
     def __eq__(self, other):
         """
         Перегрузим оператор эквивалентности
         """
         if type(other) is VersionsRange:
-            return self.__first_version == other.get_first_version() and self.__last_version == other.get_last_version()
+            return self.__first_version == other.get_first() and self.__last_version == other.get_last()
         else:
             return False
 
@@ -66,13 +66,13 @@ class VersionsRange(object):
         if self.__last_version is None:
             return False
         else:
-            return self.get_last_version() < other.get_first_version()
+            return self.get_last() < other.get_first()
 
     def __gt__(self, other):
         """
         self > other оператор
         """
-        return other.get_last_version() < self.get_first_version()
+        return other.get_last() < self.get_first()
 
     def __repr__(self):
         return 'First: ' + str(self.__first_version) + ' Last: ' + str(self.__last_version)
@@ -92,13 +92,13 @@ class VersionsRange(object):
         Вычитание некого диапазона из текущего
         """
         result = []
-        if not minuend.get_first_version() >= subtrahend.get_first_version():
+        if not minuend.get_first() >= subtrahend.get_first():
             result.append(
-                VersionsRange(first=minuend.get_first_version(), last=subtrahend.get_first_version() - 1)
+                VersionsRange(first=minuend.get_first(), last=subtrahend.get_first() - 1)
             )
-        if not minuend.get_last_version() <= subtrahend.get_last_version():
+        if not minuend.get_last() <= subtrahend.get_last():
             result.append(
-                VersionsRange(first=subtrahend.get_last_version() + 1, last=minuend.get_last_version())
+                VersionsRange(first=subtrahend.get_last() + 1, last=minuend.get_last())
             )
         return result
 
@@ -109,12 +109,12 @@ class VersionsRange(object):
         last_infinity = False
 
         for version_range in versions_ranges:
-            if (first is None) or (first > version_range.get_first_version()):
-                first = version_range.get_first_version()
-            if version_range.get_last_version() is None:
+            if (first is None) or (first > version_range.get_first()):
+                first = version_range.get_first()
+            if version_range.get_last() is None:
                 last_infinity = True
                 last = None
-            if (last is None or last < version_range.get_last_version()) and not last_infinity:
-                last = version_range.get_last_version()
+            if (last is None or last < version_range.get_last()) and not last_infinity:
+                last = version_range.get_last()
 
         return VersionsRange(first=first, last=last)

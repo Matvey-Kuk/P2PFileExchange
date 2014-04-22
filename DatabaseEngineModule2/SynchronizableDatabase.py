@@ -39,12 +39,12 @@ class SynchronizableDatabase(Database):
         else:
             detected_foreign_database.set_versions_range_with_detected_hash_difference(versions_range_from_condition)
 
-    def get_versions_range_required_from_another_database(self, database_id):
+    def get_versions_ranges_required_from_another_database(self, database_id):
         """
         Получить, какие состояния требуется узнать у другой базы.
         """
         foreign_database = self.__get_foreign_database(database_id)
-        return foreign_database.get_range_with_detected_hash_differences()
+        return foreign_database.get_ranges_level_for_binary_search_in_foreign_database()
 
     def notify_about_absolete_data(self, version_first, version_last, database_id_with_newer_data):
         """

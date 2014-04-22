@@ -24,9 +24,9 @@ class Database(object):
         last_version = None
         for alteration in self.__alterations:
             if last_version is None:
-                last_version = alteration.get_versions_range().get_last_version()
-            if last_version < alteration.get_versions_range().get_last_version():
-                last_version = alteration.get_versions_range().get_last_version()
+                last_version = alteration.get_versions_range().get_last()
+            if last_version < alteration.get_versions_range().get_last():
+                last_version = alteration.get_versions_range().get_last()
         return last_version
 
     def get_alterations(self, versions_range):
