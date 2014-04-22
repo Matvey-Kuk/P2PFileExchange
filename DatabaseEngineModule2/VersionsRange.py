@@ -87,6 +87,22 @@ class VersionsRange(object):
         return self.__last_version - self.__first_version + 1
 
     @staticmethod
+    def divide_range(versions_range):
+        """
+        Разделить диапазон на 2.
+        """
+        return [
+            VersionsRange(
+                first=versions_range.get_first(),
+                last=versions_range.get_first() + round(versions_range.get_size() / 2) - 1
+            ),
+            VersionsRange(
+                first=versions_range.get_first() + round(versions_range.get_size() / 2),
+                last=versions_range.get_last()
+            )
+        ]
+
+    @staticmethod
     def subtraction(minuend, subtrahend):
         """
         Вычитание некого диапазона из текущего

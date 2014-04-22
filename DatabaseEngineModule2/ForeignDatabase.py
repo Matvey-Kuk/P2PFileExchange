@@ -46,16 +46,8 @@ class ForeignDatabase(object):
                     )
                 ]
             else:
-                self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] = [
-                    VersionsRange(
-                        first=versions_range.get_first(),
-                        last=versions_range.get_first() + round(versions_range.get_size() / 2) - 1
-                    ),
-                    VersionsRange(
-                        first=versions_range.get_first() + round(versions_range.get_size() / 2),
-                        last=versions_range.get_last()
-                    )
-                ]
+                self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] = \
+                    VersionsRange.divide_range(versions_range)
         else:
             self.__remove_versions_range_from_search_level(versions_range, self.__current_search_level)
 
@@ -64,16 +56,8 @@ class ForeignDatabase(object):
                 self.__detected_ranges_with_different_alterations.append(versions_range)
             else:
                 #Бьем его и добавляем на следующий
-                self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] = [
-                    VersionsRange(
-                        first=versions_range.get_first(),
-                        last=versions_range.get_first + round(versions_range.get_size() / 2) - 1
-                    ),
-                    VersionsRange(
-                        first=versions_range.get_first + round(versions_range.get_size() / 2),
-                        last=versions_range.get_last()
-                    )
-                ]
+                self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] += \
+                    VersionsRange.divide_range(versions_range)
 
             #Проверяем переход на следующий уровень
             if len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
