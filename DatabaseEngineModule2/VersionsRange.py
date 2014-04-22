@@ -30,6 +30,10 @@ class VersionsRange(object):
         else:
             return self.__last_version >= version >= self.__first_version
 
+    def concretize_infinity(self, concrete_last_version):
+        if self.__last_version is None:
+            self.__last_version = int(concrete_last_version)
+
     def get_first_version(self):
         return self.__first_version
 
@@ -50,7 +54,10 @@ class VersionsRange(object):
         """
         Перегрузим оператор эквивалентности
         """
-        return self.__first_version == other.get_first_version() and self.__last_version == other.get_last_version()
+        if type(other) is VersionsRange:
+            return self.__first_version == other.get_first_version() and self.__last_version == other.get_last_version()
+        else:
+            return False
 
     def __lt__(self, other):
         """
@@ -75,6 +82,9 @@ class VersionsRange(object):
             'first': self.__first_version,
             'last': self.__last_version
         }
+
+    def get_size(self):
+        return self.__last_version - self.__first_version + 1
 
     @staticmethod
     def subtraction(minuend, subtrahend):

@@ -21,6 +21,7 @@ class SynchronizableDatabase(Database):
         """
         Получить состояние базы в указанном диапазоне версий (хеши).
         """
+        versions_range.concretize_infinity(self.get_last_version())
         return {
             'hash': self.get_hash(versions_range),
             'id': self.__id,
@@ -31,13 +32,7 @@ class SynchronizableDatabase(Database):
         """
         Сообщить базе о внешней базе и ее состоянии в указанном диапазоне.
         """
-        detected_foreign_database = None
-        for foreign_database in self.__foreign_databases:
-            if foreign_database.get_id() == condition['id']:
-                detected_foreign_database = foreign_database
-        if detected_foreign_database is None:
-            detected_foreign_database = ForeignDatabase(condition['id'])
-
+        detected_foreign_database = self.__get_foreign_database(condition['id'])
         versions_range_from_condition = VersionsRange(dump=condition['versions_range'])
         if self.get_hash(versions_range_from_condition) == condition['hash']:
             detected_foreign_database.set_versions_range_with_detected_hash_equivalence(versions_range_from_condition)
@@ -48,7 +43,8 @@ class SynchronizableDatabase(Database):
         """
         Получить, какие состояния требуется узнать у другой базы.
         """
-        raise Exception('Not written yet.')
+        foreign_database = self.__get_foreign_database(database_id)
+        return foreign_database.get_range_with_detected_hash_differences()
 
     def notify_about_absolete_data(self, version_first, version_last, database_id_with_newer_data):
         """
@@ -56,3 +52,19 @@ class SynchronizableDatabase(Database):
         а так же указать, в какой базе доступна более новая информация.
         """
         raise Exception('Not written yet.')
+
+    def get_id(self):
+        return self.__id
+
+    def __get_foreign_database(self, database_id):
+        detected_foreign_database = None
+
+        for foreign_database in self.__foreign_databases:
+            if foreign_database.get_id() == database_id:
+                detected_foreign_database = foreign_database
+
+        if detected_foreign_database is None:
+            detected_foreign_database = ForeignDatabase(database_id)
+
+        self.__foreign_databases.append(detected_foreign_database)
+        return detected_foreign_database

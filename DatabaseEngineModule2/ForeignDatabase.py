@@ -13,19 +13,26 @@ class ForeignDatabase(object):
         self.__latest_version = None
 
         self.__versions_ranges_with_detected_hash_differences = []
+        self.__versions_ranges_with_detected_different_alterations = []
 
     def get_id(self):
         return self.__id
 
     def set_versions_range_with_detected_hash_difference(self, versions_range):
-        self.__versions_ranges_with_detected_hash_differences.append(versions_range)
+        if versions_range in self.__versions_ranges_with_detected_hash_differences:
+            self.__versions_ranges_with_detected_different_alterations.append(versions_range)
+        else:
+            self.__versions_ranges_with_detected_hash_differences.append(versions_range)
 
-    def set_versions_range_with_detected_hash_equivalence(self, notifyed_versions_range):
+    def set_versions_range_with_detected_hash_equivalence(self, versions_range):
         for versions_range in self.__versions_ranges_with_detected_hash_differences:
-            versions_range = VersionsRange.subtraction(versions_range, notifyed_versions_range)
+            versions_range = VersionsRange.subtraction(versions_range, versions_range)
 
     def get_range_with_detected_hash_differences(self):
-        raise Exception('Not written yet.')
+        if len(self.__versions_ranges_with_detected_hash_differences) > 0:
+            return self.__versions_ranges_with_detected_hash_differences[0]
+        else:
+            return None
 
     def set_latest_version(self, version):
         raise Exception('Not written yet.')
