@@ -18,7 +18,7 @@ class ForeignDatabase(object):
         return self.__id
 
     def set_versions_range_with_detected_hash_difference(self, versions_range):
-        raise Exception('Not written yet.')
+        self.__versions_ranges_with_detected_hash_differences.append(versions_range)
 
     def set_versions_range_with_detected_hash_equivalence(self, notifyed_versions_range):
         for versions_range in self.__versions_ranges_with_detected_hash_differences:
