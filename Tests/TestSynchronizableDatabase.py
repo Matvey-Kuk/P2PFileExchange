@@ -66,6 +66,38 @@ class TestSynchronizableDatabase(unittest.TestCase):
             [VersionsRange(version=2)]
         )
 
+    def test_alterations_sync(self):
+        database_a = SynchronizableDatabase()
+        database_a.insert_alteration(Alteration({'a': 1}, VersionsRange(version=1)))
+        database_a.insert_alteration(Alteration({'a': 2}, VersionsRange(version=2)))
+        database_a.insert_alteration(Alteration({'c': 1}, VersionsRange(version=2)))
+        database_a.insert_alteration(Alteration({'a': 3}, VersionsRange(version=3)))
+
+        database_b = SynchronizableDatabase()
+        database_b.insert_alteration(Alteration({'a': 1}, VersionsRange(version=1)))
+        database_b.insert_alteration(Alteration({'a': 2}, VersionsRange(version=2)))
+        database_b.insert_alteration(Alteration({'a': 3}, VersionsRange(version=3)))
+
+        self.define_different_alterations(database_a, database_b, 40)
+
+        vrs_for_b = database_b.get_versions_ranges_for_required_from_foreign_database_alterations(database_a.get_id())
+        alterations_from_a = []
+        for vr_for_b in vrs_for_b:
+            alterations_from_a += database_a.get_alterations(vr_for_b)
+        for alteration_from_a in alterations_from_a:
+            if not database_b.is_alteration_known(alteration_from_a):
+                database_b.insert_alteration(alteration_from_a)
+
+        self.assertEqual(
+            database_b.get_alterations(VersionsRange(first=0, last=None)),
+            [
+                Alteration({'a': 1}, VersionsRange(version=1)),
+                Alteration({'a': 2}, VersionsRange(version=2)),
+                Alteration({'a': 3}, VersionsRange(version=3)),
+                Alteration({'c': 1}, VersionsRange(version=2))
+            ]
+        )
+
     def sync_databases(self, database_a, database_b):
         required_versions_ranges = database_b.get_versions_ranges_required_from_another_database(database_a.get_id())
         for required_versions_range in required_versions_ranges:

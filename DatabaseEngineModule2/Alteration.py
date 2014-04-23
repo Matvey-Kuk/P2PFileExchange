@@ -60,3 +60,6 @@ class Alteration(object):
 
     def __eq__(self, other):
         return self.get_changes() == other.get_changes() and self.get_versions_range() == other.get_versions_range()
+
+    def __repr__(self):
+        return "Changes: " + repr(self.__changes) + ' Versions range: ' + repr(self.__versions_range)

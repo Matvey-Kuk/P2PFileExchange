@@ -97,3 +97,11 @@ class ForeignDatabase(object):
 
     def set_latest_version(self, version):
         raise Exception('Not written yet.')
+
+    def insert_new_versions_range_with_different_alterations(self, versions_range):
+        if not versions_range in self.__detected_ranges_with_different_alterations:
+            self.__detected_ranges_with_different_alterations.append(versions_range)
+
+    def notify_versions_range_with_equivalent_alterations(self, versions_range):
+        if versions_range in self.__detected_ranges_with_different_alterations:
+            self.__detected_ranges_with_different_alterations.remove(versions_range)

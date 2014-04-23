@@ -56,12 +56,13 @@ class SynchronizableDatabase(Database):
         foreign_database = self.__get_foreign_database(database_id)
         return foreign_database.get_ranges_with_needed_alterations_in_foreign_database()
 
-    def notify_about_absolete_data(self, version_first, version_last, database_id_with_newer_data):
+    def notify_about_absolete_data(self, versions_range, database_id_with_newer_data):
         """
         Уведомить базу о том, что у нее содержится устарелая информация в диапазоне версий,
         а так же указать, в какой базе доступна более новая информация.
         """
-        raise Exception('Not written yet.')
+        foreign_database = self.__get_foreign_database(database_id_with_newer_data)
+        foreign_database.insert_new_versions_range_with_different_alterations(versions_range)
 
     def get_id(self):
         return self.__id
