@@ -57,3 +57,6 @@ class Alteration(object):
             result_changes[key] = result_changes_with_versions_and_times[key]['value']
 
         return Alteration(result_changes,VersionsRange.merge(versions_ranges))
+
+    def __eq__(self, other):
+        return self.get_changes() == other.get_changes() and self.get_versions_range() == other.get_versions_range()

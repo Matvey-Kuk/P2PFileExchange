@@ -78,3 +78,10 @@ class SynchronizableDatabase(Database):
 
         self.__foreign_databases.append(detected_foreign_database)
         return detected_foreign_database
+
+    def is_alteration_known(self, alteration):
+        known = False
+        for self_alteration in self.get_alterations(VersionsRange(first=0, last=None)):
+            if self_alteration == alteration:
+                known = True
+        return known

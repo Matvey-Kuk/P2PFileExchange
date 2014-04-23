@@ -75,3 +75,10 @@ class TestSynchronizableDatabase(unittest.TestCase):
         for i in range(0, iterations):
             self.sync_databases(database_a, database_b)
             self.sync_databases(database_b, database_a)
+
+    def test_is_alteration_know(self):
+        database = SynchronizableDatabase()
+        database.insert_alteration(Alteration({'a': 1}, VersionsRange(version=1)))
+
+        self.assertFalse(database.is_alteration_known(Alteration({'a': 2}, VersionsRange(version=1))))
+        self.assertTrue(database.is_alteration_known(Alteration({'a': 1}, VersionsRange(version=1))))
