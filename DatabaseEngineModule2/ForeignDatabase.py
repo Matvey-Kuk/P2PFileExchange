@@ -53,7 +53,8 @@ class ForeignDatabase(object):
 
             #Проверяем, не является ли диапазон неразбиваемым:
             if versions_range.get_size() == 1:
-                self.__detected_ranges_with_different_alterations.append(versions_range)
+                if not versions_range in self.__detected_ranges_with_different_alterations:
+                    self.__detected_ranges_with_different_alterations.append(versions_range)
             else:
                 #Бьем его и добавляем на следующий
                 self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] += \
@@ -90,6 +91,9 @@ class ForeignDatabase(object):
             return [VersionsRange(first=0, last=None)]
         else:
             return self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]
+
+    def get_ranges_with_needed_alterations_in_foreign_database(self):
+        return self.__detected_ranges_with_different_alterations
 
     def set_latest_version(self, version):
         raise Exception('Not written yet.')

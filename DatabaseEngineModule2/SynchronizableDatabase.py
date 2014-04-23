@@ -21,7 +21,10 @@ class SynchronizableDatabase(Database):
         """
         Получить состояние базы в указанном диапазоне версий (хеши).
         """
-        versions_range.concretize_infinity(self.get_last_version())
+        self_last_version = self.get_last_version()
+        if self_last_version is None:
+            self_last_version = 0
+        versions_range.concretize_infinity(self_last_version)
         return {
             'hash': self.get_hash(versions_range),
             'id': self.__id,
@@ -45,6 +48,13 @@ class SynchronizableDatabase(Database):
         """
         foreign_database = self.__get_foreign_database(database_id)
         return foreign_database.get_ranges_level_for_binary_search_in_foreign_database()
+
+    def get_versions_ranges_for_required_from_foreign_database_alterations(self, database_id):
+        """
+        Получить диапазоны необходимых "Шариков"
+        """
+        foreign_database = self.__get_foreign_database(database_id)
+        return foreign_database.get_ranges_with_needed_alterations_in_foreign_database()
 
     def notify_about_absolete_data(self, version_first, version_last, database_id_with_newer_data):
         """
