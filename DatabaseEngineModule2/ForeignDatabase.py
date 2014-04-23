@@ -67,7 +67,9 @@ class ForeignDatabase(object):
                 self.__current_search_level = 0
 
     def set_versions_range_with_detected_hash_equivalence(self, versions_range):
-        pass
+        for search_level in self.__versions_ranges_with_detected_hash_differences:
+            if versions_range in self.__versions_ranges_with_detected_hash_differences[search_level]:
+                self.__versions_ranges_with_detected_hash_differences[search_level].remove(versions_range)
 
     def __remove_versions_range_from_search_level(self, versions_range, search_level):
         new_versions_ranges_in_current_level = []
