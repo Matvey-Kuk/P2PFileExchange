@@ -1,7 +1,7 @@
 import unittest
 
-from DatabaseEngineModule2.Alteration import *
-from DatabaseEngineModule2.VersionsRange import *
+from DatabaseEngineModule.Alteration import *
+from DatabaseEngineModule.VersionsRange import *
 
 
 class TestAlteration(unittest.TestCase):

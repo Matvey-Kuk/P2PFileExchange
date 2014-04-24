@@ -1,4 +1,4 @@
-from DatabaseEngineModule2.VersionsRange import *
+from DatabaseEngineModule.VersionsRange import *
 
 
 class ForeignDatabase(object):

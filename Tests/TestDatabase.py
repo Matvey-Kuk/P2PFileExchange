@@ -1,7 +1,7 @@
 import unittest
 
-from DatabaseEngineModule2.Database import *
-from DatabaseEngineModule2.Alteration import *
+from DatabaseEngineModule.Database import *
+from DatabaseEngineModule.Alteration import *
 
 
 class TestDatabase(unittest.TestCase):

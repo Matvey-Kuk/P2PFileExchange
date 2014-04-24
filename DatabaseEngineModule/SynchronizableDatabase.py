@@ -1,8 +1,8 @@
 import random
 
-from DatabaseEngineModule2.Database import *
-from DatabaseEngineModule2.VersionsRange import *
-from DatabaseEngineModule2.ForeignDatabase import *
+from DatabaseEngineModule.Database import *
+from DatabaseEngineModule.VersionsRange import *
+from DatabaseEngineModule.ForeignDatabase import *
 
 
 class SynchronizableDatabase(Database):

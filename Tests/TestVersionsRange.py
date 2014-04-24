@@ -1,6 +1,6 @@
 import unittest
 
-from DatabaseEngineModule2.VersionsRange import *
+from DatabaseEngineModule.VersionsRange import *
 
 
 class TestVersionsRange(unittest.TestCase):
