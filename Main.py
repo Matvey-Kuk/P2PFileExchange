@@ -25,6 +25,9 @@ class Main(object):
                 self.command_line_arguments.nick_name
             )
 
+        if self.command_line_arguments.UsersDatabaseModule:
+            self.database_engine = DatabaseEngine(self.networking, self.requests_processor)
+
         if self.command_line_arguments.P2PModule:
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
             self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
@@ -43,6 +46,12 @@ class Main(object):
         parser.add_argument(
             '-AuthDatabaseModule',
             dest='AuthDatabaseModule',
+            action='store_true',
+            help='Enables this module.'
+        )
+        parser.add_argument(
+            '-UsersDatabaseModule',
+            dest='UsersDatabaseModule',
             action='store_true',
             help='Enables this module.'
         )

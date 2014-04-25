@@ -5,7 +5,6 @@ import random
 
 
 from NetworkingModule.NetworkingUsingModule import *
-from AuthorizationModule.UsersTable import *
 
 
 class Authorization(NetworkingUsingModule):
@@ -14,10 +13,10 @@ class Authorization(NetworkingUsingModule):
     def __init__(self, networking, request_processor, database_engine, nick_name):
         super().__init__(networking, request_processor, 'auth_database')
 
-        self.users_database = UsersTable()
+        #self.users_database = UsersTable()
 
         self.database_engine = database_engine
-        self.database_engine.add_table(self.users_database)
+        #self.database_engine.add_table(self.users_database)
 
         self.register_callbacks_for_requests()
         self.random_msg = []
@@ -43,9 +42,9 @@ class Authorization(NetworkingUsingModule):
 
         if random.random() < 0.1:
             print('pushed new record to database')
-            self.users_database.new_record(str(random.random()), random.random())
+            #self.users_database.new_record(str(random.random()), random.random())
 
-        print(self.users_database.get_serialized())
+        #print(self.users_database.get_serialized())
 
         # for peer in self.networking.get_peers():
         #     if self.get_peer_metadata(peer, 'welcome') is None:

@@ -1,7 +1,5 @@
 import unittest
-from unittest.mock import Mock
 
-from DatabaseEngineModule.Table import *
 from DatabaseEngineModule.Database import *
 
 

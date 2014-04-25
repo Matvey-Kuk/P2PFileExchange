@@ -27,6 +27,8 @@ class Database(object):
                 last_version = alteration.get_versions_range().get_last()
             if last_version < alteration.get_versions_range().get_last():
                 last_version = alteration.get_versions_range().get_last()
+        if last_version is None:
+            last_version = 0
         return last_version
 
     def get_alterations(self, versions_range):
@@ -46,3 +48,10 @@ class Database(object):
 
     def get_hash(self, versions_range):
         return hashlib.sha224(str(self.restore_a_table(versions_range)).encode('utf-8')).hexdigest()
+
+    def __repr__(self):
+        string = ''
+        sorted_alterations = sorted(self.__alterations, key=lambda alteration: alteration.get_versions_range())
+        for alteration in sorted_alterations:
+            string += '\n' + repr(alteration)
+        return string
