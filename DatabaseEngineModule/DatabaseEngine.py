@@ -1,9 +1,10 @@
 from threading import Timer
 
 from DatabaseEngineModule.SynchronizableDatabase import *
+from NetworkingModule.NetworkingUsingModule import *
 
 
-class DatabaseEngine(SynchronizableDatabase):
+class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     """
     База данных, которая умеет работать с сетью.
     """
@@ -11,7 +12,8 @@ class DatabaseEngine(SynchronizableDatabase):
     def __init__(self, networking, requests_processor):
         self.__networking = networking
         self.__requests_processor = requests_processor
-        super().__init__()
+        SynchronizableDatabase.__init__(self)
+        NetworkingUsingModule.__init__(self, networking, requests_processor, 'database_engine')
         self.process()
         self.__register_callbacks()
 
@@ -31,4 +33,6 @@ class DatabaseEngine(SynchronizableDatabase):
         timer.start()
 
     def __register_callbacks(self):
+        # self.register_request_answer_generator('server_port', self.server_port_request_answer)
+        # self.register_answer_received_callback('server_port', self.server_port_answer_received)
         pass
