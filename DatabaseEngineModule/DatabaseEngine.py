@@ -32,6 +32,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         print('Database:' + repr(self))
 
         self.__request_databases_conditions()
+        self.__request_needed_alterations()
 
         timer = Timer(update_timeout, self.__process)
         timer.start()
@@ -40,6 +41,9 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.register_request_answer_generator('database_condition', self.__database_condition_answer_generator)
         self.register_answer_received_callback('database_condition', self.__database_condition_answer_received)
 
+        self.register_request_answer_generator('alterations', self.__get_alterations_answer_generator)
+        self.register_answer_received_callback('alterations', self.__get_alterations_answer_received)
+
     def __database_condition_answer_generator(self, dumped_versions_ranges):
         versions_ranges = []
         for dumped_versions_range in dumped_versions_ranges:
@@ -47,7 +51,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         result_conditions = []
         for versions_range in versions_ranges:
             result_conditions.append(self.get_condition(versions_range))
-        print('answer sent ' + repr(result_conditions))
         return result_conditions
 
     def __database_condition_answer_received(self, request):
@@ -65,3 +68,27 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             for versions_range in versions_ranges:
                 dumped_versions_ranges.append(versions_range.get_dump())
             self.send_request(peer, 'database_condition', dumped_versions_ranges)
+
+    def __request_needed_alterations(self):
+        for peer in self.__networking.get_peers():
+            database_id = self.get_peer_metadata(peer, 'database_id')
+            if not database_id is None:
+                versions_ranges = self.get_versions_ranges_for_required_from_foreign_database_alterations(database_id)
+                dumped_versions_ranges = []
+                for versions_range in versions_ranges:
+                    dumped_versions_ranges.append(versions_range.get_dump())
+                print('sending req ' + repr(dumped_versions_ranges))
+                self.send_request(peer, 'alterations', dumped_versions_ranges)
+
+    def __get_alterations_answer_generator(self, dumped_versions_ranges):
+        print('alterations request_received ' + repr(dumped_versions_ranges))
+        alterations = []
+        for dumped_versions_range in dumped_versions_ranges:
+            alterations += self.get_alterations(VersionsRange(dump=dumped_versions_range))
+        dumped_alterations = []
+        for alteration in alterations:
+            dumped_alterations.append(alteration.get_dump())
+        return dumped_alterations
+
+    def __get_alterations_answer_received(self, request):
+        print('alterations_received: ' + repr(request.answer_data))

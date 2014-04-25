@@ -63,3 +63,10 @@ class Alteration(object):
 
     def __repr__(self):
         return "Changes: " + repr(self.__changes) + ' Versions range: ' + repr(self.__versions_range)
+
+    def get_dump(self):
+        return {
+            'changes': self.__changes,
+            'versions_range': self.__versions_range.get_dump(),
+            'creation_time': self.__creation_time
+        }
