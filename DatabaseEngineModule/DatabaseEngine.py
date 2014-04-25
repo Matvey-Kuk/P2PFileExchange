@@ -96,4 +96,8 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         for dumped_alteration in dumped_alterations:
             alterations.append(Alteration.serialize_from_dump(dumped_alteration))
         for alteration in alterations:
+            self.notify_versions_range_with_synchronised_alterations(
+                alteration.get_versions_range(),
+                self.get_peer_metadata(request.peer, 'database_id')
+            )
             self.insert_alteration(alteration)

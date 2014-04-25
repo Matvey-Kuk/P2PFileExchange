@@ -90,3 +90,6 @@ class SynchronizableDatabase(Database):
             if self_alteration == alteration:
                 known = True
         return known
+
+    def notify_versions_range_with_synchronised_alterations(self, versions_range, database_id):
+        self.__get_foreign_database(database_id).notify_versions_range_with_equivalent_alterations(versions_range)
