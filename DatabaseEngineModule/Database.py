@@ -1,4 +1,5 @@
 import hashlib
+import collections
 
 from DatabaseEngineModule.VersionsRange import *
 from DatabaseEngineModule.Alteration import *
@@ -47,7 +48,9 @@ class Database(object):
         return self.restore_a_table(versions_range)[key]
 
     def get_hash(self, versions_range):
-        return hashlib.sha224(str(self.restore_a_table(versions_range)).encode('utf-8')).hexdigest()
+        restored_table = self.restore_a_table(versions_range)
+        restored_table = collections.OrderedDict(sorted(restored_table.items()))
+        return hashlib.sha224(str(restored_table).encode('utf-8')).hexdigest()
 
     def __repr__(self):
         string = ''

@@ -22,14 +22,14 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     def __process(self):
         update_timeout = 2
 
-        self.insert_alteration(Alteration(
-            {
-                str(random.randint(0, 10)): str(random.randint(100, 999))
-            },
-            VersionsRange(version=self.get_last_version() + 1)
-        ))
-
-        print('Database:' + repr(self))
+        # self.insert_alteration(Alteration(
+        #     {
+        #         str(random.randint(0, 10)): str(random.randint(100, 999))
+        #     },
+        #     VersionsRange(version=self.get_last_version() + 1)
+        # ))
+        #
+        # print('Database:' + repr(self))
 
         self.__request_databases_conditions()
         self.__request_needed_alterations()
@@ -77,7 +77,13 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 dumped_versions_ranges = []
                 for versions_range in versions_ranges:
                     dumped_versions_ranges.append(versions_range.get_dump())
-                print('sending req ' + repr(dumped_versions_ranges))
+                # print_str = ''
+                # for dumped_versions_range in dumped_versions_ranges:
+                #     print_str += repr(dumped_versions_range)
+                #     print_str += repr(self.get_hash(VersionsRange(first=dumped_versions_range['first'], last=dumped_versions_range['last'])))
+                #     print_str += repr(Alteration.merge(self.get_alterations(VersionsRange(first=dumped_versions_range['first'], last=dumped_versions_range['last']))))
+                #     print_str += '\n'
+                # print('sending req \n' + print_str)
                 self.send_request(peer, 'alterations', dumped_versions_ranges)
 
     def __get_alterations_answer_generator(self, dumped_versions_ranges):

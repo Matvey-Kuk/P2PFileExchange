@@ -64,3 +64,28 @@ class TestDatabase(unittest.TestCase):
             database_a.get_hash(VersionsRange(first=0, last=database_a.get_last_version())),
             database_b.get_hash(VersionsRange(first=0, last=database_b.get_last_version())),
         )
+
+        database_a.insert_alteration(
+            Alteration(
+                {
+                    'a': '1',
+                    'b': '2',
+                    'c': '3'
+                },
+                VersionsRange(version=2)
+            )
+        )
+        database_b.insert_alteration(
+            Alteration(
+                {
+                    'b': '2',
+                    'a': '1',
+                    'c': '3'
+                },
+                VersionsRange(version=2)
+            )
+        )
+        self.assertEqual(
+            database_a.get_hash(VersionsRange(first=0, last=database_a.get_last_version())),
+            database_b.get_hash(VersionsRange(first=0, last=database_b.get_last_version())),
+        )
