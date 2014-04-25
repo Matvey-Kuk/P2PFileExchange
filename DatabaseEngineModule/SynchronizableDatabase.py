@@ -46,8 +46,12 @@ class SynchronizableDatabase(Database):
         """
         Получить, какие состояния требуется узнать у другой базы.
         """
-        foreign_database = self.__get_foreign_database(database_id)
-        return foreign_database.get_ranges_level_for_binary_search_in_foreign_database()
+        if database_id is None:
+            versions_ranges = [VersionsRange(first=0, last=None)]
+        else:
+            foreign_database = self.__get_foreign_database(database_id)
+            versions_ranges = foreign_database.get_ranges_level_for_binary_search_in_foreign_database()
+        return versions_ranges
 
     def get_versions_ranges_for_required_from_foreign_database_alterations(self, database_id):
         """

@@ -14,10 +14,12 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.__requests_processor = requests_processor
         SynchronizableDatabase.__init__(self)
         NetworkingUsingModule.__init__(self, networking, requests_processor, 'database_engine')
-        self.process()
+        self.__process()
         self.__register_callbacks()
 
-    def process(self):
+        self.__peers_to_databases_ids = {}
+
+    def __process(self):
         update_timeout = 5
 
         self.insert_alteration(Alteration(
@@ -29,10 +31,27 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
 
         print('Database:' + repr(self))
 
-        timer = Timer(update_timeout, self.process)
+        self.__request_databases_conditions()
+
+        timer = Timer(update_timeout, self.__process)
         timer.start()
 
     def __register_callbacks(self):
-        # self.register_request_answer_generator('server_port', self.server_port_request_answer)
-        # self.register_answer_received_callback('server_port', self.server_port_answer_received)
-        pass
+        self.register_request_answer_generator('database_condition', self.__database_condition_answer_generator)
+        self.register_answer_received_callback('database_condition', self.__database_condition_answer_received)
+
+    def __database_condition_answer_generator(self, question_data):
+        print('database_request_received' + repr(question_data))
+
+
+    def __database_condition_answer_received(self, request):
+        print('database_answer_received')
+
+    def __request_databases_conditions(self):
+        for peer in self.__networking.get_peers():
+            database_id = self.get_peer_metadata(peer, 'database_id')
+            versions_ranges = self.get_versions_ranges_required_from_another_database(database_id)
+            dumped_versions_ranges = []
+            for versions_range in versions_ranges:
+                dumped_versions_ranges.append(versions_range.get_dump())
+            self.send_request(peer, 'database_condition', dumped_versions_ranges)
