@@ -18,7 +18,6 @@ class Database(object):
             if alteration == new_alteration:
                 eq_alteration_detected = True
         if not eq_alteration_detected:
-            print('----' + repr(new_alteration))
             self.__alterations.append(new_alteration)
 
     def get_last_version(self):
