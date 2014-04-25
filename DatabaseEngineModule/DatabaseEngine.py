@@ -81,7 +81,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 self.send_request(peer, 'alterations', dumped_versions_ranges)
 
     def __get_alterations_answer_generator(self, dumped_versions_ranges):
-        print('alterations request_received ' + repr(dumped_versions_ranges))
         alterations = []
         for dumped_versions_range in dumped_versions_ranges:
             alterations += self.get_alterations(VersionsRange(dump=dumped_versions_range))
@@ -91,4 +90,10 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         return dumped_alterations
 
     def __get_alterations_answer_received(self, request):
-        print('alterations_received: ' + repr(request.answer_data))
+        print('Alterations received: ' + repr(request.answer_data))
+        dumped_alterations = request.answer_data
+        alterations = []
+        for dumped_alteration in dumped_alterations:
+            alterations.append(Alteration.serialize_from_dump(dumped_alteration))
+        for alteration in alterations:
+            self.insert_alteration(alteration)

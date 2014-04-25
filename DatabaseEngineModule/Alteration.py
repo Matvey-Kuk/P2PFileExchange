@@ -70,3 +70,11 @@ class Alteration(object):
             'versions_range': self.__versions_range.get_dump(),
             'creation_time': self.__creation_time
         }
+
+    @staticmethod
+    def serialize_from_dump(alteration_dump):
+        return Alteration(
+            alteration_dump['changes'],
+            VersionsRange(dump=alteration_dump['versions_range']),
+            creation_time=alteration_dump['creation_time']
+        )
