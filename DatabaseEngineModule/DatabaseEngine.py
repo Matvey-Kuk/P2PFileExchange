@@ -20,11 +20,11 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.__peers_to_databases_ids = {}
 
     def __process(self):
-        update_timeout = 5
+        update_timeout = 2
 
         self.insert_alteration(Alteration(
             {
-                random.randint(0, 10): random.randint(100, 999)
+                str(random.randint(0, 10)): str(random.randint(100, 999))
             },
             VersionsRange(version=self.get_last_version() + 1)
         ))

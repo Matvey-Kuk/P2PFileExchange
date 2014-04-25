@@ -56,13 +56,27 @@ class Alteration(object):
         for key in result_changes_with_versions_and_times:
             result_changes[key] = result_changes_with_versions_and_times[key]['value']
 
-        return Alteration(result_changes,VersionsRange.merge(versions_ranges))
+        return Alteration(result_changes, VersionsRange.merge(versions_ranges))
 
     def __eq__(self, other):
-        return self.get_changes() == other.get_changes() and self.get_versions_range() == other.get_versions_range()
+        self_changes = self.get_changes()
+        other_changes = other.get_changes()
+        changes_eq = True
+        for key_s in self_changes:
+            if not key_s in other_changes:
+                changes_eq = False
+            elif not self_changes[key_s] == other_changes[key_s]:
+                changes_eq = False
+        for key_o in other_changes:
+            if not key_o in self_changes:
+                changes_eq = False
+            elif not self_changes[key_o] == other_changes[key_o]:
+                changes_eq = False
+        return changes_eq and self.get_versions_range() == other.get_versions_range()
 
     def __repr__(self):
-        return "Changes: " + repr(self.__changes) + ' Versions range: ' + repr(self.__versions_range)
+        return "Changes: " + repr(self.__changes) + ' Versions range: ' + repr(self.__versions_range) + \
+               ' Creation time: ' + repr(self.__creation_time)
 
     def get_dump(self):
         return {
