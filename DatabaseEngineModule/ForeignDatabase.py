@@ -46,8 +46,7 @@ class ForeignDatabase(object):
                     )
                 ]
             else:
-                self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] = \
-                    VersionsRange.divide_range(versions_range)
+                self.__versions_ranges_with_detected_hash_differences[1] = VersionsRange.divide_range(versions_range)
         else:
             self.__remove_versions_range_from_search_level(versions_range, self.__current_search_level)
 
@@ -61,11 +60,20 @@ class ForeignDatabase(object):
                     VersionsRange.divide_range(versions_range)
 
             #Проверяем переход на следующий уровень
-            if len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
-                self.__current_search_level += 1
+            if self.__current_search_level in self.__versions_ranges_with_detected_hash_differences:
+                if len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
+                    self.__current_search_level += 1
 
-            if not self.__current_search_level in self.__versions_ranges_with_detected_hash_differences:
-                self.__current_search_level = 0
+            self.__check_search_cycle_ended()
+
+    def __check_search_cycle_ended(self):
+        end_detected = True
+        for key in self.__versions_ranges_with_detected_hash_differences:
+            if len(self.__versions_ranges_with_detected_hash_differences[key]) > 0:
+                end_detected = False
+        if end_detected:
+            self.__current_search_level = 0
+            self.__versions_ranges_with_detected_hash_differences = {}
 
     def set_versions_range_with_detected_hash_equivalence(self, versions_range):
         for search_level in self.__versions_ranges_with_detected_hash_differences:
@@ -83,13 +91,18 @@ class ForeignDatabase(object):
         self.__versions_ranges_with_detected_hash_differences[search_level] = \
             new_versions_ranges_in_current_level
 
+        self.__check_search_cycle_ended()
+
     def get_ranges_level_for_binary_search_in_foreign_database(self):
         """
         Получаем все диапазоны на текущем уровне поиска, в которых обнаружено несоответствие хешей.
         """
+        self.__check_search_cycle_ended()
         if self.__current_search_level == 0:
             return [VersionsRange(first=0, last=None)]
         else:
+            if len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
+                print('bug: ' + repr(id(self)) + repr(self.__versions_ranges_with_detected_hash_differences))
             return self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]
 
     def get_ranges_with_needed_alterations_in_foreign_database(self):

@@ -91,16 +91,20 @@ class VersionsRange(object):
         """
         Разделить диапазон на 2.
         """
-        return [
-            VersionsRange(
-                first=versions_range.get_first(),
-                last=versions_range.get_first() + round(versions_range.get_size() / 2) - 1
-            ),
-            VersionsRange(
-                first=versions_range.get_first() + round(versions_range.get_size() / 2),
-                last=versions_range.get_last()
-            )
-        ]
+        if versions_range.get_size() > 1:
+            result = [
+                VersionsRange(
+                    first=versions_range.get_first(),
+                    last=versions_range.get_first() + round(versions_range.get_size() / 2) - 1
+                ),
+                VersionsRange(
+                    first=versions_range.get_first() + round(versions_range.get_size() / 2),
+                    last=versions_range.get_last()
+                )
+            ]
+        else:
+            result = [versions_range]
+        return result
 
     @staticmethod
     def subtraction(minuend, subtrahend):

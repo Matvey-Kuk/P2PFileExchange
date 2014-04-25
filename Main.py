@@ -8,6 +8,7 @@ from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 from Interface.Interface import *
 from DatabaseEngineModule.DatabaseEngine import *
 
+
 class Main(object):
     """Это основной класс, через который запускается приложение."""
 
@@ -15,15 +16,6 @@ class Main(object):
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
         self.requests_processor = RequestsProcessor(self.networking)
-
-        if self.command_line_arguments.AuthDatabaseModule:
-            self.database_engine = DatabaseEngine(self.networking, self.requests_processor)
-            self.authorization = Authorization(
-                self.networking,
-                self.requests_processor,
-                self.database_engine,
-                self.command_line_arguments.nick_name
-            )
 
         if self.command_line_arguments.UsersDatabaseModule:
             self.database_engine = DatabaseEngine(self.networking, self.requests_processor)

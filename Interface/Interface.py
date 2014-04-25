@@ -76,7 +76,7 @@ class Interface(object):
 
         self.txtfr1['state'] = 'normal'
         s = s.strip()
-        self.txtfr1.insert('end',"\n" + s)
+        self.txtfr1.insert('end', "\n" + s)
         self.txtfr1.yview_moveto(1.0)
 
         self.previous_commands.append(s)
@@ -85,10 +85,10 @@ class Interface(object):
 
         try:
             str = Interface.__commands_processors_callbacks[input_words[0].lower()](input_words[1])
-            self.txtfr1.insert('end',"\n" + str)
+            self.txtfr1.insert('end', "\n" + str)
             self.txtfr1.yview_moveto(1.0)
         except:
-            self.txtfr1.insert('end',"\n" + "Undefined command (prefix)")
+            self.txtfr1.insert('end', "\n" + "Undefined command (prefix)")
             self.txtfr1.yview_moveto(1.0)
 
         self.txtfr1['state'] = 'disabled'

@@ -2,7 +2,7 @@ from threading import Timer
 
 from DatabaseEngineModule.SynchronizableDatabase import *
 from NetworkingModule.NetworkingUsingModule import *
-
+from Interface.Interface import *
 
 class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     """
@@ -16,6 +16,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         NetworkingUsingModule.__init__(self, networking, requests_processor, 'database_engine')
         self.__process()
         self.__register_callbacks()
+        self.__register_interface_callbacks()
 
         self.__peers_to_databases_ids = {}
 
@@ -45,6 +46,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.register_answer_received_callback('alterations', self.__get_alterations_answer_received)
 
     def __database_condition_answer_generator(self, dumped_versions_ranges):
+        print('request condition answer received ' + repr(dumped_versions_ranges))
         versions_ranges = []
         for dumped_versions_range in dumped_versions_ranges:
             versions_ranges.append(VersionsRange(dump=dumped_versions_range))
@@ -64,6 +66,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         for peer in self.__networking.get_peers():
             database_id = self.get_peer_metadata(peer, 'database_id')
             versions_ranges = self.get_versions_ranges_required_from_another_database(database_id)
+            print('req cond ' + str(database_id) + repr(peer) + repr(versions_ranges))
             dumped_versions_ranges = []
             for versions_range in versions_ranges:
                 dumped_versions_ranges.append(versions_range.get_dump())
@@ -84,6 +87,8 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 #     print_str += repr(Alteration.merge(self.get_alterations(VersionsRange(first=dumped_versions_range['first'], last=dumped_versions_range['last']))))
                 #     print_str += '\n'
                 # print('sending req \n' + print_str)
+                if len(versions_ranges) > 0:
+                    print('Alterations requested: ' + repr(dumped_versions_ranges))
                 self.send_request(peer, 'alterations', dumped_versions_ranges)
 
     def __get_alterations_answer_generator(self, dumped_versions_ranges):
@@ -96,9 +101,10 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         return dumped_alterations
 
     def __get_alterations_answer_received(self, request):
-        print('Alterations received: ' + repr(request.answer_data))
         dumped_alterations = request.answer_data
         alterations = []
+        if len(alterations) > 0:
+            print('received alterations' + repr(alterations))
         for dumped_alteration in dumped_alterations:
             alterations.append(Alteration.serialize_from_dump(dumped_alteration))
         for alteration in alterations:
@@ -107,3 +113,25 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 self.get_peer_metadata(request.peer, 'database_id')
             )
             self.insert_alteration(alteration)
+
+    def __send_data_to_interface(self):
+        s = "Current db version: " + str(self.get_last_version())
+        return s
+
+    def __process_interface_command(self, command):
+        command_words = command.split(' ')
+        if command_words[0] == 'show':
+            return repr(Alteration.merge(self.get_alterations(VersionsRange(first=0, last=None))).get_changes())
+        elif command_words[0] == 'add':
+            self.insert_alteration(
+                Alteration(
+                    {command_words[1]: command_words[2]},
+                    VersionsRange(version=self.get_last_version() + 1)
+                )
+            )
+            return 'Yahoo!'
+        return 'Undefined command'
+
+    def __register_interface_callbacks(self):
+        Interface.register_output_callback('db', self.__send_data_to_interface)
+        Interface.register_command_processor_callback('db', self.__process_interface_command)
