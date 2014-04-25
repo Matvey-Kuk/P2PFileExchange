@@ -6,4 +6,6 @@ install:
   - pip install pep8 --use-mirrors
 python:
   - "3.3"
-script:  python3 -m unittest discover --start-directory=Tests --pattern=*.py
+script:
+  - python3 -m unittest discover --start-directory=Tests --pattern=*.py
+  - pep8
