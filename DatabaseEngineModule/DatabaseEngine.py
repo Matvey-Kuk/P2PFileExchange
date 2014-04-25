@@ -40,12 +40,22 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.register_request_answer_generator('database_condition', self.__database_condition_answer_generator)
         self.register_answer_received_callback('database_condition', self.__database_condition_answer_received)
 
-    def __database_condition_answer_generator(self, question_data):
-        print('database_request_received' + repr(question_data))
-
+    def __database_condition_answer_generator(self, dumped_versions_ranges):
+        versions_ranges = []
+        for dumped_versions_range in dumped_versions_ranges:
+            versions_ranges.append(VersionsRange(dump=dumped_versions_range))
+        result_conditions = []
+        for versions_range in versions_ranges:
+            result_conditions.append(self.get_condition(versions_range))
+        print('answer sent ' + repr(result_conditions))
+        return result_conditions
 
     def __database_condition_answer_received(self, request):
-        print('database_answer_received')
+        conditions = request.answer_data
+        if self.get_peer_metadata(request.peer, 'database_id') is None:
+            self.set_peer_metadata(request.peer, 'database_id', conditions[0]['id'])
+        for condition in conditions:
+            self.notify_condition(condition)
 
     def __request_databases_conditions(self):
         for peer in self.__networking.get_peers():
