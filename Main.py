@@ -30,7 +30,6 @@ class Main(object):
         if self.command_line_arguments.Interface:
             self.interface = Interface()
             self.interface.roottk.mainloop()
-            exit(0)
 
 
     @staticmethod
