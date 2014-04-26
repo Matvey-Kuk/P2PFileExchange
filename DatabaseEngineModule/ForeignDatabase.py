@@ -30,8 +30,9 @@ class ForeignDatabase(object):
         return self.__id
 
     def set_versions_range_with_detected_hash_difference(self, versions_range):
+        print('dif: ' + repr(versions_range))
         #Если первая итерация поиска
-        if self.__current_search_level == 0:
+        if self.__current_search_level == 0 and len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
             self.__current_search_level = 1
             #Проверяем, нужно ли нам применить "оптимизационную границу"
             if versions_range.get_last() > self.__binary_search_deep_limit:
@@ -56,8 +57,12 @@ class ForeignDatabase(object):
                     self.__detected_ranges_with_different_alterations.append(versions_range)
             else:
                 #Бьем его и добавляем на следующий
-                self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] += \
-                    VersionsRange.divide_range(versions_range)
+                if self.__current_search_level in self.__versions_ranges_with_detected_hash_differences:
+                    self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] += \
+                        VersionsRange.divide_range(versions_range)
+                else:
+                    self.__versions_ranges_with_detected_hash_differences[self.__current_search_level] = \
+                        VersionsRange.divide_range(versions_range)
 
             #Проверяем переход на следующий уровень
             if self.__current_search_level in self.__versions_ranges_with_detected_hash_differences:
@@ -72,10 +77,12 @@ class ForeignDatabase(object):
             if len(self.__versions_ranges_with_detected_hash_differences[key]) > 0:
                 end_detected = False
         if end_detected:
+            print('ended')
             self.__current_search_level = 0
-            self.__versions_ranges_with_detected_hash_differences = {}
+            self.__versions_ranges_with_detected_hash_differences = {0: []}
 
     def set_versions_range_with_detected_hash_equivalence(self, versions_range):
+        print("eq: " + repr(versions_range))
         for search_level in self.__versions_ranges_with_detected_hash_differences:
             if versions_range in self.__versions_ranges_with_detected_hash_differences[search_level]:
                 self.__versions_ranges_with_detected_hash_differences[search_level].remove(versions_range)
@@ -101,8 +108,6 @@ class ForeignDatabase(object):
         if self.__current_search_level == 0:
             return [VersionsRange(first=0, last=None)]
         else:
-            if len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
-                print('bug: ' + repr(id(self)) + repr(self.__versions_ranges_with_detected_hash_differences))
             return self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]
 
     def get_ranges_with_needed_alterations_in_foreign_database(self):

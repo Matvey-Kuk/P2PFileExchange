@@ -66,7 +66,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         for peer in self.__networking.get_peers():
             database_id = self.get_peer_metadata(peer, 'database_id')
             versions_ranges = self.get_versions_ranges_required_from_another_database(database_id)
-            print('req cond ' + str(database_id) + repr(peer) + repr(versions_ranges))
             dumped_versions_ranges = []
             for versions_range in versions_ranges:
                 dumped_versions_ranges.append(versions_range.get_dump())
