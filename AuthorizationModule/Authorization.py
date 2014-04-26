@@ -6,6 +6,7 @@ import random
 
 from NetworkingModule.NetworkingUsingModule import *
 from AuthorizationModule.UsersTable import *
+from Interface.AllowingProcessing import *
 
 
 class Authorization(NetworkingUsingModule):
@@ -38,6 +39,9 @@ class Authorization(NetworkingUsingModule):
         self.process()
 
     def process(self):
+        if not AllowingProcessing.allow_processing:
+            return 0
+
         super().process()
         update_timeout = 2
 

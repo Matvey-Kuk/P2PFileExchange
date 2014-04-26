@@ -1,6 +1,7 @@
 from threading import Timer
 
 from NetworkingModule.ServerThread import *
+from Interface.AllowingProcessing import *
 
 
 class Networking(object):
@@ -87,6 +88,8 @@ class Networking(object):
         """
         Запускает все переодические операции для соединений
         """
+        if  not AllowingProcessing.allow_processing:
+            return 0
         update_timeout = 0.1
 
         self.process_peers()

@@ -7,11 +7,14 @@ from RequestsModule.RequestsProcessor import *
 from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 from Interface.Interface import *
 from DatabaseEngineModule.DatabaseEngine import *
+from Interface.AllowingProcessing import *
 
 class Main(object):
     """Это основной класс, через который запускается приложение."""
 
     def __init__(self):
+        AllowingProcessing().allow_processing = True
+
         self.command_line_arguments = self.parse_arguments()
         self.networking = self.start_networking()
         self.requests_processor = RequestsProcessor(self.networking)
@@ -32,6 +35,8 @@ class Main(object):
         if self.command_line_arguments.Interface:
             self.interface = Interface()
             self.interface.roottk.mainloop()
+            exit(0)
+
 
     @staticmethod
     def parse_arguments():

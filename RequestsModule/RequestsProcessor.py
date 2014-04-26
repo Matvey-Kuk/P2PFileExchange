@@ -3,6 +3,7 @@ from time import time
 import json
 
 from RequestsModule.Request import *
+from Interface.AllowingProcessing import *
 
 
 class RequestsProcessor(object):
@@ -63,6 +64,9 @@ class RequestsProcessor(object):
         """
         Системная функция, перемалывает запросы и вызывает коллбэки.
         """
+        if not AllowingProcessing.allow_processing:
+            return 0
+
         update_timeout = 0.1
 
         new_non_processed_requests = []

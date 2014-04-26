@@ -3,6 +3,7 @@ import json
 import random
 
 from NetworkingModule.NetworkingUsingModule import *
+from Interface.AllowingProcessing import *
 
 
 class DatabaseEngine(NetworkingUsingModule):
@@ -19,6 +20,9 @@ class DatabaseEngine(NetworkingUsingModule):
         self.__tables.append(table)
 
     def process(self):
+        if not AllowingProcessing.allow_processing:
+            return 0
+
         update_timeout = 5
 
         for peer in self.networking.get_peers():

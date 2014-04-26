@@ -2,6 +2,7 @@ from threading import Timer
 
 from NetworkingModule.NetworkingUsingModule import *
 from NetworkingModule.Peer import *
+from Interface.AllowingProcessing import *
 from Interface.Interface import *
 
 
@@ -62,6 +63,9 @@ class P2p(NetworkingUsingModule):
         self.set_peer_metadata(request.peer, 'server_port', request.answer_data)
 
     def process(self):
+        if not AllowingProcessing.allow_processing:
+            return 0
+
         super().process()
         update_timeout = 1
 
