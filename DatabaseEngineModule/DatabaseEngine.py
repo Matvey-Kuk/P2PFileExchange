@@ -67,7 +67,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             self.notify_condition(condition)
 
     def __request_databases_conditions(self):
-        for peer in self.__networking.get_peers():
+        for peer in self.__get_peers_database_working_with():
             database_id = self.get_peer_metadata(peer, 'database_id')
             versions_ranges = self.get_versions_ranges_required_from_another_database(database_id)
             dumped_versions_ranges = []
@@ -76,7 +76,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             self.send_request(peer, 'database_condition', dumped_versions_ranges)
 
     def __request_needed_alterations(self):
-        for peer in self.__networking.get_peers():
+        for peer in self.__get_peers_database_working_with():
             database_id = self.get_peer_metadata(peer, 'database_id')
             if not database_id is None:
                 versions_ranges = self.get_versions_ranges_for_required_from_foreign_database_alterations(database_id)
@@ -134,3 +134,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     def __register_interface_callbacks(self):
         Interface.register_output_callback('db', self.__send_data_to_interface)
         Interface.register_command_processor_callback('db', self.__process_interface_command)
+
+    def __get_peers_database_working_with(self):
+        return self.__networking.get_peers()
