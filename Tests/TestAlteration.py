@@ -1,7 +1,7 @@
 import unittest
 
-from DatabaseEngineModule2.Alteration import *
-from DatabaseEngineModule2.VersionsRange import *
+from DatabaseEngineModule.Alteration import *
+from DatabaseEngineModule.VersionsRange import *
 
 
 class TestAlteration(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestAlteration(unittest.TestCase):
     def test_init(self):
         alteration = Alteration({'key': 'value'}, VersionsRange(version=0))
         alteration_2 = Alteration({'key': 'value'}, VersionsRange(version=0))
-        self.assertTrue(alteration.get_creation_time() < alteration_2.get_creation_time())
+        self.assertTrue(alteration.get_creation_time() <= alteration_2.get_creation_time())
 
     def test_merge_version_difference(self):
         """

@@ -1,6 +1,6 @@
 import unittest
 
-from DatabaseEngineModule2.SynchronizableDatabase import *
+from DatabaseEngineModule.SynchronizableDatabase import *
 
 
 class TestSynchronizableDatabase(unittest.TestCase):

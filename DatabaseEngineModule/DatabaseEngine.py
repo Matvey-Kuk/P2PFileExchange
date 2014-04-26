@@ -1,81 +1,137 @@
 from threading import Timer
-import json
-import random
 
+from DatabaseEngineModule.SynchronizableDatabase import *
 from NetworkingModule.NetworkingUsingModule import *
-from Interface.AllowingProcessing import *
+from Interface.Interface import *
 
+class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
+    """
+    База данных, которая умеет работать с сетью.
+    """
 
-class DatabaseEngine(NetworkingUsingModule):
+    def __init__(self, networking, requests_processor):
+        self.__networking = networking
+        self.__requests_processor = requests_processor
+        SynchronizableDatabase.__init__(self)
+        NetworkingUsingModule.__init__(self, networking, requests_processor, 'database_engine')
+        self.__process()
+        self.__register_callbacks()
+        self.__register_interface_callbacks()
 
-    def __init__(self, networking, request_processor):
-        super().__init__(networking, request_processor, 'database_engine')
+        self.__peers_to_databases_ids = {}
 
-        self.__tables = []
+    def __process(self):
+        update_timeout = 2
 
-        self.register_requests_callbacks()
-        self.process()
+        # self.insert_alteration(Alteration(
+        #     {
+        #         str(random.randint(0, 10)): str(random.randint(100, 999))
+        #     },
+        #     VersionsRange(version=self.get_last_version() + 1)
+        # ))
+        #
+        # print('Database:' + repr(self))
 
-    def add_table(self, table):
-        self.__tables.append(table)
+        self.__request_databases_conditions()
+        self.__request_needed_alterations()
 
-    def process(self):
-        if not AllowingProcessing.allow_processing:
-            return 0
-
-        update_timeout = 5
-
-        for peer in self.networking.get_peers():
-            print('request has been sent')
-            self.send_request(peer,  'version_request', 'Give me your db version')
-
-        timer = Timer(update_timeout, self.process)
+        timer = Timer(update_timeout, self.__process)
         timer.start()
 
-    def register_requests_callbacks(self):
-        self.register_request_answer_generator(
-            'version_request',
-            self.database_version_request_answer_generator
-        )
-        self.register_answer_received_callback(
-            'version_request',
-            self.database_version_request_answer_received
-        )
+    def __register_callbacks(self):
+        self.register_request_answer_generator('database_condition', self.__database_condition_answer_generator)
+        self.register_answer_received_callback('database_condition', self.__database_condition_answer_received)
 
-    def database_dump_request_answer_generator(self, request_data):
-        pass
+        self.register_request_answer_generator('alterations', self.__get_alterations_answer_generator)
+        self.register_answer_received_callback('alterations', self.__get_alterations_answer_received)
 
-    def database_dump_request_answer_received(self, request):
-        pass
+    def __database_condition_answer_generator(self, dumped_versions_ranges):
+        print('request condition answer received ' + repr(dumped_versions_ranges))
+        versions_ranges = []
+        for dumped_versions_range in dumped_versions_ranges:
+            versions_ranges.append(VersionsRange(dump=dumped_versions_range))
+        result_conditions = []
+        for versions_range in versions_ranges:
+            result_conditions.append(self.get_condition(versions_range))
+        return result_conditions
 
-    def database_version_request_answer_generator(self, request_data):
-        message = {}
-        for db in self.__tables:
-            message[db.get_prefix()] = {
-                "db_version": db.get_version(),
-                "db_hash": db.get_hash()
-            }
-        answer = json.JSONEncoder().encode(message)
-        return answer
+    def __database_condition_answer_received(self, request):
+        conditions = request.answer_data
+        if self.get_peer_metadata(request.peer, 'database_id') is None:
+            self.set_peer_metadata(request.peer, 'database_id', conditions[0]['id'])
+        for condition in conditions:
+            self.notify_condition(condition)
 
-    def database_version_request_answer_received(self, request):
-        new_data = json.JSONDecoder().decode(request.answer_data)
-        print(new_data)
-        for database_prefix in new_data:
-            if int(new_data[database_prefix]['db_version']) > self.get_database(database_prefix).get_version():
-                print('New version detected')
-            else:
-                if new_data[database_prefix]['db_version'] == self.get_database(database_prefix).get_version() and \
-                   new_data[database_prefix]['db_hash'] != self.get_database(database_prefix).get_hash():
-                    print('Branched version detected')
+    def __request_databases_conditions(self):
+        for peer in self.__networking.get_peers():
+            database_id = self.get_peer_metadata(peer, 'database_id')
+            versions_ranges = self.get_versions_ranges_required_from_another_database(database_id)
+            print('req cond ' + str(database_id) + repr(peer) + repr(versions_ranges))
+            dumped_versions_ranges = []
+            for versions_range in versions_ranges:
+                dumped_versions_ranges.append(versions_range.get_dump())
+            self.send_request(peer, 'database_condition', dumped_versions_ranges)
 
-    def merge_new_version(self, peer, peer_version, database_prefix):
-        pass
+    def __request_needed_alterations(self):
+        for peer in self.__networking.get_peers():
+            database_id = self.get_peer_metadata(peer, 'database_id')
+            if not database_id is None:
+                versions_ranges = self.get_versions_ranges_for_required_from_foreign_database_alterations(database_id)
+                dumped_versions_ranges = []
+                for versions_range in versions_ranges:
+                    dumped_versions_ranges.append(versions_range.get_dump())
+                # print_str = ''
+                # for dumped_versions_range in dumped_versions_ranges:
+                #     print_str += repr(dumped_versions_range)
+                #     print_str += repr(self.get_hash(VersionsRange(first=dumped_versions_range['first'], last=dumped_versions_range['last'])))
+                #     print_str += repr(Alteration.merge(self.get_alterations(VersionsRange(first=dumped_versions_range['first'], last=dumped_versions_range['last']))))
+                #     print_str += '\n'
+                # print('sending req \n' + print_str)
+                if len(versions_ranges) > 0:
+                    print('Alterations requested: ' + repr(dumped_versions_ranges))
+                self.send_request(peer, 'alterations', dumped_versions_ranges)
 
-    def merge_branch_version(self):
-        pass
+    def __get_alterations_answer_generator(self, dumped_versions_ranges):
+        alterations = []
+        for dumped_versions_range in dumped_versions_ranges:
+            alterations += self.get_alterations(VersionsRange(dump=dumped_versions_range))
+        dumped_alterations = []
+        for alteration in alterations:
+            dumped_alterations.append(alteration.get_dump())
+        return dumped_alterations
 
-    def get_database(self, prefix):
-        for database in self.__tables:
-            if database.get_prefix() == prefix:
-                return database
+    def __get_alterations_answer_received(self, request):
+        dumped_alterations = request.answer_data
+        alterations = []
+        if len(alterations) > 0:
+            print('received alterations' + repr(alterations))
+        for dumped_alteration in dumped_alterations:
+            alterations.append(Alteration.serialize_from_dump(dumped_alteration))
+        for alteration in alterations:
+            self.notify_versions_range_with_synchronised_alterations(
+                alteration.get_versions_range(),
+                self.get_peer_metadata(request.peer, 'database_id')
+            )
+            self.insert_alteration(alteration)
+
+    def __send_data_to_interface(self):
+        s = "Current db version: " + str(self.get_last_version())
+        return s
+
+    def __process_interface_command(self, command):
+        command_words = command.split(' ')
+        if command_words[0] == 'show':
+            return repr(Alteration.merge(self.get_alterations(VersionsRange(first=0, last=None))).get_changes())
+        elif command_words[0] == 'add':
+            self.insert_alteration(
+                Alteration(
+                    {command_words[1]: command_words[2]},
+                    VersionsRange(version=self.get_last_version() + 1)
+                )
+            )
+            return 'Yahoo!'
+        return 'Undefined command'
+
+    def __register_interface_callbacks(self):
+        Interface.register_output_callback('db', self.__send_data_to_interface)
+        Interface.register_command_processor_callback('db', self.__process_interface_command)

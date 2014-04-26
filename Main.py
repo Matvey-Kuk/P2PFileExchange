@@ -9,6 +9,7 @@ from Interface.Interface import *
 from DatabaseEngineModule.DatabaseEngine import *
 from Interface.AllowingProcessing import *
 
+
 class Main(object):
     """Это основной класс, через который запускается приложение."""
 
@@ -19,14 +20,8 @@ class Main(object):
         self.networking = self.start_networking()
         self.requests_processor = RequestsProcessor(self.networking)
 
-        if self.command_line_arguments.AuthDatabaseModule:
+        if self.command_line_arguments.UsersDatabaseModule:
             self.database_engine = DatabaseEngine(self.networking, self.requests_processor)
-            self.authorization = Authorization(
-                self.networking,
-                self.requests_processor,
-                self.database_engine,
-                self.command_line_arguments.nick_name
-            )
 
         if self.command_line_arguments.P2PModule:
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
@@ -48,6 +43,12 @@ class Main(object):
         parser.add_argument(
             '-AuthDatabaseModule',
             dest='AuthDatabaseModule',
+            action='store_true',
+            help='Enables this module.'
+        )
+        parser.add_argument(
+            '-UsersDatabaseModule',
+            dest='UsersDatabaseModule',
             action='store_true',
             help='Enables this module.'
         )
