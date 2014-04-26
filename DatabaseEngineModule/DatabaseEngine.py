@@ -5,16 +5,17 @@ from NetworkingModule.NetworkingUsingModule import *
 from Interface.Interface import *
 from Interface.AllowingProcessing import *
 
+
 class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     """
     База данных, которая умеет работать с сетью.
     """
 
-    def __init__(self, networking, requests_processor):
+    def __init__(self, networking, requests_processor, prefix):
         self.__networking = networking
         self.__requests_processor = requests_processor
         SynchronizableDatabase.__init__(self)
-        NetworkingUsingModule.__init__(self, networking, requests_processor, 'database_engine')
+        NetworkingUsingModule.__init__(self, networking, requests_processor, prefix)
         self.__process()
         self.__register_callbacks()
         self.__register_interface_callbacks()
@@ -50,7 +51,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.register_answer_received_callback('alterations', self.__get_alterations_answer_received)
 
     def __database_condition_answer_generator(self, dumped_versions_ranges):
-        print('request condition answer received ' + repr(dumped_versions_ranges))
         versions_ranges = []
         for dumped_versions_range in dumped_versions_ranges:
             versions_ranges.append(VersionsRange(dump=dumped_versions_range))
@@ -90,8 +90,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 #     print_str += repr(Alteration.merge(self.get_alterations(VersionsRange(first=dumped_versions_range['first'], last=dumped_versions_range['last']))))
                 #     print_str += '\n'
                 # print('sending req \n' + print_str)
-                if len(versions_ranges) > 0:
-                    print('Alterations requested: ' + repr(dumped_versions_ranges))
                 self.send_request(peer, 'alterations', dumped_versions_ranges)
 
     def __get_alterations_answer_generator(self, dumped_versions_ranges):
@@ -106,8 +104,6 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     def __get_alterations_answer_received(self, request):
         dumped_alterations = request.answer_data
         alterations = []
-        if len(alterations) > 0:
-            print('received alterations' + repr(alterations))
         for dumped_alteration in dumped_alterations:
             alterations.append(Alteration.serialize_from_dump(dumped_alteration))
         for alteration in alterations:
@@ -118,7 +114,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             self.insert_alteration(alteration)
 
     def __send_data_to_interface(self):
-        s = "Current db version: " + str(self.get_last_version())
+        s = "Db version: " + str(self.get_last_version())
         return s
 
     def __process_interface_command(self, command):
