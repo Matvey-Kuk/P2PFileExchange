@@ -3,6 +3,7 @@ from threading import Timer
 from DatabaseEngineModule.SynchronizableDatabase import *
 from NetworkingModule.NetworkingUsingModule import *
 from Interface.Interface import *
+from Interface.AllowingProcessing import *
 
 class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
     """
@@ -21,6 +22,9 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.__peers_to_databases_ids = {}
 
     def __process(self):
+        if not AllowingProcessing.allow_processing:
+            return 0
+
         update_timeout = 2
 
         # self.insert_alteration(Alteration(

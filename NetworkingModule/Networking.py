@@ -90,6 +90,7 @@ class Networking(object):
         """
         if  not AllowingProcessing.allow_processing:
             return 0
+
         update_timeout = 0.1
 
         self.process_peers()
