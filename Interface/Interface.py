@@ -70,7 +70,6 @@ class Interface(object):
         self.txtfr1.after_idle(self.asking_for_information)
        # self.roottk.after(100, self.roottk.mainloop())
 
-
     def input_command(self, *dont_need_this):
         """Обработчик введённых команд"""
         s = self.txtfr2.get('1.0', 'end')
@@ -78,7 +77,7 @@ class Interface(object):
 
         self.txtfr1['state'] = 'normal'
         s = s.strip()
-        self.txtfr1.insert('end',"\n" + s)
+        self.txtfr1.insert('end', "\n" + s)
         self.txtfr1.yview_moveto(1.0)
 
         self.previous_commands.append(s)
@@ -87,10 +86,10 @@ class Interface(object):
 
         try:
             str = Interface.__commands_processors_callbacks[input_words[0].lower()](input_words[1])
-            self.txtfr1.insert('end',"\n" + str)
+            self.txtfr1.insert('end', "\n" + str)
             self.txtfr1.yview_moveto(1.0)
         except:
-            self.txtfr1.insert('end',"\n" + "Undefined command (prefix)")
+            self.txtfr1.insert('end', "\n" + "Undefined command (prefix)")
             self.txtfr1.yview_moveto(1.0)
 
         self.txtfr1['state'] = 'disabled'
@@ -113,7 +112,6 @@ class Interface(object):
         self.roottk.destroy()
         #self.roottk.quit()
 
-
     def asking_for_information(self):
         """Метод, опрашивающий поставщиков данных"""
         self.txtfr1.after(1000, self.asking_for_information)
@@ -125,7 +123,6 @@ class Interface(object):
             #self.txtfr1.insert('end', "\n%s" % str)
             self.Info_labels[prefix]['text'] = str
         #self.txtfr1['state'] = 'disabled'
-
 
     @staticmethod
     def register_output_callback(prefix, callback):
