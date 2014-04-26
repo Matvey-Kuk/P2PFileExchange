@@ -21,7 +21,7 @@ class ForeignDatabase(object):
         Потом каждый из этих 2-х диапазонов делится еще на 2- это 2-й уровень поиска итд.
         В следующей переменной хранятся {уровень поиска: [диапазоны]}
         """
-        self.__versions_ranges_with_detected_hash_differences = {}
+        self.__versions_ranges_with_detected_hash_differences = {0: []}
         self.__current_search_level = 0
 
         self.__detected_ranges_with_different_alterations = []
@@ -30,7 +30,6 @@ class ForeignDatabase(object):
         return self.__id
 
     def set_versions_range_with_detected_hash_difference(self, versions_range):
-        print('dif: ' + repr(versions_range))
         #Если первая итерация поиска
         if self.__current_search_level == 0 and len(self.__versions_ranges_with_detected_hash_differences[self.__current_search_level]) == 0:
             self.__current_search_level = 1
@@ -77,12 +76,10 @@ class ForeignDatabase(object):
             if len(self.__versions_ranges_with_detected_hash_differences[key]) > 0:
                 end_detected = False
         if end_detected:
-            print('ended')
             self.__current_search_level = 0
             self.__versions_ranges_with_detected_hash_differences = {0: []}
 
     def set_versions_range_with_detected_hash_equivalence(self, versions_range):
-        print("eq: " + repr(versions_range))
         for search_level in self.__versions_ranges_with_detected_hash_differences:
             if versions_range in self.__versions_ranges_with_detected_hash_differences[search_level]:
                 self.__versions_ranges_with_detected_hash_differences[search_level].remove(versions_range)
@@ -97,8 +94,6 @@ class ForeignDatabase(object):
 
         self.__versions_ranges_with_detected_hash_differences[search_level] = \
             new_versions_ranges_in_current_level
-
-        self.__check_search_cycle_ended()
 
     def get_ranges_level_for_binary_search_in_foreign_database(self):
         """
