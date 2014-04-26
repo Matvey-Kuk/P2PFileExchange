@@ -5,10 +5,10 @@
 
 from tkinter import *
 from tkinter.ttk import *
+from Interface.AllowingProcessing import *
 
 
 class Interface(object):
-
     __output_callbacks = {}
     __commands_processors_callbacks = {}
 
@@ -21,6 +21,7 @@ class Interface(object):
         self.roottk = Tk()
         self.roottk.title("Project console interface :D")
         self.roottk.minsize(256, 128)
+        self.roottk.protocol('WM_DELETE_WINDOW', self.closing_window)
 
         self.frameInfo = Frame()
         self.frameTBox = Frame()
@@ -69,7 +70,7 @@ class Interface(object):
         self.txtfr1.after_idle(self.asking_for_information)
        # self.roottk.after(100, self.roottk.mainloop())
 
-    def input_command(self, *event):
+    def input_command(self, *dont_need_this):
         """Обработчик введённых команд"""
         s = self.txtfr2.get('1.0', 'end')
         self.txtfr2.delete('1.0', 'end')
@@ -105,6 +106,11 @@ class Interface(object):
             self.current_command_number += 1
         self.txtfr2.delete('1.0', 'end')
         self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
+
+    def closing_window(self, *args):
+        AllowingProcessing.allow_processing = False
+        self.roottk.destroy()
+        #self.roottk.quit()
 
     def asking_for_information(self):
         """Метод, опрашивающий поставщиков данных"""

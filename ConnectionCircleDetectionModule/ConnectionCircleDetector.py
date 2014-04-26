@@ -3,6 +3,7 @@ import random
 from threading import Timer
 
 from NetworkingModule.NetworkingUsingModule import *
+from Interface.AllowingProcessing import *
 
 
 class ConnectionCircleDetector(NetworkingUsingModule):
@@ -65,6 +66,9 @@ class ConnectionCircleDetector(NetworkingUsingModule):
                 self.set_peer_metadata(peer, 'uid_request', request)
 
     def process(self):
+        if not AllowingProcessing.allow_processing:
+            return 0
+
         update_timeout = 1
 
         for peer in self.networking.get_peers():
