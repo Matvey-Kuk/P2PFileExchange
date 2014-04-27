@@ -45,7 +45,11 @@ class Database(object):
         return merged.get_changes()
 
     def find_in_restored_table(self, versions_range, key):
-        return self.restore_a_table(versions_range)[key]
+        restored_table = self.restore_a_table(versions_range)
+        if not key in restored_table:
+            return None
+        else:
+            return restored_table[key]
 
     def get_hash(self, versions_range):
         restored_table = self.restore_a_table(versions_range)
