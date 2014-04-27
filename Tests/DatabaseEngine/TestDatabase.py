@@ -89,3 +89,15 @@ class TestDatabase(unittest.TestCase):
             database_a.get_hash(VersionsRange(first=0, last=database_a.get_last_version())),
             database_b.get_hash(VersionsRange(first=0, last=database_b.get_last_version())),
         )
+
+    def test_get_hast_long_root(self):
+        dict = {
+            'b': 1,
+            'a': {
+                'c': 2,
+                'a': 1
+            }
+        }
+
+        database_a = Database()
+        print(database_a.sort_dict_recursively(dict))

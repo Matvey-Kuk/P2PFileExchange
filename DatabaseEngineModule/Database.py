@@ -53,8 +53,18 @@ class Database(object):
 
     def get_hash(self, versions_range):
         restored_table = self.restore_a_table(versions_range)
-        restored_table = collections.OrderedDict(sorted(restored_table.items()))
+        restored_table = self.sort_dict_recursively(restored_table)
         return hashlib.sha224(str(restored_table).encode('utf-8')).hexdigest()
+
+    def sort_dict_recursively(self, dictionary):
+        result_dictionary = {}
+        for key in dictionary:
+            if type(dictionary[key]) is dict:
+                result_dictionary[key] = self.sort_dict_recursively(dictionary[key])
+            else:
+                result_dictionary[key] = dictionary[key]
+        return collections.OrderedDict(sorted(result_dictionary.items()))
+
 
     def __repr__(self):
         string = ''

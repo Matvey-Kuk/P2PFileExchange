@@ -1,4 +1,5 @@
 import rsa
+from rsa import transform
 
 from DatabaseEngineModule.Alteration import *
 
@@ -15,11 +16,17 @@ class Cryptography(object):
 
     @staticmethod
     def get_signature(data, private_key):
-        return rsa.sign(Cryptography.encode_data(data), Cryptography.restore_private_key(private_key), 'SHA-1')
+        return transform.bytes2int(
+            rsa.sign(Cryptography.encode_data(data), Cryptography.restore_private_key(private_key), 'MD5')
+        )
 
     @staticmethod
     def verify_signature(data, public_key, signature):
-        return rsa.verify(Cryptography.encode_data(data), signature, Cryptography.restore_public_key(public_key))
+        return rsa.verify(
+            Cryptography.encode_data(data),
+            transform.int2bytes(signature),
+            Cryptography.restore_public_key(public_key)
+        )
 
     @staticmethod
     def encode_data(data):

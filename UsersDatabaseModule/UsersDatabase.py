@@ -5,7 +5,7 @@ from UsersDatabaseModule.Cryptography import *
 class UsersDatabase(DatabaseEngine):
 
     def __init__(self, networking, requests_processor):
-        DatabaseEngine.__init__(self, networking, requests_processor, 'users_database')
+        super().__init__(networking, requests_processor, 'users_database')
 
         self.__name = None
         self.__keys = None
@@ -27,7 +27,7 @@ class UsersDatabase(DatabaseEngine):
         elif command_words[0] == 'login':
             pass
         elif command_words[0] == 'show':
-            return self.restore_a_table(VersionsRange(first=0, last=None))
+            return repr(self.restore_a_table(VersionsRange(first=0, last=None)))
         else:
             return 'Undefined command'
 
@@ -40,7 +40,7 @@ class UsersDatabase(DatabaseEngine):
             new_alteration = Alteration(
                 {
                     name: {
-                        'connection_data': 'no',
+                        'connection_data': '',
                         'public_key': self.__keys['public_key'],
                         'connection_time': time(),
                         'signature': Cryptography.get_signature('no', self.__keys['private_key'])
