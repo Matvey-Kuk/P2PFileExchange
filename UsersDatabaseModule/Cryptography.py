@@ -1,0 +1,5 @@
+
+
+class Cryptography(object):
+
+    pass

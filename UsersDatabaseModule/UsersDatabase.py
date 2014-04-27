@@ -27,8 +27,10 @@ class UsersDatabase(DatabaseEngine):
             return 'Undefined command'
 
     def __register_as(self, name):
-        # if
-        pass
+        if not self.find_in_restored_table(VersionsRange(first=0, last=None), name) is None:
+            print('Already registered!')
+        else:
+            print('Ready to register!')
 
     def is_logged_in(self):
         return False
