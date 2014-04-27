@@ -17,6 +17,7 @@ class Interface(object):
         self.Info_labels = {}
         self.previous_commands = []
         self.current_command_number = 0
+        self.prefix = ""
 
         self.roottk = Tk()
         self.roottk.title("Project console interface :D")
@@ -61,7 +62,7 @@ class Interface(object):
         #self.roottk.rowconfigure(2, weight=0)
 
         i = -1
-        for prefix in self.__output_callbacks.keys():
+        for prefix in sorted(self.__output_callbacks.keys()):
             i += 1
             self.Info_labels[prefix] = Label(self.frameInfo, anchor='center')
             self.Info_labels[prefix].grid(row=0, column=i, sticky='nsew')
@@ -82,14 +83,31 @@ class Interface(object):
 
         self.previous_commands.append(s)
 
-        input_words = s.split(None, 1)
-
-        if input_words[0].lower() in Interface.__commands_processors_callbacks:
-            str = Interface.__commands_processors_callbacks[input_words[0].lower()](input_words[1])
-            self.txtfr1.insert('end', "\n" + str)
-            self.txtfr1.yview_moveto(1.0)
+        if not self.prefix:
+            input_words = s.split(None, 1)
+            input_words[0] = input_words[0].lower()
+            if input_words[0] in Interface.__commands_processors_callbacks:
+                prefix = input_words[0]
+                s = input_words[1]
+            elif input_words[0] == "go" and input_words[1].lower() in Interface.__commands_processors_callbacks:
+                self.prefix = input_words[1].lower()
+                self.txtfr1.insert('end', "\n" + "You're in " + self.prefix + " module")
+                self.txtfr1.yview_moveto(1.0)
+                prefix = ""
+            else:
+                self.txtfr1.insert('end', "\n" + "Undefined prefix")
+                self.txtfr1.yview_moveto(1.0)
+                prefix = ""
         else:
-            self.txtfr1.insert('end', "\n" + "Undefined command (prefix)")
+            if s.split(None, 1)[0].lower() == "leave":
+                self.txtfr1.insert('end', "\n" + "You left " + self.prefix + " module")
+                self.txtfr1.yview_moveto(1.0)
+                self.prefix = ""
+            prefix = self.prefix
+
+        if prefix:
+            str = Interface.__commands_processors_callbacks[prefix](s)
+            self.txtfr1.insert('end', "\n" + prefix + ": " + str)
             self.txtfr1.yview_moveto(1.0)
 
         self.txtfr1['state'] = 'disabled'
