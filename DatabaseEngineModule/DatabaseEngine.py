@@ -17,8 +17,8 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         SynchronizableDatabase.__init__(self)
         NetworkingUsingModule.__init__(self, networking, requests_processor, prefix)
         self.__process()
-        self.__register_callbacks()
-        self.__register_interface_callbacks()
+        self.__register_networking_callbacks()
+        self.register_interface_callbacks()
 
         self.__peers_to_databases_ids = {}
 
@@ -26,16 +26,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         if not AllowingProcessing.allow_processing:
             return 0
 
-        update_timeout = 2
-
-        # self.insert_alteration(Alteration(
-        #     {
-        #         str(random.randint(0, 10)): str(random.randint(100, 999))
-        #     },
-        #     VersionsRange(version=self.get_last_version() + 1)
-        # ))
-        #
-        # print('Database:' + repr(self))
+        update_timeout = 15
 
         self.__request_databases_conditions()
         self.__request_needed_alterations()
@@ -43,7 +34,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         timer = Timer(update_timeout, self.__process)
         timer.start()
 
-    def __register_callbacks(self):
+    def __register_networking_callbacks(self):
         self.register_request_answer_generator('database_condition', self.__database_condition_answer_generator)
         self.register_answer_received_callback('database_condition', self.__database_condition_answer_received)
 
@@ -67,7 +58,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             self.notify_condition(condition)
 
     def __request_databases_conditions(self):
-        for peer in self.__get_peers_database_working_with():
+        for peer in self.get_peers_database_working_with():
             database_id = self.get_peer_metadata(peer, 'database_id')
             versions_ranges = self.get_versions_ranges_required_from_another_database(database_id)
             dumped_versions_ranges = []
@@ -76,7 +67,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             self.send_request(peer, 'database_condition', dumped_versions_ranges)
 
     def __request_needed_alterations(self):
-        for peer in self.__get_peers_database_working_with():
+        for peer in self.get_peers_database_working_with():
             database_id = self.get_peer_metadata(peer, 'database_id')
             if not database_id is None:
                 versions_ranges = self.get_versions_ranges_for_required_from_foreign_database_alterations(database_id)
@@ -113,11 +104,11 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             )
             self.insert_alteration(alteration)
 
-    def __send_data_to_interface(self):
+    def send_data_to_interface(self):
         s = "Db version: " + str(self.get_last_version())
         return s
 
-    def __process_interface_command(self, command):
+    def process_interface_command(self, command):
         command_words = command.split(' ')
         if command_words[0] == 'show':
             return repr(Alteration.merge(self.get_alterations(VersionsRange(first=0, last=None))).get_changes())
@@ -131,9 +122,9 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             return 'Yahoo!'
         return 'Undefined command'
 
-    def __register_interface_callbacks(self):
-        Interface.register_output_callback('db', self.__send_data_to_interface)
-        Interface.register_command_processor_callback('db', self.__process_interface_command)
+    def register_interface_callbacks(self):
+        Interface.register_output_callback('db', self.send_data_to_interface)
+        Interface.register_command_processor_callback('db', self.process_interface_command)
 
-    def __get_peers_database_working_with(self):
+    def get_peers_database_working_with(self):
         return self.__networking.get_peers()
