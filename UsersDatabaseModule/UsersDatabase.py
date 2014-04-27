@@ -12,7 +12,21 @@ class UsersDatabase(DatabaseEngine):
 
     def insert_alteration(self, new_alteration):
         print('New alteration: ' + repr(new_alteration))
-        DatabaseEngine.insert_alteration(self, new_alteration)
+        if self.check_alteration_ligitimity(new_alteration):
+            DatabaseEngine.insert_alteration(self, new_alteration)
+
+    def check_alteration_ligitimity(self, alteration):
+        result = True
+        changes = alteration.get_changes()
+        for key in changes:
+            if not self.find_in_restored_table(VersionsRange(first=0, last=None), key) is None:
+                if not Cryptography.verify_signature(
+                        changes[key]['connection_data'],
+                        changes[key]['public_key'],
+                        changes[key]['signature']
+                ):
+                    result = False
+        return result
 
     def send_data_to_interface(self):
         if self.is_logged_in():
@@ -37,13 +51,14 @@ class UsersDatabase(DatabaseEngine):
             answer = 'Already registered!'
         else:
             self.__keys = Cryptography.generate_keys()
+            connection_data = ''
             new_alteration = Alteration(
                 {
                     name: {
-                        'connection_data': '',
+                        'connection_data': connection_data,
                         'public_key': self.__keys['public_key'],
                         'connection_time': time(),
-                        'signature': Cryptography.get_signature('no', self.__keys['private_key'])
+                        'signature': Cryptography.get_signature(connection_data, self.__keys['private_key'])
                     }
                 },
                 VersionsRange(version=self.get_last_version())
