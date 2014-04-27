@@ -19,20 +19,23 @@ class Main(object):
         self.networking = self.start_networking()
         self.requests_processor = RequestsProcessor(self.networking)
 
-        if self.command_line_arguments.UsersDatabaseModule: #Запуск базы данных, если задан параметр
+        if self.command_line_arguments.UsersDatabaseModule:  #Запуск базы данных, если задан параметр
             self.users_database = UsersDatabase(self.networking, self.requests_processor)
 
-        if self.command_line_arguments.P2PModule: #Запуск пир-к-пиру модлуля, если заданы параметры
+        if self.command_line_arguments.P2PModule:  #Запуск пир-к-пиру модлуля, если заданы параметры
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
             self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
-        if self.command_line_arguments.Interface: #Зпуск интерфейса, если задан параметр
+        if self.command_line_arguments.Interface:  #Зпуск интерфейса, если задан параметр
             self.interface = Interface()
             self.interface.roottk.mainloop()
 
 
     @staticmethod
-    def parse_arguments():  #Создание парсеров, тех самых заветных параметров, но с очень малоинформирующей справкой, да к тому же на буржуйском :)
+    def parse_arguments():
+        """
+        Создание парсеров, тех самых заветных параметров, но с очень малоинформирующей справкой, да к тому же на буржуйском :)
+        """
         parser = argparse.ArgumentParser(description='Hello, p2p world.')
         parser.add_argument('-port', '-p', dest='port', help='Server port')
         parser.add_argument('-host', dest='bind_host', help='Host for server binding')
@@ -66,7 +69,10 @@ class Main(object):
         command_line_args = parser.parse_args()
         return command_line_args
 
-    def start_networking(self): #Задание параметров соединения по умолчанию, если они не указаны ( можно было сделать с помощью argparse)
+    def start_networking(self):
+        """
+        Задание параметров соединения по умолчанию, если они не указаны ( можно было сделать с помощью argparse)
+        """
         port = 1234
         if not self.command_line_arguments.port is None:
             port = int(self.command_line_arguments.port)
