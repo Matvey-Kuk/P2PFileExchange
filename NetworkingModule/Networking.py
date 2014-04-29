@@ -88,7 +88,8 @@ class Networking(object):
         """
         Запускает все переодические операции для соединений
         """
-        if  not AllowingProcessing.allow_processing:
+        if not AllowingProcessing().allow_processing:
+            print("NetworkingClosed")
             return 0
 
         update_timeout = 0.1

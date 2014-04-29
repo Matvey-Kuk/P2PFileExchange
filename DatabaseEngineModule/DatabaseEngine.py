@@ -23,7 +23,8 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.__peers_to_databases_ids = {}
 
     def __process(self):
-        if not AllowingProcessing.allow_processing:
+        if not AllowingProcessing().allow_processing:
+            print("DatabaseClosed")
             return 0
 
         print(self.get_hash(VersionsRange(first=0, last=None)))

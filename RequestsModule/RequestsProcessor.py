@@ -64,7 +64,8 @@ class RequestsProcessor(object):
         """
         Системная функция, перемалывает запросы и вызывает коллбэки.
         """
-        if not AllowingProcessing.allow_processing:
+        if not AllowingProcessing().allow_processing:
+            print("RequestsClosed")
             return 0
 
         update_timeout = 2

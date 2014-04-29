@@ -63,7 +63,8 @@ class P2p(NetworkingUsingModule):
         self.set_peer_metadata(request.peer, 'server_port', request.answer_data)
 
     def process(self):
-        if not AllowingProcessing.allow_processing:
+        if not AllowingProcessing().allow_processing:
+            print("P2PClosed")
             return 0
 
         super().process()

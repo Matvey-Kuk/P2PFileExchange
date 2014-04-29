@@ -2,15 +2,18 @@
 """
 Здесь будет реализация консольного интерфейса программы.
 """
+import threading as tr
 
 from tkinter import *
 from tkinter.ttk import *
+
 from Interface.AllowingProcessing import *
 
 
 class Interface(object):
     __output_callbacks = {}
     __commands_processors_callbacks = {}
+    __exit_command_callbacks = []
 
     def __init__(self):
 
@@ -126,7 +129,9 @@ class Interface(object):
         self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
 
     def closing_window(self, *args):
-        AllowingProcessing.allow_processing = False
+        for callback in Interface.__exit_command_callbacks:
+            callback()
+        AllowingProcessing().allow_processing = False
         self.roottk.destroy()
         #self.roottk.quit()
 
@@ -151,3 +156,8 @@ class Interface(object):
     def register_command_processor_callback(prefix, callback):
         """Здесь регистрируются коллбэки функций, которые обрабатывают команды"""
         Interface.__commands_processors_callbacks[prefix.lower()] = callback
+
+    @staticmethod
+    def register_exit_command_callback(callback):
+        """Здесь регистрируются коллбэки функций, выполняемых при закрытии программы"""
+        Interface.__exit__command_callbacks.append(callback)

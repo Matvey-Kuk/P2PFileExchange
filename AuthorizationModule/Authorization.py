@@ -38,7 +38,8 @@ class Authorization(NetworkingUsingModule):
         self.process()
 
     def process(self):
-        if not AllowingProcessing.allow_processing:
+        if not AllowingProcessing().allow_processing:
+            print("AuthorizationClosed")
             return 0
 
         super().process()

@@ -66,7 +66,8 @@ class ConnectionCircleDetector(NetworkingUsingModule):
                 self.set_peer_metadata(peer, 'uid_request', request)
 
     def process(self):
-        if not AllowingProcessing.allow_processing:
+        if not AllowingProcessing().allow_processing:
+            print("ConnectionCircleClosed")
             return 0
 
         update_timeout = 1
