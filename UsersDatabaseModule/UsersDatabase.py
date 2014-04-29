@@ -11,8 +11,8 @@ class UsersDatabase(DatabaseEngine):
         self.__keys = None
 
     def insert_alteration(self, new_alteration):
-        print('New alteration: ' + repr(new_alteration))
         if self.check_alteration_ligitimity(new_alteration):
+            print('New alteration: ' + repr(new_alteration))
             DatabaseEngine.insert_alteration(self, new_alteration)
 
     def check_alteration_ligitimity(self, alteration):
@@ -38,6 +38,9 @@ class UsersDatabase(DatabaseEngine):
         command_words = command.split(' ')
         if command_words[0] == 'register':
             return self.__register_as(command_words[1])
+        elif command_words[0] == 'change_connection_data':
+            self.__change_connection_data(self.__name, command_words[1])
+            return 'Successfully changed!'
         elif command_words[0] == 'login':
             pass
         elif command_words[0] == 'show':
@@ -50,22 +53,26 @@ class UsersDatabase(DatabaseEngine):
         if not self.find_in_restored_table(VersionsRange(first=0, last=None), name) is None:
             answer = 'Already registered!'
         else:
+            self.__name = name
             self.__keys = Cryptography.generate_keys()
-            connection_data = ''
-            new_alteration = Alteration(
-                {
-                    name: {
-                        'connection_data': connection_data,
-                        'public_key': self.__keys['public_key'],
-                        'connection_time': time(),
-                        'signature': Cryptography.get_signature(connection_data, self.__keys['private_key'])
-                    }
-                },
-                VersionsRange(version=self.get_last_version())
-            )
-            self.insert_alteration(new_alteration)
+            new_connection_data = ''
+            self.__change_connection_data(name, new_connection_data)
             answer = 'Successfully registered!'
         return answer
+
+    def __change_connection_data(self, name, new_connection_data):
+        new_alteration = Alteration(
+            {
+                name: {
+                    'connection_data': new_connection_data,
+                    'public_key': self.__keys['public_key'],
+                    'connection_time': time(),
+                    'signature': Cryptography.get_signature(new_connection_data, self.__keys['private_key'])
+                }
+            },
+            VersionsRange(version=self.get_last_version() + 1)
+        )
+        self.insert_alteration(new_alteration)
 
     def is_logged_in(self):
         return False
