@@ -160,4 +160,4 @@ class Interface(object):
     @staticmethod
     def register_exit_command_callback(callback):
         """Здесь регистрируются коллбэки функций, выполняемых при закрытии программы"""
-        Interface.__exit__command_callbacks.append(callback)
+        Interface.__exit_command_callbacks.append(callback)
