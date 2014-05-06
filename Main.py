@@ -8,7 +8,7 @@ from Interface.Interface import *
 from UsersDatabaseModule.UsersDatabase import *
 from Interface.AllowingProcessing import *
 
-
+AllowingProcessing().allow_processing = True
 class Main(object):
     """Это основной класс, через который запускается приложение."""
 
@@ -26,9 +26,11 @@ class Main(object):
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
             self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
-        if self.command_line_arguments.Interface:  #Зпуск интерфейса, если задан параметр
+        #print(threading.enumerate())
+        if self.command_line_arguments.Interface:  #Запуск интерфейса, если задан параметр
             self.interface = Interface()
             self.interface.roottk.mainloop()
+        #print(threading.enumerate())
 
 
     @staticmethod

@@ -3,6 +3,7 @@ import socket
 import inspect
 
 from NetworkingModule.Peer import *
+from Interface.AllowingProcessing import *
 
 
 class ServerThread(threading.Thread): #Класс для создания сокета, примающего соединения от других клиентов
@@ -18,11 +19,15 @@ class ServerThread(threading.Thread): #Класс для создания сок
         self.tcp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self.tcp_socket.bind((self.host, self.port))    #Присваивание сокету указанного адреса и порта
+        self.tcp_socket.setblocking(0)
 
     def run(self):
-        while True:
+        while AllowingProcessing().allow_processing:
             self.tcp_socket.listen(4) #Макс число клиентов ожидающих соединение
-            (socket, (ip, port)) = self.tcp_socket.accept() #Возвращает кортеж с двумя элементами: новый сокет и адрес клиента
+            try:
+                (socket, (ip, port)) = self.tcp_socket.accept() #Возвращает кортеж с двумя элементами: новый сокет и адрес клиента
+            except BlockingIOError:
+                continue
             peer = Peer(ip, port)
             peer.connect(socket)    #Подключение к новому сокету из кортежа, который получили раньше
             print("New incoming connection from " + ip + ":" + str(port))
