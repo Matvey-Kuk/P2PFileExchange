@@ -7,8 +7,9 @@ from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 from Interface.Interface import *
 from UsersDatabaseModule.UsersDatabase import *
 from Interface.AllowingProcessing import *
+from SelfIpDetectingModule.SelfIpDetector import  *
 
-AllowingProcessing().allow_processing = True
+
 class Main(object):
     """Это основной класс, через который запускается приложение."""
 
@@ -20,6 +21,7 @@ class Main(object):
         self.requests_processor = RequestsProcessor(self.networking)
 
         if self.command_line_arguments.UsersDatabaseModule:  #Запуск базы данных, если задан параметр
+            self.self_ip_detector = SelfIpDetector(self.networking, self.requests_processor)
             self.users_database = UsersDatabase(self.networking, self.requests_processor)
 
         if self.command_line_arguments.P2PModule:  #Запуск пир-к-пиру модлуля, если заданы параметры
@@ -95,4 +97,5 @@ class Main(object):
 
         return networking
 
+AllowingProcessing().allow_processing = True
 main = Main()
