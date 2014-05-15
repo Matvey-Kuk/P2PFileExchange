@@ -57,23 +57,25 @@ class UsersDatabase(DatabaseEngine):
         else:
             self.__name = name
             self.__keys = Cryptography.generate_keys()
-            new_connection_data = {
-                'ips': self.self_ip_detector.get_self_ips(),
-                'server_port': 'hz'
-            }
-            new_connection_data = json.JSONEncoder().encode(new_connection_data)
-            self.__change_connection_data(name, new_connection_data)
+            self.__change_connection_data()
             answer = 'Successfully registered!'
         return answer
 
-    def __change_connection_data(self, name, new_connection_data):
+    def __pack_connection_data(self):
+        new_connection_data = {
+            'ips': self.self_ip_detector.get_self_ips(),
+            'server_port': repr(self.networking.server_port)
+        }
+        return json.JSONEncoder().encode(new_connection_data)
+
+    def __change_connection_data(self):
         new_alteration = Alteration(
             {
-                name: {
-                    'connection_data': new_connection_data,
+                self.__name: {
+                    'connection_data': self.__pack_connection_data(),
                     'public_key': self.__keys['public_key'],
                     'update_data_time': time(),
-                    'signature': Cryptography.get_signature(new_connection_data, self.__keys['private_key'])
+                    'signature': Cryptography.get_signature(self.__pack_connection_data(), self.__keys['private_key'])
                 }
             },
             VersionsRange(version=self.get_last_version() + 1)
