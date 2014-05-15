@@ -22,7 +22,7 @@ class Main(object):
 
         if self.command_line_arguments.UsersDatabaseModule:  #Запуск базы данных, если задан параметр
             self.self_ip_detector = SelfIpDetector(self.networking, self.requests_processor)
-            self.users_database = UsersDatabase(self.networking, self.requests_processor)
+            self.users_database = UsersDatabase(self.networking, self.requests_processor, self.self_ip_detector)
 
         if self.command_line_arguments.P2PModule:  #Запуск пир-к-пиру модлуля, если заданы параметры
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)

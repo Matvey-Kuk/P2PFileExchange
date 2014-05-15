@@ -1,18 +1,20 @@
 from DatabaseEngineModule.DatabaseEngine import *
 from UsersDatabaseModule.Cryptography import *
+import json
 
 
 class UsersDatabase(DatabaseEngine):
 
-    def __init__(self, networking, requests_processor):
+    def __init__(self, networking, requests_processor, self_ip_detector):
         super().__init__(networking, requests_processor, 'users_database')
+        self.self_ip_detector = self_ip_detector
 
         self.__name = None
         self.__keys = None
 
     def insert_alteration(self, new_alteration):
         if self.check_alteration_ligitimity(new_alteration):
-            #print('New alteration: ' + repr(new_alteration))
+            print('New alteration: ' + repr(new_alteration))
             DatabaseEngine.insert_alteration(self, new_alteration)
 
     def check_alteration_ligitimity(self, alteration):
@@ -55,7 +57,11 @@ class UsersDatabase(DatabaseEngine):
         else:
             self.__name = name
             self.__keys = Cryptography.generate_keys()
-            new_connection_data = ''
+            new_connection_data = {
+                'ips': self.self_ip_detector.get_self_ips(),
+                'server_port': 'hz'
+            }
+            new_connection_data = json.JSONEncoder().encode(new_connection_data)
             self.__change_connection_data(name, new_connection_data)
             answer = 'Successfully registered!'
         return answer
@@ -66,7 +72,7 @@ class UsersDatabase(DatabaseEngine):
                 name: {
                     'connection_data': new_connection_data,
                     'public_key': self.__keys['public_key'],
-                    'connection_time': time(),
+                    'update_data_time': time(),
                     'signature': Cryptography.get_signature(new_connection_data, self.__keys['private_key'])
                 }
             },

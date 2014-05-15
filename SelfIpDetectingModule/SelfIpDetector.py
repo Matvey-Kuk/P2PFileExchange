@@ -19,12 +19,10 @@ class SelfIpDetector(NetworkingUsingModule):
         self.__process()
 
     def self_ip_request_answer_generator(self, question_data, peer):
-        print(question_data)
-        print(peer)
-        return 'ah'
+        return peer.ip
 
     def self_ip_request_answer_received(self, request):
-        print(request)
+        self.__ips.append(request.answer_data)
 
     def __process(self):
         if not AllowingProcessing().allow_processing:
@@ -34,10 +32,11 @@ class SelfIpDetector(NetworkingUsingModule):
             if self.get_peer_metadata(peer, 'ip_request') is None:
                 request = self.send_request(peer, 'self_ip_request', 'Hello, give me my ip!')
                 self.set_peer_metadata(peer, 'ip_request', request)
-            else:
-                print(self.get_peer_metadata(peer, 'ip_request'))
 
         update_timeout = 1
 
         timer = Timer(update_timeout, self.__process)
         timer.start()
+
+    def get_self_ips(self):
+        return self.__ips.copy()
