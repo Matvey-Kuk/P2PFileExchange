@@ -19,15 +19,11 @@ class ServerThread(threading.Thread): #Класс для создания сок
         self.tcp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self.tcp_socket.bind((self.host, self.port))    #Присваивание сокету указанного адреса и порта
-        self.tcp_socket.setblocking(0)
 
     def run(self):
         while AllowingProcessing().allow_processing:
             self.tcp_socket.listen(4) #Макс число клиентов ожидающих соединение
-            try:
-                (socket, (ip, port)) = self.tcp_socket.accept() #Возвращает кортеж с двумя элементами: новый сокет и адрес клиента
-            except BlockingIOError:
-                continue
+            (socket, (ip, port)) = self.tcp_socket.accept()
             peer = Peer(ip, port)
             peer.connect(socket)    #Подключение к новому сокету из кортежа, который получили раньше
             print("New incoming connection from " + ip + ":" + str(port))

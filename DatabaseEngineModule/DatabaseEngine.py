@@ -27,7 +27,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             print("DatabaseClosed")
             return 0
 
-        print(self.get_hash(VersionsRange(first=0, last=None)))
+        #print(self.get_hash(VersionsRange(first=0, last=None)))
 
         update_timeout = 2
 
@@ -45,7 +45,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.register_answer_received_callback('alterations', self.__get_alterations_answer_received)
 
     def __database_condition_answer_generator(self, dumped_versions_ranges):
-        print('Request conditions: ' + repr(dumped_versions_ranges))
+        #print('Request conditions: ' + repr(dumped_versions_ranges))
         versions_ranges = []
         for dumped_versions_range in dumped_versions_ranges:
             versions_ranges.append(VersionsRange(dump=dumped_versions_range))
@@ -69,7 +69,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
             for versions_range in versions_ranges:
                 dumped_versions_ranges.append(versions_range.get_dump())
             self.send_request(peer, 'database_condition', dumped_versions_ranges)
-            print('sent cond req: ' + repr(dumped_versions_ranges))
+            #print('sent cond req: ' + repr(dumped_versions_ranges))
 
     def __request_needed_alterations(self):
         for peer in self.get_peers_database_working_with():
@@ -89,7 +89,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 self.send_request(peer, 'alterations', dumped_versions_ranges)
 
     def __get_alterations_answer_generator(self, dumped_versions_ranges):
-        print('get_alterations: ' + repr(dumped_versions_ranges))
+        #print('get_alterations: ' + repr(dumped_versions_ranges))
         alterations = []
         for dumped_versions_range in dumped_versions_ranges:
             alterations += self.get_alterations(VersionsRange(dump=dumped_versions_range))

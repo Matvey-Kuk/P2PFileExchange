@@ -12,7 +12,7 @@ class UsersDatabase(DatabaseEngine):
 
     def insert_alteration(self, new_alteration):
         if self.check_alteration_ligitimity(new_alteration):
-            print('New alteration: ' + repr(new_alteration))
+            #print('New alteration: ' + repr(new_alteration))
             DatabaseEngine.insert_alteration(self, new_alteration)
 
     def check_alteration_ligitimity(self, alteration):
