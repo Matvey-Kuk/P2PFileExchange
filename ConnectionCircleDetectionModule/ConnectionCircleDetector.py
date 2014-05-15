@@ -27,8 +27,7 @@ class ConnectionCircleDetector(NetworkingUsingModule):
         self.register_request_answer_generator('unique_instance_key', self.get_unique_instance_key)
         self.register_answer_received_callback('unique_instance_key', self.unique_instance_key_received)
 
-    def get_unique_instance_key(self, question_data):
-        print('uk got')
+    def get_unique_instance_key(self, question_data, peer):
         return self.unique_key
 
     def unique_instance_key_received(self, request):

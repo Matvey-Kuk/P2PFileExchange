@@ -25,7 +25,7 @@ class P2p(NetworkingUsingModule):
         self.register_request_answer_generator('peers_request', self.peer_request_answer)
         self.register_answer_received_callback('peers_request', self.peer_request_answer_received)
 
-    def peer_request_answer(self, question_data):
+    def peer_request_answer(self, question_data, peer):
         peer_list = []
         peer_added_list = []
         for peer in self.networking.get_peers():
@@ -56,7 +56,7 @@ class P2p(NetworkingUsingModule):
                     if self.networking.get_peer(new_peer['ip'], new_peer['server_port']) is None:
                         self.networking.provoke_connection(new_peer['ip'], new_peer['server_port'])
 
-    def server_port_request_answer(self, question_data):
+    def server_port_request_answer(self, question_data, peer):
         return self.networking.server_port
 
     def server_port_answer_received(self, request):

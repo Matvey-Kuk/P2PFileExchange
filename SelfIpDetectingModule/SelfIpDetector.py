@@ -18,8 +18,9 @@ class SelfIpDetector(NetworkingUsingModule):
 
         self.__process()
 
-    def self_ip_request_answer_generator(self, question_data):
-        print('q')
+    def self_ip_request_answer_generator(self, question_data, peer):
+        print(question_data)
+        print(peer)
         return 'ah'
 
     def self_ip_request_answer_received(self, request):

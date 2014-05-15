@@ -106,7 +106,7 @@ class RequestsProcessor(object):
         if module_prefix in self.answer_generating_callbacks:
             if request_prefix in self.answer_generating_callbacks[module_prefix]:
                 callback = self.answer_generating_callbacks[module_prefix][request_prefix]
-                answer = callback(request_data)
+                answer = callback(request_data, peer)
         answer_message = {
             'request_question_answer': 'answer',
             'request_id': message_body['text']['request_id'],

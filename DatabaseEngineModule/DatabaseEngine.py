@@ -44,7 +44,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
         self.register_request_answer_generator('alterations', self.__get_alterations_answer_generator)
         self.register_answer_received_callback('alterations', self.__get_alterations_answer_received)
 
-    def __database_condition_answer_generator(self, dumped_versions_ranges):
+    def __database_condition_answer_generator(self, dumped_versions_ranges, peer):
         #print('Request conditions: ' + repr(dumped_versions_ranges))
         versions_ranges = []
         for dumped_versions_range in dumped_versions_ranges:
@@ -88,7 +88,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
                 # print('sending req \n' + print_str)
                 self.send_request(peer, 'alterations', dumped_versions_ranges)
 
-    def __get_alterations_answer_generator(self, dumped_versions_ranges):
+    def __get_alterations_answer_generator(self, dumped_versions_ranges, peer):
         #print('get_alterations: ' + repr(dumped_versions_ranges))
         alterations = []
         for dumped_versions_range in dumped_versions_ranges:
