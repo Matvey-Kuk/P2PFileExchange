@@ -7,7 +7,9 @@ from ConnectionCircleDetectionModule.ConnectionCircleDetector import *
 from Interface.Interface import *
 from UsersDatabaseModule.UsersDatabase import *
 from Interface.AllowingProcessing import *
-from SelfIpDetectingModule.SelfIpDetector import  *
+from SelfIpDetectingModule.SelfIpDetector import *
+from FunctionalTestInteractionModule.FunctionalTestInteraction import *
+
 
 
 class Main(object):
@@ -28,12 +30,14 @@ class Main(object):
             self.connection_circle_detector = ConnectionCircleDetector(self.networking, self.requests_processor)
             self.p2p = P2p(self.networking, self.requests_processor, self.connection_circle_detector)
 
-        #print(threading.enumerate())
         if self.command_line_arguments.Interface:  #Запуск интерфейса, если задан параметр
             self.interface = Interface()
             self.interface.roottk.mainloop()
-        #print(threading.enumerate())
 
+        if not self.command_line_arguments.functional_test_interaction_port is None:
+            self.functional_tests_interactor = FunctionalTestInteraction(
+                self.command_line_arguments.functional_test_interaction_port
+            )
 
     @staticmethod
     def parse_arguments():
@@ -44,7 +48,7 @@ class Main(object):
         parser.add_argument('-port', '-p', dest='port', help='Server port')
         parser.add_argument('-host', dest='bind_host', help='Host for server binding')
         parser.add_argument('-peer', dest='first_peer', help='ip:port of first peer needed for connection')
-        parser.add_argument('-nick', dest='nick_name', help='Enter your nick name')
+        parser.add_argument('-functionalTestInteractionPort', dest='functional_test_interaction_port', help='Enter port to set interaction with functional tests engine.')
         parser.add_argument(
             '-AuthDatabaseModule',
             dest='AuthDatabaseModule',

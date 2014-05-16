@@ -24,12 +24,19 @@ class UsersDatabase(DatabaseEngine):
         for key in changes:
             if not self.find_in_restored_table(VersionsRange(first=0, last=None), key) is None:
                 if not Cryptography.verify_signature(
-                        changes[key]['connection_data'],
+                        changes[key]['connection_data'] + changes[key]['groups'] + repr(changes[key]['update_data_time']),
                         changes[key]['public_key'],
                         changes[key]['signature']
                 ):
                     result = False
         return result
+
+    def get_peers_for_group(self, administrator_name, group_name):
+        user_data = self.find_in_restored_table(VersionsRange(first=0, last=None), administrator_name)
+        if group_name in user_data['groups']:
+            print(user_data['groups'])
+            print(type(user_data['groups']))
+        return 'Ok'
 
     def send_data_to_interface(self):
         if self.is_logged_in():
@@ -43,6 +50,9 @@ class UsersDatabase(DatabaseEngine):
             return self.__register_as(command_words[1])
         elif command_words[0] == 'add_user_to_group':
             self.__add_user_to_group(command_words[1], command_words[2])
+            return 'Succeed!'
+        elif command_words[0] == 'show_peers_for_group':
+            return self.get_peers_for_group(command_words[1], command_words[2])
         elif command_words[0] == 'show':
             return repr(self.restore_a_table(VersionsRange(first=0, last=None)))
         else:
@@ -79,14 +89,18 @@ class UsersDatabase(DatabaseEngine):
         return json.JSONEncoder().encode(new_connection_data)
 
     def __update_data_in_database(self):
+        creation_time = time()
         new_alteration = Alteration(
             {
                 self.__name: {
                     'connection_data': self.__pack_connection_data(),
                     'groups': self.get_groups(),
                     'public_key': self.__keys['public_key'],
-                    'update_data_time': time(),
-                    'signature': Cryptography.get_signature(self.__pack_connection_data(), self.__keys['private_key'])
+                    'update_data_time': creation_time,
+                    'signature': Cryptography.get_signature(
+                        self.__pack_connection_data() + self.get_groups() + repr(creation_time),
+                        self.__keys['private_key']
+                    )
                 }
             },
             VersionsRange(version=self.get_last_version() + 1)
