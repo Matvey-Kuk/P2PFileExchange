@@ -1,13 +1,6 @@
 from FunctionalTests.Instance import *
 
 
-class FunctionalTester(object):
-
-    def __init__(self):
-        self
-
-    def run_instance(self, arguments):
-        return id
-
-    def send_message_to_instance(self, id):
-        pass
+instance = Instance('-port 1235 -P2PModule -UsersDatabaseModule -functionalTestInteractionPort 1111')
+print(instance.send_command('auth register matvey'))
+instance.kill()
