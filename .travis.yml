@@ -7,4 +7,4 @@ install:
 python:
   - "3.3"
 script:
-  - python3 -m unittest discover --start-directory=Tests --pattern=*.py
+  - python3 -m unittest discover --start-directory=P2PFileExchange/Tests --pattern=*.py
