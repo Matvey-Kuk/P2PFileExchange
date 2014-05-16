@@ -11,7 +11,6 @@ from SelfIpDetectingModule.SelfIpDetector import *
 from FunctionalTestInteractionModule.FunctionalTestInteraction import *
 
 
-
 class Main(object):
     """Это основной класс, через который запускается приложение."""
 
