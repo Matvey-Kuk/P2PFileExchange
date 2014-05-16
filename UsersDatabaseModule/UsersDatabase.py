@@ -11,6 +11,7 @@ class UsersDatabase(DatabaseEngine):
 
         self.__name = None
         self.__keys = None
+        self.__groups = {}
 
     def insert_alteration(self, new_alteration):
         if self.check_alteration_ligitimity(new_alteration):
@@ -40,15 +41,24 @@ class UsersDatabase(DatabaseEngine):
         command_words = command.split(' ')
         if command_words[0] == 'register':
             return self.__register_as(command_words[1])
-        elif command_words[0] == 'change_connection_data':
-            self.__change_connection_data(self.__name, command_words[1])
-            return 'Successfully changed!'
-        elif command_words[0] == 'login':
-            pass
+        elif command_words[0] == 'add_user_to_group':
+            self.__add_user_to_group(command_words[1], command_words[2])
         elif command_words[0] == 'show':
             return repr(self.restore_a_table(VersionsRange(first=0, last=None)))
         else:
             return 'Undefined command'
+
+    def __add_user_to_group(self, group_name, user_name):
+        if group_name in self.__groups:
+            if user_name in group_name:
+                return 0
+        if not group_name in self.__groups:
+            self.__groups[group_name] = []
+        self.__groups[group_name].append(user_name)
+        self.__update_data_in_database()
+
+    def get_groups(self):
+        return json.JSONEncoder().encode(self.__groups)
 
     def __register_as(self, name):
         answer = ''
@@ -57,7 +67,7 @@ class UsersDatabase(DatabaseEngine):
         else:
             self.__name = name
             self.__keys = Cryptography.generate_keys()
-            self.__change_connection_data()
+            self.__update_data_in_database()
             answer = 'Successfully registered!'
         return answer
 
@@ -68,11 +78,12 @@ class UsersDatabase(DatabaseEngine):
         }
         return json.JSONEncoder().encode(new_connection_data)
 
-    def __change_connection_data(self):
+    def __update_data_in_database(self):
         new_alteration = Alteration(
             {
                 self.__name: {
                     'connection_data': self.__pack_connection_data(),
+                    'groups': self.get_groups(),
                     'public_key': self.__keys['public_key'],
                     'update_data_time': time(),
                     'signature': Cryptography.get_signature(self.__pack_connection_data(), self.__keys['private_key'])
