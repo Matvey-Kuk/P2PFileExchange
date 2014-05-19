@@ -15,4 +15,5 @@ class TestUsersDatabase(unittest.TestCase):
         print(self.functional_tester.send_command(self.instances[0], 'auth register matvey'))
 
     def tearDown(self):
+        print('test_ended')
         self.functional_tester.kill_instances()

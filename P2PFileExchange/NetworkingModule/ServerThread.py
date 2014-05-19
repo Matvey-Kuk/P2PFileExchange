@@ -6,6 +6,11 @@ from NetworkingModule.Peer import *
 from Interface.AllowingProcessing import *
 
 
+from .ThreadStopException import *
+
+threading.SystemExit = SystemExit, ThreadStopException
+
+
 class ServerThread(threading.Thread): #Класс для создания сокета, примающего соединения от других клиентов
 
     def __init__(self, host, port, peers):
@@ -28,3 +33,6 @@ class ServerThread(threading.Thread): #Класс для создания сок
             peer.connect(socket)    #Подключение к новому сокету из кортежа, который получили раньше
             print("New incoming connection from " + ip + ":" + str(port))
             self.peers.append(peer)
+
+    def stop(self):
+        raise ThreadStopException()

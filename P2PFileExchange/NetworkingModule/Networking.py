@@ -2,6 +2,7 @@ from threading import Timer
 
 from NetworkingModule.ServerThread import *
 from Interface.AllowingProcessing import *
+from .ThreadStopException import *
 
 
 class Networking(object):
@@ -98,3 +99,18 @@ class Networking(object):
 
         timer = Timer(update_timeout, self.update)
         timer.start()
+
+    def stop_all_threads(self):
+        for peer in self.peers:
+            try:
+                peer.thread_send.stop()
+            except ThreadStopException:
+                pass
+            peer.thread_send.join()
+        try:
+            self.server_thread.stop()
+        except ThreadStopException:
+            pass
+
+        for peer in self.peers:
+            print(peer.thread_send.isAlive())

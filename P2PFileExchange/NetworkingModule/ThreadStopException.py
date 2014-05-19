@@ -1,0 +1,2 @@
+class ThreadStopException(StopIteration):
+    pass

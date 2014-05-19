@@ -3,14 +3,15 @@ import argparse
 import os
 
 from .Instance import *
-from .NetworkingModule.Networking import *
-from .NetworkingModule.NetworkingUsingModule import *
-from .RequestsModule.RequestsProcessor import *
+from NetworkingModule.Networking import *
+from NetworkingModule.NetworkingUsingModule import *
+from RequestsModule.RequestsProcessor import *
 
 
 class FunctionalTester(NetworkingUsingModule):
 
     def __init__(self):
+        AllowingProcessing().allow_processing = True
         self.parser = argparse.ArgumentParser(description='Hello, p2p world testing.')
         self.parser.add_argument('-path', '-p', dest='path', help='Test program path')
         self.__server_port_increment = 1111
@@ -18,6 +19,10 @@ class FunctionalTester(NetworkingUsingModule):
         self.__instances = []
         networking = Networking('127.0.0.1', 1110)
         super().__init__(networking, RequestsProcessor(networking), 'functional_testing')
+        self.register_answer_received_callback('command', self.answer_received)
+
+    def answer_received(self, request):
+        pass
 
     def make_instance(self):
         instance = Instance(
@@ -44,5 +49,7 @@ class FunctionalTester(NetworkingUsingModule):
         return request.answer_data
 
     def kill_instances(self):
+        AllowingProcessing.allow_processing = False
+        self.networking.stop_all_threads()
         for instance in self.__instances:
             instance.kill()
