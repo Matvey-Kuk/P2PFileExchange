@@ -35,8 +35,9 @@ class FunctionalTester(NetworkingUsingModule):
     def send_command(self, instance, command):
         peer_for_instance = None
         for peer in self.networking.get_peers():
-            if peer.port == instance.get_server_port():
+            if peer.port == instance.get_functional_testing_port():
                 peer_for_instance = peer
+        print('peer' + repr(peer_for_instance))
         request = self.send_request(peer_for_instance, 'command', command)
         while request.answer_data is None:
             sleep(0.1)

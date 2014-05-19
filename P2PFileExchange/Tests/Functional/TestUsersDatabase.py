@@ -8,7 +8,7 @@ class TestUsersDatabase(unittest.TestCase):
     def setUp(self):
         self.functional_tester = FunctionalTester()
         self.instances = []
-        for i in range(10):
+        for i in range(2):
             self.instances.append(self.functional_tester.make_instance())
 
     def test_register_user(self):
