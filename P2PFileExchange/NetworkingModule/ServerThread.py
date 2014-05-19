@@ -21,7 +21,7 @@ class ServerThread(threading.Thread): #Класс для создания сок
         self.tcp_socket.bind((self.host, self.port))    #Присваивание сокету указанного адреса и порта
 
     def run(self):
-        while AllowingProcessing().allow_processing:
+        while True:
             self.tcp_socket.listen(4) #Макс число клиентов ожидающих соединение
             (socket, (ip, port)) = self.tcp_socket.accept()
             peer = Peer(ip, port)

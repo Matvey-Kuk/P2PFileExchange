@@ -1,32 +1,47 @@
 from time import sleep
 import argparse
+import os
 
-from FunctionalTests.Instance import *
-from FunctionalTests.NetworkingModule.Networking import *
-from FunctionalTests.NetworkingModule.Message import *
+from .Instance import *
+from .NetworkingModule.Networking import *
+from .NetworkingModule.NetworkingUsingModule import *
+from .RequestsModule.RequestsProcessor import *
 
-parser = argparse.ArgumentParser(description='Hello, p2p world.')
-parser.add_argument('-path', '-p', dest='path', help='Test program path')
 
-networking = Networking('127.0.0.1', 1234)
+class FunctionalTester(NetworkingUsingModule):
 
-instance = Instance(
-    parser.parse_args().path + '/Main.py',
-    1234,
-    1111
-)
+    def __init__(self):
+        self.parser = argparse.ArgumentParser(description='Hello, p2p world testing.')
+        self.parser.add_argument('-path', '-p', dest='path', help='Test program path')
+        self.__server_port_increment = 1111
+        self.__functional_port_increment = 2111
+        self.__instances = []
+        networking = Networking('127.0.0.1', 1110)
+        super().__init__(networking, RequestsProcessor(networking), 'functional_testing')
 
-sleep(5)
+    def make_instance(self):
+        instance = Instance(
+            os.path.abspath(__file__)[0:os.path.abspath(__file__).rfind('/')] + '/../P2PFileExchange/Main.py',
+            self.__server_port_increment,
+            self.__functional_port_increment
+        )
+        self.__instances.append(instance)
+        sleep(1)
+        self.networking.provoke_connection('127.0.0.1', self.__functional_port_increment)
+        self.__server_port_increment += 1
+        self.__functional_port_increment += 1
+        return instance
 
-networking.provoke_connection('127.0.0.1', 1111)
+    def send_command(self, instance, command):
+        peer_for_instance = None
+        for peer in self.networking.get_peers():
+            if peer.port == instance.get_server_port():
+                peer_for_instance = peer
+        request = self.send_request(peer_for_instance, 'command', command)
+        while request.answer_data is None:
+            sleep(0.1)
+        return request.answer_data
 
-for peer in networking.get_peers():
-    networking.send_message(Message(peer, prefix='func_testing', text='auth register matvey'))
-
-sleep(5)
-
-for message in networking.get_messages('func_testing'):
-    print(message.data)
-
-print(instance.send_command('auth register matvey'))
-instance.kill()
+    def kill_instances(self):
+        for instance in self.__instances:
+            instance.kill()

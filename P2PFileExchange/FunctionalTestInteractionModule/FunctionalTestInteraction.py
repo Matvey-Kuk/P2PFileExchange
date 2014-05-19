@@ -1,31 +1,19 @@
 from Interface.Interface import *
 from NetworkingModule.Networking import *
 from NetworkingModule.Message import *
+from NetworkingModule.NetworkingUsingModule import *
+from RequestsModule.RequestsProcessor import *
 
 
-class FunctionalTestInteraction(object):
+class FunctionalTestInteraction(NetworkingUsingModule):
 
     def __init__(self, port):
-        self.networking = Networking('127.0.0.1', int(port))
+        networking = Networking('127.0.0.1', int(port))
+        super().__init__(networking, RequestsProcessor(networking), 'functional_testing')
+
+        self.register_request_answer_generator('command', self.received_command)
+
         print('Started interaction with functional tests on port:' + str(port))
-        self.update()
 
-    def update(self):
-        if not AllowingProcessing().allow_processing:
-            return 0
-
-        update_timeout = 0.1
-
-        for message in self.networking.get_messages('func_testing', True):
-            if len(message.data.split(None, 1)) == 1:
-                arguments = ''
-            else:
-                arguments = message.data.split(None, 1)[1]
-
-            self.networking.send_message(Message(message.peer, prefix='func_testing', text=Interface.execute_command(
-                message.data.split(None, 1)[0],
-                arguments
-            )))
-
-        timer = Timer(update_timeout, self.update)
-        timer.start()
+    def received_command(self, request_data, peer):
+        return 'boooooo'
