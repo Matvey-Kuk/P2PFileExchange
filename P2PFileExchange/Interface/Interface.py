@@ -103,7 +103,7 @@ class Interface(object):
                 prefix = ""
         else:
             if s.split(None, 1)[0].lower() == "leave":
-                self.txtfr1.insert('end', "\n" + "You left " + self.prefix + " module")
+                self.txtfr1.insert('end', "\n" + "You've left " + self.prefix + " module")
                 self.txtfr1.yview_moveto(1.0)
                 self.prefix = ""
             prefix = self.prefix
@@ -119,14 +119,14 @@ class Interface(object):
     def input_up_command(self, event):
         if self.current_command_number:
             self.current_command_number -= 1
-        self.txtfr2.delete('1.0', 'end')
-        self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
+            self.txtfr2.delete('1.0', 'end')
+            self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
 
     def input_down_command(self, event):
         if self.current_command_number < len(self.previous_commands) - 1:
             self.current_command_number += 1
-        self.txtfr2.delete('1.0', 'end')
-        self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
+            self.txtfr2.delete('1.0', 'end')
+            self.txtfr2.insert('end', self.previous_commands[self.current_command_number])
 
     def closing_window(self, *args):
         for callback in Interface.__exit_command_callbacks:
