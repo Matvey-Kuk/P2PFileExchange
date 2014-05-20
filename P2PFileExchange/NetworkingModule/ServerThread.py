@@ -4,6 +4,7 @@ import inspect
 
 from NetworkingModule.Peer import *
 from Interface.AllowingProcessing import *
+from time import sleep
 
 
 from .ThreadStopException import *
@@ -24,15 +25,19 @@ class ServerThread(threading.Thread): #Класс для создания сок
         self.tcp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self.tcp_socket.bind((self.host, self.port))    #Присваивание сокету указанного адреса и порта
+        self.tcp_socket.setblocking(0)
 
     def run(self):
         while True:
             self.tcp_socket.listen(4) #Макс число клиентов ожидающих соединение
-            (socket, (ip, port)) = self.tcp_socket.accept()
-            peer = Peer(ip, port)
-            peer.connect(socket)    #Подключение к новому сокету из кортежа, который получили раньше
-            print("New incoming connection from " + ip + ":" + str(port))
-            self.peers.append(peer)
+            try:
+                (socket, (ip, port)) = self.tcp_socket.accept()
+                peer = Peer(ip, port)
+                peer.connect(socket)    #Подключение к новому сокету из кортежа, который получили раньше
+                print("New incoming connection from " + ip + ":" + str(port))
+                self.peers.append(peer)
+            except BlockingIOError:
+                sleep(0.1)
 
     def stop(self):
         raise ThreadStopException()
