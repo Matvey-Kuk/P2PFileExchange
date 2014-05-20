@@ -29,7 +29,7 @@ class DatabaseEngine(SynchronizableDatabase, NetworkingUsingModule):
 
         #print(self.get_hash(VersionsRange(first=0, last=None)))
 
-        update_timeout = 2
+        update_timeout = 1
 
         self.__request_databases_conditions()
         self.__request_needed_alterations()

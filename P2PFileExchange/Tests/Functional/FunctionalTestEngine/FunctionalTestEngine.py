@@ -14,7 +14,8 @@ class FunctionalTestEngine(NetworkingUsingModule):
         AllowingProcessing().allow_processing = True
         self.parser = argparse.ArgumentParser(description='Hello, p2p world testing.')
         self.parser.add_argument('-path', '-p', dest='path', help='Test program path')
-        self.__server_port_increment = 1111
+        self.__server_first_port = 1111
+        self.__server_port_increment = self.__server_first_port
         self.__functional_port_increment = 2111
         self.__instances = []
         networking = Networking('127.0.0.1', 1110)
@@ -25,10 +26,14 @@ class FunctionalTestEngine(NetworkingUsingModule):
         pass
 
     def make_instance(self):
+        another_peer_port = None
+        if self.__server_port_increment != self.__server_first_port:
+            another_peer_port = self.__server_port_increment - 1
         instance = Instance(
             os.path.abspath(__file__)[0:os.path.abspath(__file__).rfind('/')] + '/../../../Main.py',
             self.__server_port_increment,
-            self.__functional_port_increment
+            self.__functional_port_increment,
+            another_peer_port
         )
         self.__instances.append(instance)
         sleep(1)
@@ -42,10 +47,9 @@ class FunctionalTestEngine(NetworkingUsingModule):
         for peer in self.networking.get_peers():
             if peer.port == instance.get_functional_testing_port():
                 peer_for_instance = peer
-        print('peer' + repr(peer_for_instance))
         request = self.send_request(peer_for_instance, 'command', command)
         while request.answer_data is None:
-            sleep(0.1)
+            sleep(0.01)
         return request.answer_data
 
     def kill_instances(self):

@@ -16,5 +16,4 @@ class FunctionalTestInteraction(NetworkingUsingModule):
         print('Started interaction with functional tests on port:' + str(port))
 
     def received_command(self, request_data, peer):
-        print('Received command: ' + request_data)
-        return 'boooooo'
+        return Interface.execute_command(request_data.split(' ')[0], " ".join(request_data.split(' ')[1:]))
