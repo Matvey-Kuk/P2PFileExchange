@@ -21,7 +21,7 @@ class Peer (object):
         self.received_messages_queue = Queue()
 
         self.sending_messages_queue = Queue()
-        self.send_enabled = threading.Event()
+        self.send_enabled = False
 
         self.send_thread_run = True
         self.receive_thread_run = True
@@ -84,8 +84,6 @@ class Peer (object):
 
         while len(self.messages_for_sending) > 0:
             self.sending_messages_queue.put(self.messages_for_sending.pop(0))
-
-        self.send_enabled.set()
 
     def set_metadata(self, module_prefix, data_prefix, data):
         if not module_prefix in self.metadata:

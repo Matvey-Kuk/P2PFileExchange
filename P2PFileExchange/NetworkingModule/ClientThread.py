@@ -1,7 +1,4 @@
 import threading
-from .ThreadStopException import *
-
-threading.SystemExit = SystemExit, ThreadStopException
 
 
 class ClientThread(threading.Thread):
@@ -9,9 +6,7 @@ class ClientThread(threading.Thread):
     def __init__(self, socket):
         threading.Thread.__init__(self)
         self.socket = socket
+        socket.setblocking(0)
 
     def run(self):
         raise NotImplementedError("Эту функцию необходимо унаследовать")
-
-    def stop(self):
-        raise ThreadStopException()

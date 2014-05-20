@@ -50,6 +50,5 @@ class FunctionalTester(NetworkingUsingModule):
 
     def kill_instances(self):
         AllowingProcessing.allow_processing = False
-        self.networking.stop_all_threads()
         for instance in self.__instances:
             instance.kill()

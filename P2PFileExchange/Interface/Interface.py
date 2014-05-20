@@ -65,11 +65,14 @@ class Interface(object):
         #self.roottk.rowconfigure(2, weight=0)
 
         i = -1
-        for prefix in sorted(self.__output_callbacks.keys()):
-            i += 1
-            self.Info_labels[prefix] = Label(self.frameInfo, anchor='center')
-            self.Info_labels[prefix].grid(row=0, column=i, sticky='nsew')
-        self.frameInfo.columnconfigure(i, weight=1)
+        if len(self.__output_callbacks) > 0:
+            for prefix in sorted(self.__output_callbacks.keys()):
+                i += 1
+                self.Info_labels[prefix] = Label(self.frameInfo, anchor='center')
+                self.Info_labels[prefix].grid(row=0, column=i, sticky='nsew')
+            self.frameInfo.columnconfigure(i, weight=1)
+        else:
+            self.frameInfo.columnconfigure(1, weight=1)
 
         self.txtfr1.after_idle(self.asking_for_information)
        # self.roottk.after(100, self.roottk.mainloop())

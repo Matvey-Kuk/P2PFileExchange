@@ -1,4 +1,7 @@
 from NetworkingModule.ClientThread import *
+from Interface.AllowingProcessing import *
+
+from time import sleep
 
 
 class ClientSendThread(ClientThread):
@@ -11,12 +14,14 @@ class ClientSendThread(ClientThread):
         self.connection_errors = connection_errors
 
     def run(self):
-        while self.running_enabled:
+        while self.running_enabled and AllowingProcessing().allow_processing:
             try:
-                self.enabled.wait()
-                if self.messages_for_sending.qsize() == 0:
-                    self.enabled.clear()
-                else:
+                if self.messages_for_sending.qsize() != 0:
                     self.socket.sendall(self.messages_for_sending.get().get_bytes() + b'\n')
+                else:
+                    sleep(0.1)
+            except BlockingIOError:
+                sleep(0.1)
             except Exception as exception:
                 self.connection_errors.put(exception)
+        print('send stopped')
