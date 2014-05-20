@@ -37,5 +37,4 @@ class ServerThread(threading.Thread): #Класс для создания сок
                 self.peers.append(peer)
             except BlockingIOError:
                 sleep(0.1)
-        print('server stopped')
         self._stop()

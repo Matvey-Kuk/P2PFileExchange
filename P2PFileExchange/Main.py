@@ -1,4 +1,5 @@
 import argparse
+import signal
 
 from NetworkingModule.Networking import *
 from P2pModule.P2p import *
@@ -102,3 +103,10 @@ class Main(object):
 
 AllowingProcessing().allow_processing = True
 main = Main()
+
+
+def signal_handler(signal, frame):
+        print('Kill signal handled. Saving...')
+        AllowingProcessing().allow_processing = False
+
+signal.signal(signal.SIGINT, signal_handler)

@@ -30,4 +30,3 @@ class ClientReceiveThread(ClientThread):
 
             except Exception as exception:
                 self.connection_errors.put(exception)
-        print('receive stopped')

@@ -24,4 +24,3 @@ class ClientSendThread(ClientThread):
                 sleep(0.1)
             except Exception as exception:
                 self.connection_errors.put(exception)
-        print('send stopped')
