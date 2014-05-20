@@ -1,4 +1,4 @@
-from FunctionalTests.FunctionalTester import FunctionalTester
+from Tests.Functional.FunctionalTestEngine.FunctionalTestEngine import *
 
 import unittest
 
@@ -6,7 +6,7 @@ import unittest
 class TestUsersDatabase(unittest.TestCase):
 
     def setUp(self):
-        self.functional_tester = FunctionalTester()
+        self.functional_tester = FunctionalTestEngine()
         self.instances = []
         for i in range(1):
             self.instances.append(self.functional_tester.make_instance())

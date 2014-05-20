@@ -8,7 +8,7 @@ from NetworkingModule.NetworkingUsingModule import *
 from RequestsModule.RequestsProcessor import *
 
 
-class FunctionalTester(NetworkingUsingModule):
+class FunctionalTestEngine(NetworkingUsingModule):
 
     def __init__(self):
         AllowingProcessing().allow_processing = True
@@ -26,7 +26,7 @@ class FunctionalTester(NetworkingUsingModule):
 
     def make_instance(self):
         instance = Instance(
-            os.path.abspath(__file__)[0:os.path.abspath(__file__).rfind('/')] + '/../P2PFileExchange/Main.py',
+            os.path.abspath(__file__)[0:os.path.abspath(__file__).rfind('/')] + '/../../../Main.py',
             self.__server_port_increment,
             self.__functional_port_increment
         )
