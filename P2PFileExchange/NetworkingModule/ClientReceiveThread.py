@@ -26,7 +26,7 @@ class ClientReceiveThread(ClientThread):
                     self.received_messages.put(new_message)
                     self.received_bytes = bytearray()
             except BlockingIOError:
-                sleep(0.001)
+                sleep(0.1)
 
             except Exception as exception:
                 self.connection_errors.put(exception)
