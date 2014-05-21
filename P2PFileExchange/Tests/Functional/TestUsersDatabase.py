@@ -17,6 +17,7 @@ class TestUsersDatabase(unittest.TestCase):
                 self.functional_tester.send_command(self.instances[i], 'auth register user' + str(i)),
                 'Successfully registered!'
             )
+            print('Instance is successfully checked.')
             sleep(5)
         sleep(5 * len(self.instances))
         for i in range(len(self.instances)):
@@ -30,6 +31,7 @@ class TestUsersDatabase(unittest.TestCase):
                 ),
                 ['user0', 'user1', 'user2']
             )
+            print('Instance is successfully checked.')
 
     def tearDown(self):
         self.functional_tester.kill_instances()
