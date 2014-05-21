@@ -51,12 +51,23 @@ class UsersDatabase(DatabaseEngine):
         elif command_words[0] == 'add_user_to_group':
             self.__add_user_to_group(command_words[1], command_words[2])
             return 'Succeed!'
+        elif command_words[0] == 'show_users_in_group':
+            return
         elif command_words[0] == 'show_peers_for_group':
             return self.get_peers_for_group(command_words[1], command_words[2])
+        elif command_words[0] == 'show_users':
+            return " ".join(self.get_authorized_users())
         elif command_words[0] == 'show':
             return repr(self.restore_a_table(VersionsRange(first=0, last=None)))
         else:
             return 'Undefined command'
+
+    def get_authorized_users(self):
+        users = []
+        restored_table = self.restore_a_table(VersionsRange(first=0, last=None))
+        for user in restored_table:
+            users.append(user)
+        return users
 
     def __add_user_to_group(self, group_name, user_name):
         if group_name in self.__groups:
