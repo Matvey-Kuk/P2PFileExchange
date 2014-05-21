@@ -94,7 +94,7 @@ class P2p(NetworkingUsingModule):
         return s
 
     def process_interface_command(self, command):
-        if command == 'show peers':
+        if command == 'show_peers':
             return repr(self.networking.get_peers())
         return 'Undefined command'
 
