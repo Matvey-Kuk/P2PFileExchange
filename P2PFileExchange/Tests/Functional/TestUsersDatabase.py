@@ -12,6 +12,7 @@ class TestUsersDatabase(unittest.TestCase):
             self.instances.append(self.functional_tester.make_instance())
 
     def test_register_user(self):
+        print('Testing auth register_user command')
         for i in range(len(self.instances)):
             self.assertEqual(
                 self.functional_tester.send_command(self.instances[i], 'auth register user' + str(i)),

@@ -94,9 +94,13 @@ class P2p(NetworkingUsingModule):
         return s
 
     def process_interface_command(self, command):
-        if command == 'show_peers':
+        command_words = command.split(' ')
+        if command_words[0] == 'show_peers':
             return repr(self.networking.get_peers())
-        return 'Undefined command'
+        elif command_words[1] == 'connect_to':
+            self.networking.provoke_connection(command_words[2].split(':')[0], int(command_words[2].split(':')[1]))
+        else:
+            return 'Undefined command'
 
     def register_interface_callbacks(self):
         Interface.register_output_callback('p2p', self.send_data_to_interface)

@@ -12,6 +12,7 @@ class TestUsersDatabase(unittest.TestCase):
             self.instances.append(self.functional_tester.make_instance())
 
     def test_show_peers(self):
+        print('Testing p2p show_peers command')
         for i in range(len(self.instances)):
             self.assertIn(
                 '127.0.0.1:',
