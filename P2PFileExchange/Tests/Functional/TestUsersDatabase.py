@@ -1,5 +1,6 @@
 from Tests.Functional.FunctionalTestEngine.FunctionalTestEngine import *
 
+import tempfile
 import unittest
 
 
@@ -33,6 +34,18 @@ class TestUsersDatabase(unittest.TestCase):
                 ['user0', 'user1', 'user2']
             )
             print('Instance is successfully checked.')
+
+    def test_save_keys_to_file_and_restore(self):
+        print('Testing "auth save_keys" and "auth auth_as" commands')
+        keys_file = tempfile.NamedTemporaryFile()
+        # self.assertEqual(
+        #     self.functional_tester.send_command(self.instances[0], 'auth save_keys ' + keys_file.name),
+        #     'Keys has been saved.'
+        # )
+        self.assertEqual(
+            self.functional_tester.send_command(self.instances[0], 'auth logout ' + keys_file.name),
+            'Successfully logout.'
+        )
 
     def tearDown(self):
         self.functional_tester.kill_instances()

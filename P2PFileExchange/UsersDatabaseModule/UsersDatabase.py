@@ -13,6 +13,11 @@ class UsersDatabase(DatabaseEngine):
         self.__keys = None
         self.__groups = {}
 
+    def __logout(self):
+        self.__name = None
+        self.__keys = None
+        self.__groups = None
+
     def insert_alteration(self, new_alteration):
         if self.check_alteration_ligitimity(new_alteration):
             print('New alteration: ' + repr(new_alteration))
@@ -39,7 +44,7 @@ class UsersDatabase(DatabaseEngine):
         return 'Ok'
 
     def send_data_to_interface(self):
-        if self.is_logged_in():
+        if not self.__name is None:
             return 'Logged as: ' + repr(self.get_name())
         else:
             return 'Not logged in.'
@@ -48,6 +53,9 @@ class UsersDatabase(DatabaseEngine):
         command_words = command.split(' ')
         if command_words[0] == 'register':
             return self.__register_as(command_words[1])
+        elif command_words[0] == 'logout':
+            self.__logout()
+            return 'Successfully logout.'
         elif command_words[0] == 'add_user_to_group':
             self.__add_user_to_group(command_words[1], command_words[2])
             return 'Succeed!'
@@ -117,9 +125,6 @@ class UsersDatabase(DatabaseEngine):
             VersionsRange(version=self.get_last_version() + 1)
         )
         self.insert_alteration(new_alteration)
-
-    def is_logged_in(self):
-        return False
 
     def get_name(self):
         return self.__name
