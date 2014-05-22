@@ -27,7 +27,9 @@ class FunctionalTestEngine(NetworkingUsingModule):
     @staticmethod
     def is_port_opened(port):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        return not sock.connect_ex(('127.0.0.1', port)) == 0
+        result = not sock.connect_ex(('127.0.0.1', port)) == 0
+        sock.close()
+        return result
 
     @staticmethod
     def find_free_port(start_port):
