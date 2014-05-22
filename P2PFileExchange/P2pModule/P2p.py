@@ -97,8 +97,9 @@ class P2p(NetworkingUsingModule):
         command_words = command.split(' ')
         if command_words[0] == 'show_peers':
             return repr(self.networking.get_peers())
-        elif command_words[1] == 'connect_to':
-            self.networking.provoke_connection(command_words[2].split(':')[0], int(command_words[2].split(':')[1]))
+        elif command_words[0] == 'connect_to':
+            self.networking.provoke_connection(command_words[1].split(':')[0], int(command_words[1].split(':')[1]))
+            return 'Peer added to list.'
         else:
             return 'Undefined command'
 
