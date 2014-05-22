@@ -56,6 +56,12 @@ class UsersDatabase(DatabaseEngine):
         elif command_words[0] == 'logout':
             self.__logout()
             return 'Successfully logout.'
+        elif command_words[0] == 'show_last_connection_time':
+            return self.__get_last_connection_time(command_words[1])
+        elif command_words[0] == 'save_keys':
+            return self.__save_keys(command_words[1])
+        elif command_words[0] == 'load_keys':
+            return self.__load_keys(command_words[1])
         elif command_words[0] == 'add_user_to_group':
             self.__add_user_to_group(command_words[1], command_words[2])
             return 'Succeed!'
@@ -70,12 +76,37 @@ class UsersDatabase(DatabaseEngine):
         else:
             return 'Undefined command'
 
+    def __get_last_connection_time(self, username):
+        restored_table = self.restore_a_table(VersionsRange(first=0, last=None))
+        return str(restored_table[username]['update_data_time'])
+
     def get_authorized_users(self):
         users = []
         restored_table = self.restore_a_table(VersionsRange(first=0, last=None))
         for user in restored_table:
             users.append(user)
         return users
+
+    def __save_keys(self, file_path):
+        f = open(file_path, "w")
+        data = {
+            'name': self.__name,
+            'keys': self.__keys
+        }
+        data = json.JSONEncoder().encode(data)
+        f.write(data)
+        f.close()
+        return 'Success.'
+
+    def __load_keys(self, file_path):
+        f = open(file_path, "r")
+        data = f.read()
+        data = json.JSONDecoder().decode(data)
+        f.close()
+        self.__name = data['name']
+        self.__keys = data['keys']
+        self.__update_data_in_database()
+        return 'Logged in.'
 
     def __add_user_to_group(self, group_name, user_name):
         if group_name in self.__groups:
