@@ -21,6 +21,7 @@ class ServerThread(threading.Thread): #Класс для создания сок
         self.tcp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self.tcp_socket.bind((self.host, self.port))
+        self.port = self.tcp_socket.getsockname()[1]
         #Присваивание сокету указанного адреса и порта
         self.tcp_socket.setblocking(0)
 
