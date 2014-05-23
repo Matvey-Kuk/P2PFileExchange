@@ -44,19 +44,28 @@ class TestUsersDatabase(unittest.TestCase):
             self.functional_tester.send_command(self.instances[0], 'auth save_keys ' + keys_file.name),
             'Success.'
         )
-        connection_time = self.functional_tester.send_command(self.instances[0], 'auth show_last_connection_time username')
+        connection_time = self.functional_tester.send_command(
+            self.instances[0],
+            'auth show_last_connection_time username'
+        )
         self.functional_tester.send_command(self.instances[0], 'auth logout')
         self.assertEqual(
             self.functional_tester.send_command(self.instances[0], 'auth load_keys ' + keys_file.name),
             'Logged in.'
         )
-        connection_time2 = self.functional_tester.send_command(self.instances[1], 'auth show_last_connection_time username')
+        connection_time2 = self.functional_tester.send_command(
+            self.instances[1],
+            'auth show_last_connection_time username'
+        )
         self.assertEqual(
             connection_time,
             connection_time2
         )
         sleep(10)
-        connection_time2 = self.functional_tester.send_command(self.instances[1], 'auth show_last_connection_time username')
+        connection_time2 = self.functional_tester.send_command(
+            self.instances[1],
+            'auth show_last_connection_time username'
+        )
         self.assertNotEqual(
             connection_time,
             connection_time2
