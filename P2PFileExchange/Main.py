@@ -101,7 +101,6 @@ class Main(object):
 
         return networking
 
-AllowingProcessing().allow_processing = True
 main = Main()
 
 

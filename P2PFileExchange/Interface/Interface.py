@@ -17,7 +17,7 @@ class Interface(object):
 
     def __init__(self):
 
-        self.Info_labels = {}
+        self.info_labels = {}
         self.previous_commands = []
         self.current_command_number = 0
         self.prefix = ""
@@ -50,8 +50,8 @@ class Interface(object):
         self.txtfr2.bind('<Up>', self.input_up_command)
         self.txtfr2.bind('<Down>', self.input_down_command)
 
-        self.b_input = Button(self.frameCommandLine, text='OK', width=20, command=self.input_command)
-        self.b_input.grid(row=0, column=1, sticky='sew')
+        self.bInput = Button(self.frameCommandLine, text='OK', width=20, command=self.input_command)
+        self.bInput.grid(row=0, column=1, sticky='sew')
 
         self.frameCommandLine.rowconfigure(0, weight=1)
         self.frameCommandLine.columnconfigure(0, weight=1)
@@ -68,8 +68,8 @@ class Interface(object):
         if len(self.__output_callbacks) > 0:
             for prefix in sorted(self.__output_callbacks.keys()):
                 i += 1
-                self.Info_labels[prefix] = Label(self.frameInfo, anchor='center')
-                self.Info_labels[prefix].grid(row=0, column=i, sticky='nsew')
+                self.info_labels[prefix] = Label(self.frameInfo, anchor='center')
+                self.info_labels[prefix].grid(row=0, column=i, sticky='nsew')
             self.frameInfo.columnconfigure(i, weight=1)
         else:
             self.frameInfo.columnconfigure(1, weight=1)
@@ -81,9 +81,10 @@ class Interface(object):
         """Обработчик введённых команд"""
         s = self.txtfr2.get('1.0', 'end')
         self.txtfr2.delete('1.0', 'end')
-
         self.txtfr1['state'] = 'normal'
         s = s.strip()
+        if not s:
+            return 0
         self.txtfr1.insert('end', "\n" + s)
         self.txtfr1.yview_moveto(1.0)
 
@@ -142,12 +143,12 @@ class Interface(object):
         """Метод, опрашивающий поставщиков данных"""
         self.txtfr1.after(1000, self.asking_for_information)
         #self.txtfr1['state'] = 'normal'
-        if not self.Info_labels:
+        if not self.info_labels:
             self.txtfr1.insert('end', "\nno data")
-        for prefix in self.Info_labels.keys():
+        for prefix in self.info_labels.keys():
             str = Interface.__output_callbacks[prefix]()
             #self.txtfr1.insert('end', "\n%s" % str)
-            self.Info_labels[prefix]['text'] = str
+            self.info_labels[prefix]['text'] = str
         #self.txtfr1['state'] = 'disabled'
 
     @staticmethod
