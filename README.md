@@ -10,6 +10,12 @@
 ------------
 python3 Main.py -h
 
+Тесты:
+
+cd P2PFileExchange
+
+python3 -m unittest discover --start-directory=Tests --pattern=*.py
+
 Необходим интерпритатор версии не ниже 3.4
 
 Комманды интерфейса:

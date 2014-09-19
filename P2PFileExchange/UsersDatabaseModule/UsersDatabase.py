@@ -49,6 +49,15 @@ class UsersDatabase(DatabaseEngine):
         else:
             return 'Not logged in.'
 
+    def get_users_in_group(self, administrator_name, group_name):
+        user_data = self.find_in_restored_table(VersionsRange(first=0, last=None), administrator_name)
+        if group_name in user_data['groups']:
+            print((user_data['groups']))
+            print(type(user_data['groups']))
+            print(group_name)
+        else:
+            return "Group name not found."
+
     def process_interface_command(self, command):
         command_words = command.split(' ')
         if command_words[0] == 'register':
@@ -66,7 +75,7 @@ class UsersDatabase(DatabaseEngine):
             self.__add_user_to_group(command_words[1], command_words[2])
             return 'Succeed!'
         elif command_words[0] == 'show_users_in_group':
-            return
+            return self.get_users_in_group(command_words[1], command_words[2])
         elif command_words[0] == 'show_peers_for_group':
             return self.get_peers_for_group(command_words[1], command_words[2])
         elif command_words[0] == 'show_users':

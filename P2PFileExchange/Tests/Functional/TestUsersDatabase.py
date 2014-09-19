@@ -35,6 +35,28 @@ class TestUsersDatabase(unittest.TestCase):
             )
             print('Instance is successfully checked.')
 
+    def test_working_with_groups(self):
+        print('Testing working with groups')
+        self.assertEqual(
+            self.functional_tester.send_command(self.instances[0], 'auth register group_administrator'),
+            'Successfully registered!'
+        )
+        print('user added')
+        sleep(5)
+        self.assertEqual(
+            self.functional_tester.send_command(self.instances[0], 'auth add_user_to_group group_name group_user'),
+            'Succeed!'
+        )
+        print('group added')
+        sleep(5)
+        self.assertEqual(
+            self.functional_tester.send_command(
+                self.instances[0],
+                'auth show_users_in_group group_administrator group_name'
+            ),
+            'Succeed!'
+        )
+
     def test_save_keys_to_file_and_restore(self):
         print('Testing "auth save_keys" and "auth auth_as" commands')
         keys_file = tempfile.NamedTemporaryFile()
