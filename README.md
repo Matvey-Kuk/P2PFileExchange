@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Matvey-Kuk/network.png?branch=master)](https://travis-ci.org/Matvey-Kuk/network)
+[![Build Status](https://travis-ci.org/Matvey-Kuk/P2PFileExchange.png?branch=master)](https://travis-ci.org/Matvey-Kuk/P2PFileExchange)
 
 О проекте:
 ------------
