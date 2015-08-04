@@ -1,60 +1,58 @@
 [![Build Status](https://travis-ci.org/Matvey-Kuk/P2PFileExchange.png?branch=master)](https://travis-ci.org/Matvey-Kuk/P2PFileExchange)
 
-О проекте:
+About:
 ------------
-Распределенное децентрализованное хранилише файлов для малых рабочих групп с версионированием.
-Позволяет пользователю зарегистрироваться в децентрализованной базе данных,
-организовать рабочую группу из нескольких пользователей и вести совместную работу над приватными файлами.
+Distributed absolutely decentralised file storage for workgroups with git-like versioning.
 
-Запуск:
+How to run:
 ------------
 python3 Main.py -h
 
-Тесты:
+Tests:
 
 cd P2PFileExchange
 
 python3 -m unittest discover --start-directory=Tests --pattern=*.py
 
-Необходим интерпритатор версии не ниже 3.4
+CPython interpreter 3.4 required
 
-Комманды интерфейса:
+Commands:
 ------------
 
-Управление соединением:
+Connection control:
 
-Команда  | Описание
+Command  | Description
 ------------- | -------------
-p2p connect_to %ип адрес:порт(например, 192.168.1.1:1234)% | Установить соединение с известным пиром.
-p2p show_peers | Показать пиров, с которыми установлено соединение.
+p2p connect_to %ip:port% | Connect to peer.
+p2p show_peers | Show connected peers.
 
 Управление личными данными:
 
-Команда  | Описание
+Command  | Description
 ------------- | -------------
-auth load_keys %файл ключей с данными для авторизации% | Авторизоваться.
-auth register %имя пользователя%  | Зарегистрировать пользователя.
-auth save_keys %файл с данными для авторизации% | Сохранить файл ключей для дальнейшей авторизации.
-auth logout | Выйти из системы.
-auth show_last_connection_time %имя пользователя%  | Получить время последнего соединения пользователя.
+auth load_keys %keystorage file% | Auth.
+auth register %username%  | Register new user.
+auth save_keys %keystorage file% | Save keystorage file.
+auth logout | Log out.
+auth show_last_connection_time %username%  | Get last user online time by username.
 
-Управление рабочими группами:
+Workgroup control:
 
-Команда  | Описание
+Command  | Description
 ------------- | -------------
-auth add_user_to_group %название группы% %имя пользователя%  | Добавить пользователя в группу. Если такой рабочей группы не было, она будет создана.
-auth remove_user_from_group %название группы% %имя пользователя%  | Удалить пользователя из группы.
-auth show_users_in_group  %имя администратора группы% %название группы%  | Показать имена всех пользователей в рабочей группе.
-auth show_users_groups  %имя администратора группы% | Показатьвсе группы, которые администрирует пользователь.
-auth work_in_group  %имя администратора группы% %название группы% %локальная директория, где будут храниться файлы группы%  | Включить работу с файлами группы.
-auth stop_working_in_group %имя администратора группы% %название группы% | Отключиться от работы с файлами группы.
-auth show_groups_i_am_working_in | Показать группы, работа с которыми включена.
+auth add_user_to_group %group name% %username%  | Add user to group. Group would be created if not exists.
+auth remove_user_from_group %group name% %username%  | Remove user from group.
+auth show_users_in_group  %group admin username% %group name%  | Show usernames for all users in group.
+auth show_users_groups  %group admin username% | Show all user's groups.
+auth work_in_group  %group admin username% %group name% %local dir for group's files%  | Enabale file syncing.
+auth stop_working_in_group %group admin username% %group name% | Disable file syncing.
+auth show_groups_i_am_working_in | List enabled groups.
 
-Работа с файлами:
+Working with files:
 
-Команда  | Описание
+Command  | Description
 ------------- | -------------
-files work_with %имя администратора группы% %имя рабочей группы% | Перейти в режим редактирования файлов группы.
-files block_files %названия файлов через пробел% | Заблокировать файлы от изменений другими участниками сети.
-files release_blocked_files | Разблокировать заблокированные ранее файлы и отправить изменения.
-files leave_working_group | Выйти из режима редактирования файлов группы.
+files work_with %group admin username% %group name% | Enable group's files editing mode.
+files block_files %filename filename filename ...% | Disable syncing for certain files.
+files release_blocked_files | Enable syncing for all files.
+files leave_working_group | Disable group's files editing mode.
